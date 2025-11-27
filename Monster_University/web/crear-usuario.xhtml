@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+    <title>Crear Nuevo Usuario</title>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="container">
+        <h1>👤 Crear Nuevo Usuario</h1>
+        
+        <h:form id="formCrearUsuario">
+            <p:panel header="Datos del Usuario">
+                <!-- ID Usuario -->
+                <div class="form-group">
+                    <h:outputLabel for="xeusuId" value="ID Usuario *" styleClass="form-label"/>
+                    <p:inputText id="xeusuId" value="#{crearUsuarioController.nuevoUsuario.xeusuId}" 
+                               maxlength="5" style="width: 100px"
+                               placeholder="Ej: USR01"/>
+                    <p:message for="xeusuId" display="icon"/>
+                </div>
+
+                <!-- Nombre -->
+                <div class="form-group">
+                    <h:outputLabel for="xeusuNombre" value="Nombre Completo *" styleClass="form-label"/>
+                    <p:inputText id="xeusuNombre" value="#{crearUsuarioController.nuevoUsuario.xeusuNombre}" 
+                               maxlength="100" style="width: 300px"
+                               placeholder="Nombre del usuario"/>
+                    <p:message for="xeusuNombre" display="icon"/>
+                </div>
+
+                <!-- Contraseña -->
+                <div class="form-group">
+                    <h:outputLabel for="xeusuContra" value="Contraseña *" styleClass="form-label"/>
+                    <p:password id="xeusuContra" value="#{crearUsuarioController.nuevoUsuario.xeusuContra}" 
+                              feedback="true" promptLabel="Ingresa contraseña" 
+                              weakLabel="Débil" goodLabel="Buena" strongLabel="Fuerte"
+                              style="width: 200px"/>
+                    <p:commandButton value="🔐 Generar" action="#{crearUsuarioController.generarContrasenaAleatoria}"
+                                   update="xeusuContra confirmarContrasena" 
+                                   style="margin-left: 10px;"/>
+                    <p:message for="xeusuContra" display="icon"/>
+                </div>
+
+                <!-- Confirmar Contraseña -->
+                <div class="form-group">
+                    <h:outputLabel for="confirmarContrasena" value="Confirmar Contraseña *" styleClass="form-label"/>
+                    <p:password id="confirmarContrasena" value="#{crearUsuarioController.confirmarContrasena}" 
+                              style="width: 200px"/>
+                    <p:message for="confirmarContrasena" display="icon"/>
+                </div>
+
+                <!-- Estado -->
+                <div class="form-group">
+                    <h:outputLabel for="xeusuEstado" value="Estado *" styleClass="form-label"/>
+                    <p:selectOneMenu id="xeusuEstado" value="#{crearUsuarioController.nuevoUsuario.xeusuEstado}" 
+                                   style="width: 150px">
+                        <f:selectItem itemLabel="Seleccione estado" itemValue=""/>
+                        <f:selectItem itemLabel="ACTIVO" itemValue="ACTIVO"/>
+                        <f:selectItem itemLabel="INACTIVO" itemValue="INACTIVO"/>
+                    </p:selectOneMenu>
+                    <p:message for="xeusuEstado" display="icon"/>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="actions">
+                    <p:commandButton value="💾 Crear Usuario" 
+                                   action="#{crearUsuarioController.crearUsuario}"
+                                   update="@form"
+                                   icon="pi pi-save"
+                                   style="margin-right: 10px;"/>
+                    
+                    <p:commandButton value="🔄 Limpiar" 
+                                   action="#{crearUsuarioController.initNuevoUsuario}"
+                                   update="@form"
+                                   immediate="true"
+                                   icon="pi pi-refresh"/>
+                    
+                    <p:button value="📋 Lista Usuarios" 
+                            outcome="lista-usuarios"
+                            icon="pi pi-list"/>
+                </div>
+            </p:panel>
+        </h:form>
+
+        <!-- Mensajes globales -->
+        <p:growl id="growl" showDetail="true" life="3000"/>
+    </div>
+</h:body>
+</html>

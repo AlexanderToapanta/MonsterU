@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="MecarrCarreraViewDlg" widgetVar="MecarrCarreraViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewMecarrCarreraTitle}">
+            <h:form id="MecarrCarreraViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{mecarrCarreraController.selected != null}">
+                        <h:outputText value="#{bundle.ViewMecarrCarreraLabel_mecarrId}"/>
+                        <h:outputText value="#{mecarrCarreraController.selected.mecarrId}" title="#{bundle.ViewMecarrCarreraTitle_mecarrId}"/>
+                        <h:outputText value="#{bundle.ViewMecarrCarreraLabel_mecarrNombre}"/>
+                        <h:outputText value="#{mecarrCarreraController.selected.mecarrNombre}" title="#{bundle.ViewMecarrCarreraTitle_mecarrNombre}"/>
+                        <h:outputText value="#{bundle.ViewMecarrCarreraLabel_mecarrMaxCred}"/>
+                        <h:outputText value="#{mecarrCarreraController.selected.mecarrMaxCred}" title="#{bundle.ViewMecarrCarreraTitle_mecarrMaxCred}"/>
+                        <h:outputText value="#{bundle.ViewMecarrCarreraLabel_mecarrMinCred}"/>
+                        <h:outputText value="#{mecarrCarreraController.selected.mecarrMinCred}" title="#{bundle.ViewMecarrCarreraTitle_mecarrMinCred}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" onclick="MecarrCarreraViewDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

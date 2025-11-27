@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            Cambiar Contraseña
+        </ui:define>
+
+        <ui:define name="body">
+            <div class="password-change-container">
+                <h:form id="passwordChangeForm">
+                    <p:growl id="growl" showDetail="true" life="3000"/>
+                    
+                    <p:panel header="Cambiar Contraseña" style="max-width: 600px; margin: 0 auto;">
+                        
+                        <!-- Información del Usuario -->
+                        <div class="user-card" style="background: #e3f2fd; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                            <p:panelGrid columns="2" style="width: 100%; border: none;">
+                                <p:outputLabel value="Usuario:" style="font-weight: bold;"/>
+                                <p:outputLabel value="#{loginController.usuarioLogueado.xeusuNombre}"/>
+                                
+                                <p:outputLabel value="Estado:" style="font-weight: bold;"/>
+                                <p:outputLabel value="#{loginController.usuarioLogueado.xeusuEstado}" 
+                                             style="color: #{loginController.usuarioLogueado.xeusuEstado == 'ACTIVO' ? 'green' : 'red'};"/>
+                            </p:panelGrid>
+                        </div>
+
+                        <p:messages id="messages" showDetail="true" closable="true"/>
+                        
+                        <h:panelGrid columns="2" style="width: 100%;" cellpadding="10">
+                            
+                            <!-- Contraseña Actual -->
+                            <p:outputLabel for="currentPassword" value="Contraseña Actual: *" 
+                                         style="font-weight: bold;"/>
+                            <p:password id="currentPassword" 
+                                       value="#{passwordChangeController.currentPassword}"
+                                       feedback="false"
+                                       required="true"
+                                       requiredMessage="La contraseña actual es requerida"
+                                       placeholder="Ingrese su contraseña actual"
+                                       style="width: 100%">
+                                <p:ajax event="blur" update="currentPasswordMsg"/>
+                            </p:password>
+                            <p:message id="currentPasswordMsg" for="currentPassword"/>
+                            
+                            <!-- Nueva Contraseña -->
+                            <p:outputLabel for="newPassword" value="Nueva Contraseña: *" 
+                                         style="font-weight: bold;"/>
+                            <p:password id="newPassword" 
+                                       value="#{passwordChangeController.newPassword}"
+                                       feedback="true"
+                                       required="true"
+                                       requiredMessage="La nueva contraseña es requerida"
+                                       placeholder="Ingrese la nueva contraseña"
+                                       style="width: 100%"
+                                       promptLabel="Ingrese la nueva contraseña"
+                                       weakLabel="Débil"
+                                       goodLabel="Buena" 
+                                       strongLabel="Fuerte">
+                                <p:ajax event="blur" update="newPasswordMsg"/>
+                            </p:password>
+                            <p:message id="newPasswordMsg" for="newPassword"/>
+                            
+                            <!-- Confirmar Contraseña -->
+                            <p:outputLabel for="confirmPassword" value="Confirmar Contraseña: *" 
+                                         style="font-weight: bold;"/>
+                            <p:password id="confirmPassword" 
+                                       value="#{passwordChangeController.confirmPassword}"
+                                       feedback="false"
+                                       required="true"
+                                       requiredMessage="Debe confirmar la contraseña"
+                                       placeholder="Confirme la nueva contraseña"
+                                       style="width: 100%">
+                                <p:ajax event="blur" update="confirmPasswordMsg"/>
+                            </p:password>
+                            <p:message id="confirmPasswordMsg" for="confirmPassword"/>
+                            
+                        </h:panelGrid>
+
+                        <!-- Reglas de Contraseña -->
+                        <div class="password-rules" style="background: #fff3cd; padding: 10px; border-radius: 5px; margin: 15px 0;">
+                            <h4>Requisitos de la contraseña:</h4>
+                            <ul style="margin: 5px 0; padding-left: 20px;">
+                                <li>Mínimo 6 caracteres</li>
+                                <li>Recomendado: combinación de letras mayúsculas, minúsculas y números</li>
+                                <li>No usar contraseñas obvias o repetitivas</li>
+                            </ul>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                            <p:commandButton value="Cambiar Contraseña" 
+                                           action="#{passwordChangeController.changePassword}"
+                                           update="growl,messages"
+                                           icon="pi pi-check"
+                                           styleClass="ui-button-success"
+                                           process="@form"/>
+                            
+                            <p:button value="Cancelar" 
+                                    outcome="/index1.xhtml"
+                                    icon="pi pi-times"
+                                    styleClass="ui-button-secondary"/>
+                            
+                            <p:commandButton value="Limpiar" 
+                                           type="reset"
+                                           icon="pi pi-refresh"
+                                           styleClass="ui-button-help"
+                                           onclick="document.getElementById('passwordChangeForm').reset();"/>
+                        </div>
+                    </p:panel>
+                </h:form>
+            </div>
+
+            <style>
+                .password-change-container {
+                    padding: 40px 20px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: flex-start;
+                    min-height: 70vh;
+                }
+                
+                .user-card {
+                    border-left: 4px solid #2196F3;
+                }
+                
+                .password-rules {
+                    border-left: 4px solid #ffc107;
+                }
+                
+                @media (max-width: 768px) {
+                    .password-change-container {
+                        padding: 20px 10px;
+                    }
+                    
+                    .ui-panelgrid .ui-grid-row > td {
+                        display: block;
+                        width: 100% !important;
+                    }
+                }
+            </style>
+        </ui:define>
+
+        <ui:define name="footer">
+            <div style="text-align: center; width: 100%;">
+                <p>Seguridad - Cambio de Contraseña</p>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

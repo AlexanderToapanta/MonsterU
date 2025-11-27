@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="XeaudAudlogViewDlg" widgetVar="XeaudAudlogViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewXeaudAudlogTitle}">
+            <h:form id="XeaudAudlogViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{xeaudAudlogController.selected != null}">
+                        <h:outputText value="#{bundle.ViewXeaudAudlogLabel_idauditoria}"/>
+                        <h:outputText value="#{xeaudAudlogController.selected.idauditoria}" title="#{bundle.ViewXeaudAudlogTitle_idauditoria}"/>
+                        <h:outputText value="#{bundle.ViewXeaudAudlogLabel_accion}"/>
+                        <h:outputText value="#{xeaudAudlogController.selected.accion}" title="#{bundle.ViewXeaudAudlogTitle_accion}"/>
+                        <h:outputText value="#{bundle.ViewXeaudAudlogLabel_tablaafec}"/>
+                        <h:outputText value="#{xeaudAudlogController.selected.tablaafec}" title="#{bundle.ViewXeaudAudlogTitle_tablaafec}"/>
+                        <h:outputText value="#{bundle.ViewXeaudAudlogLabel_filaid}"/>
+                        <h:outputText value="#{xeaudAudlogController.selected.filaid}" title="#{bundle.ViewXeaudAudlogTitle_filaid}"/>
+                        <h:outputText value="#{bundle.ViewXeaudAudlogLabel_fechahora}"/>
+                        <h:outputText value="#{xeaudAudlogController.selected.fechahora}" title="#{bundle.ViewXeaudAudlogTitle_fechahora}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewXeaudAudlogLabel_detalle}"/>
+                        <h:outputText value="#{xeaudAudlogController.selected.detalle}" title="#{bundle.ViewXeaudAudlogTitle_detalle}"/>
+                        <h:outputText value="#{bundle.ViewXeaudAudlogLabel_xeusuId}"/>
+                        <h:outputText value="#{xeaudAudlogController.selected.xeusuId}" title="#{bundle.ViewXeaudAudlogTitle_xeusuId}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" onclick="XeaudAudlogViewDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

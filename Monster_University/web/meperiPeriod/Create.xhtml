@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="MeperiPeriodCreateDlg" widgetVar="MeperiPeriodCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateMeperiPeriodTitle}">
+            <h:form id="MeperiPeriodCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{meperiPeriodController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateMeperiPeriodLabel_meperiId}" for="meperiId" />
+                        <p:inputText id="meperiId" value="#{meperiPeriodController.selected.meperiId}" title="#{bundle.CreateMeperiPeriodTitle_meperiId}" required="true" requiredMessage="#{bundle.CreateMeperiPeriodRequiredMessage_meperiId}"/>
+                        <p:outputLabel value="#{bundle.CreateMeperiPeriodLabel_meperiNombre}" for="meperiNombre" />
+                        <p:inputText id="meperiNombre" value="#{meperiPeriodController.selected.meperiNombre}" title="#{bundle.CreateMeperiPeriodTitle_meperiNombre}" required="true" requiredMessage="#{bundle.CreateMeperiPeriodRequiredMessage_meperiNombre}"/>
+                        <p:outputLabel value="#{bundle.CreateMeperiPeriodLabel_meperiFechaini}" for="meperiFechaini" />
+                        <p:calendar id="meperiFechaini" pattern="MM/dd/yyyy" value="#{meperiPeriodController.selected.meperiFechaini}" title="#{bundle.EditMeperiPeriodTitle_meperiFechaini}" required="true" requiredMessage="#{bundle.EditMeperiPeriodRequiredMessage_meperiFechaini}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.CreateMeperiPeriodLabel_meperiFechafin}" for="meperiFechafin" />
+                        <p:calendar id="meperiFechafin" pattern="MM/dd/yyyy" value="#{meperiPeriodController.selected.meperiFechafin}" title="#{bundle.EditMeperiPeriodTitle_meperiFechafin}" required="true" requiredMessage="#{bundle.EditMeperiPeriodRequiredMessage_meperiFechafin}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.CreateMeperiPeriodLabel_meperiActivo}" for="meperiActivo" />
+                        <p:selectBooleanCheckbox id="meperiActivo" value="#{meperiPeriodController.selected.meperiActivo}" required="true" requiredMessage="#{bundle.EditMeperiPeriodRequiredMessage_meperiActivo}"/>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{meperiPeriodController.create}" value="#{bundle.Save}" update="display,:MeperiPeriodListForm:datalist,:growl" oncomplete="handleSubmit(args,'MeperiPeriodCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="MeperiPeriodCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

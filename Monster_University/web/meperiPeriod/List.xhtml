@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template.xhtml">
+
+
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListMeperiPeriodTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="MeperiPeriodListForm">
+                <p:panel header="#{bundle.ListMeperiPeriodTitle}">
+                    <p:dataTable id="datalist" value="#{meperiPeriodController.items}" var="item"
+                                 selectionMode="single" selection="#{meperiPeriodController.selected}"
+                                 paginator="true"
+                                 rowKey="#{item.meperiId}"
+                                 rows="10"
+                                 rowsPerPageTemplate="10,20,30,40,50"
+                                 >
+
+                        <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                        <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListMeperiPeriodTitle_meperiId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.meperiId}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListMeperiPeriodTitle_meperiNombre}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.meperiNombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListMeperiPeriodTitle_meperiFechaini}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.meperiFechaini}">
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListMeperiPeriodTitle_meperiFechafin}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.meperiFechafin}">
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListMeperiPeriodTitle_meperiActivo}"/>
+                            </f:facet>
+                            <p:selectBooleanCheckbox value="#{item.meperiActivo}" disabled="true"/>
+                        </p:column>
+                        <f:facet name="footer">
+                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{meperiPeriodController.prepareCreate}" update=":MeperiPeriodCreateForm" oncomplete="PF('MeperiPeriodCreateDialog').show()"/>
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":MeperiPeriodViewForm" oncomplete="PF('MeperiPeriodViewDialog').show()" disabled="#{empty meperiPeriodController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":MeperiPeriodEditForm" oncomplete="PF('MeperiPeriodEditDialog').show()" disabled="#{empty meperiPeriodController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{meperiPeriodController.destroy}" update=":growl,datalist" disabled="#{empty meperiPeriodController.selected}"/>
+                        </f:facet>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+
+            <ui:include src="Create.xhtml"/>
+            <ui:include src="Edit.xhtml"/>
+            <ui:include src="View.xhtml"/>
+        </ui:define>
+    </ui:composition>
+
+</html>

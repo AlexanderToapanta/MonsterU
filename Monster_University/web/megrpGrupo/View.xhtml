@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="MegrpGrupoViewDlg" widgetVar="MegrpGrupoViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewMegrpGrupoTitle}">
+            <h:form id="MegrpGrupoViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{megrpGrupoController.selected != null}">
+                        <h:outputText value="#{bundle.ViewMegrpGrupoLabel_megrpId}"/>
+                        <h:outputText value="#{megrpGrupoController.selected.megrpId}" title="#{bundle.ViewMegrpGrupoTitle_megrpId}"/>
+                        <h:outputText value="#{bundle.ViewMegrpGrupoLabel_megrpCodigo}"/>
+                        <h:outputText value="#{megrpGrupoController.selected.megrpCodigo}" title="#{bundle.ViewMegrpGrupoTitle_megrpCodigo}"/>
+                        <h:outputText value="#{bundle.ViewMegrpGrupoLabel_megrpAula}"/>
+                        <h:outputText value="#{megrpGrupoController.selected.megrpAula}" title="#{bundle.ViewMegrpGrupoTitle_megrpAula}"/>
+                        <h:outputText value="#{bundle.ViewMegrpGrupoLabel_megrpCupoMax}"/>
+                        <h:outputText value="#{megrpGrupoController.selected.megrpCupoMax}" title="#{bundle.ViewMegrpGrupoTitle_megrpCupoMax}"/>
+                        <h:outputText value="#{bundle.ViewMegrpGrupoLabel_megrpCupoAct}"/>
+                        <h:outputText value="#{megrpGrupoController.selected.megrpCupoAct}" title="#{bundle.ViewMegrpGrupoTitle_megrpCupoAct}"/>
+                        <h:outputText value="#{bundle.ViewMegrpGrupoLabel_measigId}"/>
+                        <h:outputText value="#{megrpGrupoController.selected.measigId}" title="#{bundle.ViewMegrpGrupoTitle_measigId}"/>
+                        <h:outputText value="#{bundle.ViewMegrpGrupoLabel_meperiId}"/>
+                        <h:outputText value="#{megrpGrupoController.selected.meperiId}" title="#{bundle.ViewMegrpGrupoTitle_meperiId}"/>
+                        <h:outputText value="#{bundle.ViewMegrpGrupoLabel_peperId}"/>
+                        <h:outputText value="#{megrpGrupoController.selected.peperId}" title="#{bundle.ViewMegrpGrupoTitle_peperId}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" onclick="MegrpGrupoViewDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

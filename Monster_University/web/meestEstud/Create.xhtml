@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="MeestEstudCreateDlg" widgetVar="MeestEstudCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateMeestEstudTitle}">
+            <h:form id="MeestEstudCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{meestEstudController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateMeestEstudLabel_meestEstudPK_meestId}" for="meestEstudPK_meestId" />
+                        <p:inputText id="meestEstudPK_meestId" value="#{meestEstudController.selected.meestEstudPK.meestId}" title="#{bundle.CreateMeestEstudTitle_meestEstudPK_meestId}" required="true" requiredMessage="#{bundle.CreateMeestEstudRequiredMessage_meestEstudPK_meestId}"/>
+                        <p:outputLabel value="#{bundle.CreateMeestEstudLabel_meestNombre}" for="meestNombre" />
+                        <p:inputText id="meestNombre" value="#{meestEstudController.selected.meestNombre}" title="#{bundle.CreateMeestEstudTitle_meestNombre}" required="true" requiredMessage="#{bundle.CreateMeestEstudRequiredMessage_meestNombre}"/>
+                        <p:outputLabel value="#{bundle.CreateMeestEstudLabel_meestApellido}" for="meestApellido" />
+                        <p:inputText id="meestApellido" value="#{meestEstudController.selected.meestApellido}" title="#{bundle.CreateMeestEstudTitle_meestApellido}" required="true" requiredMessage="#{bundle.CreateMeestEstudRequiredMessage_meestApellido}"/>
+                        <p:outputLabel value="#{bundle.CreateMeestEstudLabel_meestCedula}" for="meestCedula" />
+                        <p:inputText id="meestCedula" value="#{meestEstudController.selected.meestCedula}" title="#{bundle.CreateMeestEstudTitle_meestCedula}" required="true" requiredMessage="#{bundle.CreateMeestEstudRequiredMessage_meestCedula}"/>
+                        <p:outputLabel value="#{bundle.CreateMeestEstudLabel_meestEmail}" for="meestEmail" />
+                        <p:inputText id="meestEmail" value="#{meestEstudController.selected.meestEmail}" title="#{bundle.CreateMeestEstudTitle_meestEmail}" required="true" requiredMessage="#{bundle.CreateMeestEstudRequiredMessage_meestEmail}"/>
+                        <p:outputLabel value="#{bundle.CreateMeestEstudLabel_meestFechana}" for="meestFechana" />
+                        <p:calendar id="meestFechana" pattern="MM/dd/yyyy" value="#{meestEstudController.selected.meestFechana}" title="#{bundle.EditMeestEstudTitle_meestFechana}" required="true" requiredMessage="#{bundle.EditMeestEstudRequiredMessage_meestFechana}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.CreateMeestEstudLabel_meestPromedio}" for="meestPromedio" />
+                        <p:inputText id="meestPromedio" value="#{meestEstudController.selected.meestPromedio}" title="#{bundle.CreateMeestEstudTitle_meestPromedio}" required="true" requiredMessage="#{bundle.CreateMeestEstudRequiredMessage_meestPromedio}"/>
+                        <p:outputLabel value="#{bundle.CreateMeestEstudLabel_mecarrCarrera}" for="mecarrCarrera" />
+                        <p:selectOneMenu id="mecarrCarrera" value="#{meestEstudController.selected.mecarrCarrera}" required="true" requiredMessage="#{bundle.EditMeestEstudRequiredMessage_mecarrCarrera}">
+                            <f:selectItems value="#{mecarrCarreraController.itemsAvailableSelectOne}"
+                                           var="mecarrCarreraItem"
+                                           itemValue="#{mecarrCarreraItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateMeestEstudLabel_xeusuId}" for="xeusuId" />
+                        <p:selectOneMenu id="xeusuId" value="#{meestEstudController.selected.xeusuId}" >
+                            <f:selectItems value="#{xeusuUsuarController.itemsAvailableSelectOne}"
+                                           var="xeusuIdItem"
+                                           itemValue="#{xeusuIdItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{meestEstudController.create}" value="#{bundle.Save}" update="display,:MeestEstudListForm:datalist,:growl" oncomplete="handleSubmit(args,'MeestEstudCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="MeestEstudCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="MegrpGrupoCreateDlg" widgetVar="MegrpGrupoCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateMegrpGrupoTitle}">
+            <h:form id="MegrpGrupoCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{megrpGrupoController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateMegrpGrupoLabel_megrpId}" for="megrpId" />
+                        <p:inputText id="megrpId" value="#{megrpGrupoController.selected.megrpId}" title="#{bundle.CreateMegrpGrupoTitle_megrpId}" required="true" requiredMessage="#{bundle.CreateMegrpGrupoRequiredMessage_megrpId}"/>
+                        <p:outputLabel value="#{bundle.CreateMegrpGrupoLabel_megrpCodigo}" for="megrpCodigo" />
+                        <p:inputText id="megrpCodigo" value="#{megrpGrupoController.selected.megrpCodigo}" title="#{bundle.CreateMegrpGrupoTitle_megrpCodigo}" required="true" requiredMessage="#{bundle.CreateMegrpGrupoRequiredMessage_megrpCodigo}"/>
+                        <p:outputLabel value="#{bundle.CreateMegrpGrupoLabel_megrpAula}" for="megrpAula" />
+                        <p:inputText id="megrpAula" value="#{megrpGrupoController.selected.megrpAula}" title="#{bundle.CreateMegrpGrupoTitle_megrpAula}" required="true" requiredMessage="#{bundle.CreateMegrpGrupoRequiredMessage_megrpAula}"/>
+                        <p:outputLabel value="#{bundle.CreateMegrpGrupoLabel_megrpCupoMax}" for="megrpCupoMax" />
+                        <p:inputText id="megrpCupoMax" value="#{megrpGrupoController.selected.megrpCupoMax}" title="#{bundle.CreateMegrpGrupoTitle_megrpCupoMax}" required="true" requiredMessage="#{bundle.CreateMegrpGrupoRequiredMessage_megrpCupoMax}"/>
+                        <p:outputLabel value="#{bundle.CreateMegrpGrupoLabel_megrpCupoAct}" for="megrpCupoAct" />
+                        <p:inputText id="megrpCupoAct" value="#{megrpGrupoController.selected.megrpCupoAct}" title="#{bundle.CreateMegrpGrupoTitle_megrpCupoAct}" required="true" requiredMessage="#{bundle.CreateMegrpGrupoRequiredMessage_megrpCupoAct}"/>
+                        <p:outputLabel value="#{bundle.CreateMegrpGrupoLabel_measigId}" for="measigId" />
+                        <p:selectOneMenu id="measigId" value="#{megrpGrupoController.selected.measigId}" required="true" requiredMessage="#{bundle.EditMegrpGrupoRequiredMessage_measigId}">
+                            <f:selectItems value="#{measigAsignaController.itemsAvailableSelectOne}"
+                                           var="measigIdItem"
+                                           itemValue="#{measigIdItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateMegrpGrupoLabel_meperiId}" for="meperiId" />
+                        <p:selectOneMenu id="meperiId" value="#{megrpGrupoController.selected.meperiId}" >
+                            <f:selectItems value="#{meperiPeriodController.itemsAvailableSelectOne}"
+                                           var="meperiIdItem"
+                                           itemValue="#{meperiIdItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateMegrpGrupoLabel_peperId}" for="peperId" />
+                        <p:selectOneMenu id="peperId" value="#{megrpGrupoController.selected.peperId}" required="true" requiredMessage="#{bundle.EditMegrpGrupoRequiredMessage_peperId}">
+                            <f:selectItems value="#{peperPersonController.itemsAvailableSelectOne}"
+                                           var="peperIdItem"
+                                           itemValue="#{peperIdItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{megrpGrupoController.create}" value="#{bundle.Save}" update="display,:MegrpGrupoListForm:datalist,:growl" oncomplete="handleSubmit(args,'MegrpGrupoCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="MegrpGrupoCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

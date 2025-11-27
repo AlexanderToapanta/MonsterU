@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            Inicio - Sistema de Bienes
+        </ui:define>
+
+        <ui:define name="body">
+            <div class="dashboard-container">
+                <p:growl id="growl" showDetail="true" life="3000"/>
+                
+                <!-- Tarjeta de Bienvenida -->
+                <p:panel header="Bienvenido al Sistema" style="margin-bottom: 20px;">
+                    <div class="welcome-section">
+                        <h2>Hola, #{loginController.usu.usuario != null ? loginController.usu.usuario : 'Usuario'}</h2>
+                        <p>Bienvenido al Sistema de Gestión de Bienes Monster</p>
+                        
+                        <div class="user-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+                            <h3>Información de tu cuenta:</h3>
+                            <p:panelGrid columns="2" style="width: 100%;" layout="grid">
+                                <p:outputLabel value="Usuario:"/>
+                                <p:outputLabel value="#{loginController.usuarioLogueado.xeusuNombre}" 
+                                             style="font-weight: bold;"/>
+                                
+                                <p:outputLabel value="Estado:"/>
+                                <p:outputLabel value="#{loginController.usuarioLogueado.xeusuEstado}" 
+                                             style="font-weight: bold; 
+                                                    color: #{loginController.usuarioLogueado.xeusuEstado == 'ACTIVO' ? 'green' : 'red'};"/>
+                                
+                                <p:outputLabel value="ID Usuario:"/>
+                                <p:outputLabel value="#{loginController.usuarioLogueado.xeusuId}" 
+                                             style="font-weight: bold;"/>
+                            </p:panelGrid>
+                        </div>
+                    </div>
+                </p:panel>
+
+                <!-- Accesos Rápidos -->
+                <p:panel header="Accesos Rápidos" style="text-align: center; margin-bottom: 20px;">
+                    <div class="quick-actions">
+                        
+                        <p:button value="Cambiar Contraseña" 
+                  icon="pi pi-key"
+                  outcome="/cambioContrasena.xhtml"
+                  styleClass="quick-action-btn"/>
+    </div>
+</p:panel>
+
+                <!-- Información del Sistema -->
+                <p:panel header="Información del Sistema">
+                    <div class="system-info">
+                        <p:accordionPanel multiple="true">
+                            <p:tab title="Acerca del Sistema">
+                                <p>
+                                    <strong>Sistema de Gestión de Bienes Monster</strong><br/>
+                                    Versión: 1.0<br/>
+                                    Desarrollado para la gestión integral de bienes y usuarios.
+                                </p>
+                            </p:tab>
+                            
+                            <p:tab title="Últimas Actividades">
+                                <p>No hay actividades recientes.</p>
+                            </p:tab>
+                        </p:accordionPanel>
+                    </div>
+                </p:panel>
+            </div>
+
+            <style>
+                .dashboard-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }
+                
+                .welcome-section h2 {
+                    color: #2c3e50;
+                    margin-bottom: 10px;
+                }
+                
+                .welcome-section p {
+                    color: #7f8c8d;
+                    font-size: 16px;
+                }
+                
+                .quick-actions {
+                    display: flex;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+                
+                .quick-action-btn {
+                    padding: 10px 20px;
+                    margin: 5px;
+                }
+                
+                .user-info {
+                    border-left: 4px solid #007bff;
+                }
+                
+                @media (max-width: 768px) {
+                    .quick-actions {
+                        flex-direction: column;
+                        align-items: center;
+                    }
+                    
+                    .quick-action-btn {
+                        width: 100%;
+                        margin: 5px 0;
+                    }
+                }
+            </style>
+        </ui:define>
+
+        <ui:define name="footer">
+            <div style="text-align: center; width: 100%;">
+                <p>Sistema de Bienes Monster - © 2024</p>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

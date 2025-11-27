@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="FepagoPagoViewDlg" widgetVar="FepagoPagoViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewFepagoPagoTitle}">
+            <h:form id="FepagoPagoViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{fepagoPagoController.selected != null}">
+                        <h:outputText value="#{bundle.ViewFepagoPagoLabel_fepagoId}"/>
+                        <h:outputText value="#{fepagoPagoController.selected.fepagoId}" title="#{bundle.ViewFepagoPagoTitle_fepagoId}"/>
+                        <h:outputText value="#{bundle.ViewFepagoPagoLabel_fepagoMonto}"/>
+                        <h:outputText value="#{fepagoPagoController.selected.fepagoMonto}" title="#{bundle.ViewFepagoPagoTitle_fepagoMonto}"/>
+                        <h:outputText value="#{bundle.ViewFepagoPagoLabel_fepagoFecha}"/>
+                        <h:outputText value="#{fepagoPagoController.selected.fepagoFecha}" title="#{bundle.ViewFepagoPagoTitle_fepagoFecha}">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewFepagoPagoLabel_fepagoRefe}"/>
+                        <h:outputText value="#{fepagoPagoController.selected.fepagoRefe}" title="#{bundle.ViewFepagoPagoTitle_fepagoRefe}"/>
+                        <h:outputText value="#{bundle.ViewFepagoPagoLabel_fepagoEstado}"/>
+                        <h:outputText value="#{fepagoPagoController.selected.fepagoEstado}" title="#{bundle.ViewFepagoPagoTitle_fepagoEstado}"/>
+                        <h:outputText value="#{bundle.ViewFepagoPagoLabel_meestEstud}"/>
+                        <h:outputText value="#{fepagoPagoController.selected.meestEstud}" title="#{bundle.ViewFepagoPagoTitle_meestEstud}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" onclick="FepagoPagoViewDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

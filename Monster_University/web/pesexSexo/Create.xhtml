@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="PesexSexoCreateDlg" widgetVar="PesexSexoCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreatePesexSexoTitle}">
+            <h:form id="PesexSexoCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{pesexSexoController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreatePesexSexoLabel_pesexId}" for="pesexId" />
+                        <p:inputText id="pesexId" value="#{pesexSexoController.selected.pesexId}" title="#{bundle.CreatePesexSexoTitle_pesexId}" required="true" requiredMessage="#{bundle.CreatePesexSexoRequiredMessage_pesexId}"/>
+                        <p:outputLabel value="#{bundle.CreatePesexSexoLabel_pesexDescri}" for="pesexDescri" />
+                        <p:inputText id="pesexDescri" value="#{pesexSexoController.selected.pesexDescri}" title="#{bundle.CreatePesexSexoTitle_pesexDescri}" required="true" requiredMessage="#{bundle.CreatePesexSexoRequiredMessage_pesexDescri}"/>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{pesexSexoController.create}" value="#{bundle.Save}" update="display,:PesexSexoListForm:datalist,:growl" oncomplete="handleSubmit(args,'PesexSexoCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="PesexSexoCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

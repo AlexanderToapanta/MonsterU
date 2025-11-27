@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="MeasigAsignaCreateDlg" widgetVar="MeasigAsignaCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateMeasigAsignaTitle}">
+            <h:form id="MeasigAsignaCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{measigAsignaController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateMeasigAsignaLabel_measigId}" for="measigId" />
+                        <p:inputText id="measigId" value="#{measigAsignaController.selected.measigId}" title="#{bundle.CreateMeasigAsignaTitle_measigId}" required="true" requiredMessage="#{bundle.CreateMeasigAsignaRequiredMessage_measigId}"/>
+                        <p:outputLabel value="#{bundle.CreateMeasigAsignaLabel_measigNombre}" for="measigNombre" />
+                        <p:inputText id="measigNombre" value="#{measigAsignaController.selected.measigNombre}" title="#{bundle.CreateMeasigAsignaTitle_measigNombre}" required="true" requiredMessage="#{bundle.CreateMeasigAsignaRequiredMessage_measigNombre}"/>
+                        <p:outputLabel value="#{bundle.CreateMeasigAsignaLabel_measigNrc}" for="measigNrc" />
+                        <p:inputText id="measigNrc" value="#{measigAsignaController.selected.measigNrc}" title="#{bundle.CreateMeasigAsignaTitle_measigNrc}" required="true" requiredMessage="#{bundle.CreateMeasigAsignaRequiredMessage_measigNrc}"/>
+                        <p:outputLabel value="#{bundle.CreateMeasigAsignaLabel_measigCreditos}" for="measigCreditos" />
+                        <p:inputText id="measigCreditos" value="#{measigAsignaController.selected.measigCreditos}" title="#{bundle.CreateMeasigAsignaTitle_measigCreditos}" required="true" requiredMessage="#{bundle.CreateMeasigAsignaRequiredMessage_measigCreditos}"/>
+                        <p:outputLabel value="#{bundle.CreateMeasigAsignaLabel_measigDescripcion}" for="measigDescripcion" />
+                        <p:inputText id="measigDescripcion" value="#{measigAsignaController.selected.measigDescripcion}" title="#{bundle.CreateMeasigAsignaTitle_measigDescripcion}" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{measigAsignaController.create}" value="#{bundle.Save}" update="display,:MeasigAsignaListForm:datalist,:growl" oncomplete="handleSubmit(args,'MeasigAsignaCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="MeasigAsignaCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

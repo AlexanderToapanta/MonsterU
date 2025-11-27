@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="PeperPersonViewDlg" widgetVar="PeperPersonViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewPeperPersonTitle}">
+            <h:form id="PeperPersonViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{peperPersonController.selected != null}">
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_peperId}"/>
+                        <h:outputText value="#{peperPersonController.selected.peperId}" title="#{bundle.ViewPeperPersonTitle_peperId}"/>
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_peperNombre}"/>
+                        <h:outputText value="#{peperPersonController.selected.peperNombre}" title="#{bundle.ViewPeperPersonTitle_peperNombre}"/>
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_peperApellido}"/>
+                        <h:outputText value="#{peperPersonController.selected.peperApellido}" title="#{bundle.ViewPeperPersonTitle_peperApellido}"/>
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_peperEmail}"/>
+                        <h:outputText value="#{peperPersonController.selected.peperEmail}" title="#{bundle.ViewPeperPersonTitle_peperEmail}"/>
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_peperCedula}"/>
+                        <h:outputText value="#{peperPersonController.selected.peperCedula}" title="#{bundle.ViewPeperPersonTitle_peperCedula}"/>
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_peperCelular}"/>
+                        <h:outputText value="#{peperPersonController.selected.peperCelular}" title="#{bundle.ViewPeperPersonTitle_peperCelular}"/>
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_peperTipo}"/>
+                        <h:outputText value="#{peperPersonController.selected.peperTipo}" title="#{bundle.ViewPeperPersonTitle_peperTipo}"/>
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_pepeperFechIngr}"/>
+                        <h:outputText value="#{peperPersonController.selected.pepeperFechIngr}" title="#{bundle.ViewPeperPersonTitle_pepeperFechIngr}">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_peescId}"/>
+                        <h:outputText value="#{peperPersonController.selected.peescId}" title="#{bundle.ViewPeperPersonTitle_peescId}"/>
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_pesexId}"/>
+                        <h:outputText value="#{peperPersonController.selected.pesexId}" title="#{bundle.ViewPeperPersonTitle_pesexId}"/>
+                        <h:outputText value="#{bundle.ViewPeperPersonLabel_xeusuId}"/>
+                        <h:outputText value="#{peperPersonController.selected.xeusuId}" title="#{bundle.ViewPeperPersonTitle_xeusuId}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" onclick="PeperPersonViewDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

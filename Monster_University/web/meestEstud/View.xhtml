@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="MeestEstudViewDlg" widgetVar="MeestEstudViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewMeestEstudTitle}">
+            <h:form id="MeestEstudViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{meestEstudController.selected != null}">
+                        <h:outputText value="#{bundle.ViewMeestEstudLabel_meestEstudPK_meestId}"/>
+                        <h:outputText value="#{meestEstudController.selected.meestEstudPK.meestId}" title="#{bundle.ViewMeestEstudTitle_meestEstudPK_meestId}"/>
+                        <h:outputText value="#{bundle.ViewMeestEstudLabel_meestNombre}"/>
+                        <h:outputText value="#{meestEstudController.selected.meestNombre}" title="#{bundle.ViewMeestEstudTitle_meestNombre}"/>
+                        <h:outputText value="#{bundle.ViewMeestEstudLabel_meestApellido}"/>
+                        <h:outputText value="#{meestEstudController.selected.meestApellido}" title="#{bundle.ViewMeestEstudTitle_meestApellido}"/>
+                        <h:outputText value="#{bundle.ViewMeestEstudLabel_meestCedula}"/>
+                        <h:outputText value="#{meestEstudController.selected.meestCedula}" title="#{bundle.ViewMeestEstudTitle_meestCedula}"/>
+                        <h:outputText value="#{bundle.ViewMeestEstudLabel_meestEmail}"/>
+                        <h:outputText value="#{meestEstudController.selected.meestEmail}" title="#{bundle.ViewMeestEstudTitle_meestEmail}"/>
+                        <h:outputText value="#{bundle.ViewMeestEstudLabel_meestFechana}"/>
+                        <h:outputText value="#{meestEstudController.selected.meestFechana}" title="#{bundle.ViewMeestEstudTitle_meestFechana}">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewMeestEstudLabel_meestPromedio}"/>
+                        <h:outputText value="#{meestEstudController.selected.meestPromedio}" title="#{bundle.ViewMeestEstudTitle_meestPromedio}"/>
+                        <h:outputText value="#{bundle.ViewMeestEstudLabel_mecarrCarrera}"/>
+                        <h:outputText value="#{meestEstudController.selected.mecarrCarrera}" title="#{bundle.ViewMeestEstudTitle_mecarrCarrera}"/>
+                        <h:outputText value="#{bundle.ViewMeestEstudLabel_xeusuId}"/>
+                        <h:outputText value="#{meestEstudController.selected.xeusuId}" title="#{bundle.ViewMeestEstudTitle_xeusuId}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" onclick="MeestEstudViewDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

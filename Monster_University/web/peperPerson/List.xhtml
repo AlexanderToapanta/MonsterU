@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template.xhtml">
+
+
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListPeperPersonTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="PeperPersonListForm">
+                <p:panel header="#{bundle.ListPeperPersonTitle}">
+                    <p:dataTable id="datalist" value="#{peperPersonController.items}" var="item"
+                                 selectionMode="single" selection="#{peperPersonController.selected}"
+                                 paginator="true"
+                                 rowKey="#{item.peperId}"
+                                 rows="10"
+                                 rowsPerPageTemplate="10,20,30,40,50"
+                                 >
+
+                        <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                        <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_peperId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.peperId}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_peperNombre}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.peperNombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_peperApellido}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.peperApellido}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_peperEmail}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.peperEmail}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_peperCedula}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.peperCedula}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_peperCelular}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.peperCelular}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_peperTipo}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.peperTipo}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_pepeperFechIngr}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.pepeperFechIngr}">
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_peescId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.peescId}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_pesexId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.pesexId}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPeperPersonTitle_xeusuId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.xeusuId}"/>
+                        </p:column>
+                        <f:facet name="footer">
+                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{peperPersonController.prepareCreate}" update=":PeperPersonCreateForm" oncomplete="PF('PeperPersonCreateDialog').show()"/>
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":PeperPersonViewForm" oncomplete="PF('PeperPersonViewDialog').show()" disabled="#{empty peperPersonController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":PeperPersonEditForm" oncomplete="PF('PeperPersonEditDialog').show()" disabled="#{empty peperPersonController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{peperPersonController.destroy}" update=":growl,datalist" disabled="#{empty peperPersonController.selected}"/>
+                        </f:facet>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+
+            <ui:include src="Create.xhtml"/>
+            <ui:include src="Edit.xhtml"/>
+            <ui:include src="View.xhtml"/>
+        </ui:define>
+    </ui:composition>
+
+</html>

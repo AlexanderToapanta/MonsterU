@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="PeescEstcivCreateDlg" widgetVar="PeescEstcivCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreatePeescEstcivTitle}">
+            <h:form id="PeescEstcivCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{peescEstcivController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreatePeescEstcivLabel_peescId}" for="peescId" />
+                        <p:inputText id="peescId" value="#{peescEstcivController.selected.peescId}" title="#{bundle.CreatePeescEstcivTitle_peescId}" required="true" requiredMessage="#{bundle.CreatePeescEstcivRequiredMessage_peescId}"/>
+                        <p:outputLabel value="#{bundle.CreatePeescEstcivLabel_peescDescri}" for="peescDescri" />
+                        <p:inputText id="peescDescri" value="#{peescEstcivController.selected.peescDescri}" title="#{bundle.CreatePeescEstcivTitle_peescDescri}" required="true" requiredMessage="#{bundle.CreatePeescEstcivRequiredMessage_peescDescri}"/>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{peescEstcivController.create}" value="#{bundle.Save}" update="display,:PeescEstcivListForm:datalist,:growl" oncomplete="handleSubmit(args,'PeescEstcivCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="PeescEstcivCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

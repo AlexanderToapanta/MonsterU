@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="XeaudAudlogEditDlg" widgetVar="XeaudAudlogEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditXeaudAudlogTitle}">
+            <h:form id="XeaudAudlogEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{xeaudAudlogController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditXeaudAudlogLabel_idauditoria}" for="idauditoria" />
+                        <p:inputText id="idauditoria" value="#{xeaudAudlogController.selected.idauditoria}" title="#{bundle.EditXeaudAudlogTitle_idauditoria}" required="true" requiredMessage="#{bundle.EditXeaudAudlogRequiredMessage_idauditoria}"/>
+                        <p:outputLabel value="#{bundle.EditXeaudAudlogLabel_accion}" for="accion" />
+                        <p:inputText id="accion" value="#{xeaudAudlogController.selected.accion}" title="#{bundle.EditXeaudAudlogTitle_accion}" required="true" requiredMessage="#{bundle.EditXeaudAudlogRequiredMessage_accion}"/>
+                        <p:outputLabel value="#{bundle.EditXeaudAudlogLabel_tablaafec}" for="tablaafec" />
+                        <p:inputText id="tablaafec" value="#{xeaudAudlogController.selected.tablaafec}" title="#{bundle.EditXeaudAudlogTitle_tablaafec}" required="true" requiredMessage="#{bundle.EditXeaudAudlogRequiredMessage_tablaafec}"/>
+                        <p:outputLabel value="#{bundle.EditXeaudAudlogLabel_filaid}" for="filaid" />
+                        <p:inputText id="filaid" value="#{xeaudAudlogController.selected.filaid}" title="#{bundle.EditXeaudAudlogTitle_filaid}" required="true" requiredMessage="#{bundle.EditXeaudAudlogRequiredMessage_filaid}"/>
+                        <p:outputLabel value="#{bundle.EditXeaudAudlogLabel_fechahora}" for="fechahora" />
+                        <p:calendar id="fechahora" pattern="MM/dd/yyyy HH:mm:ss" value="#{xeaudAudlogController.selected.fechahora}" title="#{bundle.EditXeaudAudlogTitle_fechahora}" required="true" requiredMessage="#{bundle.EditXeaudAudlogRequiredMessage_fechahora}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditXeaudAudlogLabel_detalle}" for="detalle" />
+                        <p:inputTextarea rows="4" cols="30" id="detalle" value="#{xeaudAudlogController.selected.detalle}" title="#{bundle.EditXeaudAudlogTitle_detalle}" required="true" requiredMessage="#{bundle.EditXeaudAudlogRequiredMessage_detalle}"/>
+                        <p:outputLabel value="#{bundle.EditXeaudAudlogLabel_xeusuId}" for="xeusuId" />
+                        <p:selectOneMenu id="xeusuId" value="#{xeaudAudlogController.selected.xeusuId}" required="true" requiredMessage="#{bundle.EditXeaudAudlogRequiredMessage_xeusuId}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{xeusuUsuarController.itemsAvailableSelectOne}"
+                                           var="xeusuIdItem"
+                                           itemValue="#{xeusuIdItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{xeaudAudlogController.update}" value="#{bundle.Save}" update="display,:XeaudAudlogListForm:datalist,:growl" oncomplete="handleSubmit(args, 'XeaudAudlogEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="XeaudAudlogEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

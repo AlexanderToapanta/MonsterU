@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="FepagoPagoEditDlg" widgetVar="FepagoPagoEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditFepagoPagoTitle}">
+            <h:form id="FepagoPagoEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{fepagoPagoController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditFepagoPagoLabel_fepagoId}" for="fepagoId" />
+                        <p:inputText id="fepagoId" value="#{fepagoPagoController.selected.fepagoId}" title="#{bundle.EditFepagoPagoTitle_fepagoId}" required="true" requiredMessage="#{bundle.EditFepagoPagoRequiredMessage_fepagoId}"/>
+                        <p:outputLabel value="#{bundle.EditFepagoPagoLabel_fepagoMonto}" for="fepagoMonto" />
+                        <p:inputText id="fepagoMonto" value="#{fepagoPagoController.selected.fepagoMonto}" title="#{bundle.EditFepagoPagoTitle_fepagoMonto}" required="true" requiredMessage="#{bundle.EditFepagoPagoRequiredMessage_fepagoMonto}"/>
+                        <p:outputLabel value="#{bundle.EditFepagoPagoLabel_fepagoFecha}" for="fepagoFecha" />
+                        <p:calendar id="fepagoFecha" pattern="MM/dd/yyyy" value="#{fepagoPagoController.selected.fepagoFecha}" title="#{bundle.EditFepagoPagoTitle_fepagoFecha}" required="true" requiredMessage="#{bundle.EditFepagoPagoRequiredMessage_fepagoFecha}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditFepagoPagoLabel_fepagoRefe}" for="fepagoRefe" />
+                        <p:inputText id="fepagoRefe" value="#{fepagoPagoController.selected.fepagoRefe}" title="#{bundle.EditFepagoPagoTitle_fepagoRefe}" required="true" requiredMessage="#{bundle.EditFepagoPagoRequiredMessage_fepagoRefe}"/>
+                        <p:outputLabel value="#{bundle.EditFepagoPagoLabel_fepagoEstado}" for="fepagoEstado" />
+                        <p:inputText id="fepagoEstado" value="#{fepagoPagoController.selected.fepagoEstado}" title="#{bundle.EditFepagoPagoTitle_fepagoEstado}" required="true" requiredMessage="#{bundle.EditFepagoPagoRequiredMessage_fepagoEstado}"/>
+                        <p:outputLabel value="#{bundle.EditFepagoPagoLabel_meestEstud}" for="meestEstud" />
+                        <p:selectOneMenu id="meestEstud" value="#{fepagoPagoController.selected.meestEstud}" required="true" requiredMessage="#{bundle.EditFepagoPagoRequiredMessage_meestEstud}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{meestEstudController.itemsAvailableSelectOne}"
+                                           var="meestEstudItem"
+                                           itemValue="#{meestEstudItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{fepagoPagoController.update}" value="#{bundle.Save}" update="display,:FepagoPagoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'FepagoPagoEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="FepagoPagoEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

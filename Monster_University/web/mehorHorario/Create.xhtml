@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="MehorHorarioCreateDlg" widgetVar="MehorHorarioCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateMehorHorarioTitle}">
+            <h:form id="MehorHorarioCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{mehorHorarioController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateMehorHorarioLabel_mehorHorarioPK_mehorId}" for="mehorHorarioPK_mehorId" />
+                        <p:inputText id="mehorHorarioPK_mehorId" value="#{mehorHorarioController.selected.mehorHorarioPK.mehorId}" title="#{bundle.CreateMehorHorarioTitle_mehorHorarioPK_mehorId}" required="true" requiredMessage="#{bundle.CreateMehorHorarioRequiredMessage_mehorHorarioPK_mehorId}"/>
+                        <p:outputLabel value="#{bundle.CreateMehorHorarioLabel_mehorDia}" for="mehorDia" />
+                        <p:inputText id="mehorDia" value="#{mehorHorarioController.selected.mehorDia}" title="#{bundle.CreateMehorHorarioTitle_mehorDia}" required="true" requiredMessage="#{bundle.CreateMehorHorarioRequiredMessage_mehorDia}"/>
+                        <p:outputLabel value="#{bundle.CreateMehorHorarioLabel_mehorFechaI}" for="mehorFechaI" />
+                        <p:calendar id="mehorFechaI" pattern="HH:mm:ss" value="#{mehorHorarioController.selected.mehorFechaI}" title="#{bundle.EditMehorHorarioTitle_mehorFechaI}" required="true" requiredMessage="#{bundle.EditMehorHorarioRequiredMessage_mehorFechaI}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.CreateMehorHorarioLabel_mehorFechaF}" for="mehorFechaF" />
+                        <p:calendar id="mehorFechaF" pattern="HH:mm:ss" value="#{mehorHorarioController.selected.mehorFechaF}" title="#{bundle.EditMehorHorarioTitle_mehorFechaF}" required="true" requiredMessage="#{bundle.EditMehorHorarioRequiredMessage_mehorFechaF}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.CreateMehorHorarioLabel_megrpGrupo}" for="megrpGrupo" />
+                        <p:selectOneMenu id="megrpGrupo" value="#{mehorHorarioController.selected.megrpGrupo}" required="true" requiredMessage="#{bundle.EditMehorHorarioRequiredMessage_megrpGrupo}">
+                            <f:selectItems value="#{megrpGrupoController.itemsAvailableSelectOne}"
+                                           var="megrpGrupoItem"
+                                           itemValue="#{megrpGrupoItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{mehorHorarioController.create}" value="#{bundle.Save}" update="display,:MehorHorarioListForm:datalist,:growl" oncomplete="handleSubmit(args,'MehorHorarioCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="MehorHorarioCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

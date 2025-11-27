@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    >
+    <h:head>
+        <title><ui:insert name="title">Default Title</ui:insert></title>
+        <h:outputStylesheet library="css" name="jsfcrud.css"/>
+        <h:outputScript library="js" name="jsfcrud.js"/>
+        
+        <style>
+            .layout-container {
+                display: grid;
+                grid-template-rows: 65px auto 60px;
+                min-height: 100vh;
+                width: 100%;
+            }
+            
+            .layout-north {
+                grid-row: 1;
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+                padding: 0.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            
+            .layout-center {
+                grid-row: 2;
+                padding: 1rem;
+                overflow: auto;
+            }
+            
+            .layout-south {
+                grid-row: 3;
+                background-color: #e9ecef;
+                border-top: 1px solid #dee2e6;
+                padding: 0.5rem;
+                display: flex;
+                align-items: center;
+            }
+            
+            .app-header {
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: #495057;
+            }
+            
+            .user-menu {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </h:head>
+
+    <h:body>
+
+        <p:growl id="growl" life="3000" />
+
+        <div class="layout-container">
+            <!-- North Section -->
+            <div class="layout-north">
+                <div class="app-header">#{bundle.AppName}</div>
+                
+                <div class="user-menu">
+                    <h:form id="menuForm">
+                        <p:menubar>
+                            <p:menuitem value="#{bundle.Home}" outcome="/index" icon="pi pi-home"/>
+                            <p:submenu label="#{bundle.Maintenance}">
+                                <p:menuitem value="FepagoPago" outcome="/fepagoPago/List.xhtml" />
+                                <p:menuitem value="MeasigAsigna" outcome="/measigAsigna/List.xhtml" />
+                                <p:menuitem value="MecarrCarrera" outcome="/mecarrCarrera/List.xhtml" />
+                                <p:menuitem value="MeestEstud" outcome="/meestEstud/List.xhtml" />
+                                <p:menuitem value="MegrpGrupo" outcome="/megrpGrupo/List.xhtml" />
+                                <p:menuitem value="MehorHorario" outcome="/mehorHorario/List.xhtml" />
+                                <p:menuitem value="MeperiPeriod" outcome="/meperiPeriod/List.xhtml" />
+                                <p:menuitem value="MrMeasigMeasig" outcome="/mrMeasigMeasig/List.xhtml" />
+                                <p:menuitem value="PeescEstciv" outcome="/peescEstciv/List.xhtml" />
+                                <p:menuitem value="PeperPerson" outcome="/peperPerson/List.xhtml" />
+                                <p:menuitem value="PesexSexo" outcome="/pesexSexo/List.xhtml" />
+                                <p:menuitem value="XeaudAudlog" outcome="/xeaudAudlog/List.xhtml" />
+                                <p:menuitem value="XerolRol" outcome="/xerolRol/List.xhtml" />
+                                <p:menuitem value="XeusuUsuar" outcome="/xeusuUsuar/List.xhtml" />
+                            </p:submenu>
+                            
+                            <!-- Menú de usuario - Solo se muestra si está logueado -->
+                            <p:submenu label="Usuario" 
+                                     rendered="#{loginController.loggedIn}"
+                                     icon="pi pi-user"
+                                     style="margin-left: auto;">
+                                <p:menuitem value="Mi Perfil" 
+                                          outcome="/xeusuUsuar/View.xhtml" 
+                                          icon="pi pi-user-edit">
+                                    <f:param name="id" value="#{loginController.usuarioLogueado.xeusuId}"/>
+                                </p:menuitem>
+                                <p:menuitem value="Cambiar Contraseña" 
+                                          outcome="/cambioContrasena.xhtml" 
+                                          icon="pi pi-key"/>
+                                <p:separator/>
+                                <p:menuitem value="Cerrar Sesión" 
+                                          action="#{loginController.doLogout}" 
+                                          icon="pi pi-power-off"
+                                          ajax="false"/>
+                            </p:submenu>
+                            
+                            <!-- Opción de login - Solo se muestra si NO está logueado -->
+                            <p:menuitem value="Iniciar Sesión" 
+                                      outcome="/login.xhtml" 
+                                      icon="pi pi-sign-in"
+                                      rendered="#{not loginController.loggedIn}"
+                                      style="margin-left: auto;"/>
+                        </p:menubar>
+                    </h:form>
+                </div>
+            </div>
+
+            <!-- Center Section -->
+            <div class="layout-center">
+                <ui:insert name="body"/>
+            </div>
+
+            <!-- South Section -->
+            <div class="layout-south">
+                <ui:insert name="footer"/>
+                <div style="margin-left: 20px;">
+                    <div style="font-weight: bold;">Sistema de Bienes Monster</div>
+                    <div style="font-style: italic;">
+                        Usuario: 
+                        <h:outputText value="#{loginController.loggedIn ? loginController.usu.usuario : 'No logueado'}" 
+                                    style="font-weight: bold;"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </h:body>
+</html>

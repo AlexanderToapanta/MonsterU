@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="PeperPersonCreateDlg" widgetVar="PeperPersonCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreatePeperPersonTitle}">
+            <h:form id="PeperPersonCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{peperPersonController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperId}" for="peperId" />
+                        <p:inputText id="peperId" value="#{peperPersonController.selected.peperId}" title="#{bundle.CreatePeperPersonTitle_peperId}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperId}"/>
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperNombre}" for="peperNombre" />
+                        <p:inputText id="peperNombre" value="#{peperPersonController.selected.peperNombre}" title="#{bundle.CreatePeperPersonTitle_peperNombre}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperNombre}"/>
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperApellido}" for="peperApellido" />
+                        <p:inputText id="peperApellido" value="#{peperPersonController.selected.peperApellido}" title="#{bundle.CreatePeperPersonTitle_peperApellido}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperApellido}"/>
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperEmail}" for="peperEmail" />
+                        <p:inputText id="peperEmail" value="#{peperPersonController.selected.peperEmail}" title="#{bundle.CreatePeperPersonTitle_peperEmail}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperEmail}"/>
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperCedula}" for="peperCedula" />
+                        <p:inputText id="peperCedula" value="#{peperPersonController.selected.peperCedula}" title="#{bundle.CreatePeperPersonTitle_peperCedula}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperCedula}"/>
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperCelular}" for="peperCelular" />
+                        <p:inputText id="peperCelular" value="#{peperPersonController.selected.peperCelular}" title="#{bundle.CreatePeperPersonTitle_peperCelular}" />
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperTipo}" for="peperTipo" />
+                        <p:inputText id="peperTipo" value="#{peperPersonController.selected.peperTipo}" title="#{bundle.CreatePeperPersonTitle_peperTipo}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperTipo}"/>
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_pepeperFechIngr}" for="pepeperFechIngr" />
+                        <p:calendar id="pepeperFechIngr" pattern="MM/dd/yyyy" value="#{peperPersonController.selected.pepeperFechIngr}" title="#{bundle.EditPeperPersonTitle_pepeperFechIngr}" required="true" requiredMessage="#{bundle.EditPeperPersonRequiredMessage_pepeperFechIngr}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peescId}" for="peescId" />
+                        <p:selectOneMenu id="peescId" value="#{peperPersonController.selected.peescId}" >
+                            <f:selectItems value="#{peescEstcivController.itemsAvailableSelectOne}"
+                                           var="peescIdItem"
+                                           itemValue="#{peescIdItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_pesexId}" for="pesexId" />
+                        <p:selectOneMenu id="pesexId" value="#{peperPersonController.selected.pesexId}" required="true" requiredMessage="#{bundle.EditPeperPersonRequiredMessage_pesexId}">
+                            <f:selectItems value="#{pesexSexoController.itemsAvailableSelectOne}"
+                                           var="pesexIdItem"
+                                           itemValue="#{pesexIdItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreatePeperPersonLabel_xeusuId}" for="xeusuId" />
+                        <p:selectOneMenu id="xeusuId" value="#{peperPersonController.selected.xeusuId}" >
+                            <f:selectItems value="#{xeusuUsuarController.itemsAvailableSelectOne}"
+                                           var="xeusuIdItem"
+                                           itemValue="#{xeusuIdItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{peperPersonController.create}" value="#{bundle.Save}" update="display,:PeperPersonListForm:datalist,:growl" oncomplete="handleSubmit(args,'PeperPersonCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="PeperPersonCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

@@ -98,10 +98,10 @@ public class LoginController implements Serializable {
             // Redirección según necesidad
             if (necesitaCambiarContrasena(usuarioLogueado)) {
                 FacesContext.getCurrentInstance().getExternalContext()
-                        .redirect("/BienesMonster_G08/faces/cambiopass.xhtml");
+                        .redirect("/Monster_University/faces/cambioContrasena.xhtml");
             } else {
                 FacesContext.getCurrentInstance().getExternalContext()
-                        .redirect("/BienesMonster_G08/faces/index1.xhtml");
+                        .redirect("/Monster_University/faces/index1.xhtml");
             }
         } else {
             FacesContext.getCurrentInstance().addMessage(null, 
@@ -141,7 +141,7 @@ public class LoginController implements Serializable {
     
     // Redirigir al login
     FacesContext.getCurrentInstance().getExternalContext()
-            .redirect("/BienesMonster_G08/faces/login.xhtml");
+            .redirect("/Monster_University/faces/login.xhtml");
     return null;
 }
     

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+    <title>Gestión de Usuarios - Xeusuuarios</title>
+    <style>
+        .container { margin: 20px; }
+        .table-header { background-color: #f8f9fa; font-weight: bold; }
+        .actions-column { width: 120px; text-align: center; }
+        .status-activo { color: green; font-weight: bold; }
+        .status-inactivo { color: red; font-weight: bold; }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="container">
+        <h1>👥 Gestión de Usuarios - Xeusuuarios</h1>
+        
+        <h:form>
+            <!-- Panel de información y filtros -->
+            <p:panel header="Información y Filtros" style="margin-bottom: 20px;">
+                <p:panelGrid columns="3" style="width: 100%">
+                    <h:outputText value="Total de usuarios:"/>
+                    <h:outputText value="#{usuarioBean.totalUsuarios}" style="font-weight: bold"/>
+                    <p:commandButton value="Actualizar" action="#{usuarioBean.cargarUsuarios}" 
+                                   update="usuariosTable totalUsuarios" icon="pi pi-refresh"/>
+                    
+                    <h:outputText value="Filtrar por nombre:"/>
+                    <p:inputText value="#{usuarioBean.filtroNombre}" placeholder="Buscar por nombre..."/>
+                    <p:commandButton value="Buscar" action="#{usuarioBean.cargarUsuarios}" 
+                                   update="usuariosTable" icon="pi pi-search"/>
+                </p:panelGrid>
+                
+                <p:commandButton value="Usuarios Activos" action="#{usuarioBean.cargarUsuariosActivos}" 
+                               update="usuariosTable" style="margin-right: 10px;"/>
+                <p:commandButton value="Limpiar Filtro" action="#{usuarioBean.limpiarFiltro}" 
+                               update="usuariosTable" immediate="true"/>
+            </p:panel>
+
+            <!-- Tabla de usuarios -->
+            <p:panel header="Lista de Usuarios">
+                <p:dataTable id="usuariosTable" var="usuario" value="#{usuarioBean.usuarios}" 
+                           paginator="true" rows="10" 
+                           emptyMessage="No hay usuarios registrados"
+                           style="width: 100%">
+                    
+                    <p:column headerText="ID Usuario" width="80">
+                        <h:outputText value="#{usuario.xeusuId}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Nombre" width="200">
+                        <h:outputText value="#{usuario.xeusuNombre}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Estado" width="100">
+                        <h:outputText value="#{usuario.xeusuEstado}" 
+                                    styleClass="#{usuario.xeusuEstado eq 'ACTIVO' ? 'status-activo' : 'status-inactivo'}"/>
+                    </p:column>
+                    
+                    <p:column headerText="ID Persona" width="80">
+                        <h:outputText value="#{usuario.peperId}"/>
+                    </p:column>
+                    
+                    <p:column headerText="ID Carrera" width="80">
+                        <h:outputText value="#{usuario.mecarrId}"/>
+                    </p:column>
+                    
+                    <p:column headerText="ID Estudiante" width="80">
+                        <h:outputText value="#{usuario.meestId}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Acciones" styleClass="actions-column">
+                        <p:commandButton icon="pi pi-eye" title="Ver Detalles" 
+                                       oncomplete="PF('usuarioDialog').show()"
+                                       update=":usuarioForm:usuarioDetail">
+                            <f:setPropertyActionListener target="#{usuarioBean.usuarioSeleccionado}" 
+                                                       value="#{usuario}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+
+        <!-- Diálogo para ver detalles completos -->
+        <h:form id="usuarioForm">
+            <p:dialog header="Detalles Completos del Usuario" widgetVar="usuarioDialog" 
+                     modal="true" resizable="false" width="500">
+                <p:panelGrid columns="2" id="usuarioDetail" style="width: 100%">
+                    <h:outputText value="ID Usuario:"/>
+                    <h:outputText value="#{usuarioBean.usuarioSeleccionado.xeusuId}"/>
+                    
+                    <h:outputText value="Nombre:"/>
+                    <h:outputText value="#{usuarioBean.usuarioSeleccionado.xeusuNombre}"/>
+                    
+                    <h:outputText value="Estado:"/>
+                    <h:outputText value="#{usuarioBean.usuarioSeleccionado.xeusuEstado}"/>
+                    
+                    <h:outputText value="ID Persona:"/>
+                    <h:outputText value="#{usuarioBean.usuarioSeleccionado.peperId}"/>
+                    
+                    <h:outputText value="ID Carrera:"/>
+                    <h:outputText value="#{usuarioBean.usuarioSeleccionado.mecarrId}"/>
+                    
+                    <h:outputText value="ID Estudiante:"/>
+                    <h:outputText value="#{usuarioBean.usuarioSeleccionado.meestId}"/>
+                    
+                    <h:outputText value="Contraseña:"/>
+                    <h:outputText value="********"/> <!-- Por seguridad -->
+                </p:panelGrid>
+                
+                <p:separator/>
+                
+                <p:commandButton value="Cerrar" onclick="PF('usuarioDialog').hide();" 
+                               style="float: right;"/>
+            </p:dialog>
+        </h:form>
+    </div>
+</h:body>
+</html>

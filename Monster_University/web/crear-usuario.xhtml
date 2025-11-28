@@ -11,6 +11,29 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
 
 <h:head>
     <title>Crear Nuevo Usuario</title>
+    
+    <!-- Script de debug para la consola del navegador -->
+    <script>
+        // Función global para debug
+        function debug(message) {
+            console.log("[DEBUG] " + message);
+        }
+        
+        // Función para mostrar errores
+        function debugError(message) {
+            console.error("[ERROR] " + message);
+        }
+        
+        // Función para éxito
+        function debugSuccess(message) {
+            console.log("✅ " + message);
+        }
+        
+        // Mensaje inicial cuando se carga la página
+        console.log("=== FORMULARIO CREAR USUARIO CARGADO ===");
+        console.log("Abre esta consola (F12) para ver los mensajes de debug");
+    </script>
+    
     <style>
         .container {
             max-width: 600px;
@@ -43,7 +66,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                     <h:outputLabel for="xeusuId" value="ID Usuario *" styleClass="form-label"/>
                     <p:inputText id="xeusuId" value="#{crearUsuarioController.nuevoUsuario.xeusuId}" 
                                maxlength="5" style="width: 100px"
-                               placeholder="Ej: USR01"/>
+                               placeholder="Ej: USR01"
+                               onchange="debug('ID Usuario cambiado: ' + this.value)"/>
                     <p:message for="xeusuId" display="icon"/>
                 </div>
 
@@ -52,7 +76,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                     <h:outputLabel for="xeusuNombre" value="Nombre Completo *" styleClass="form-label"/>
                     <p:inputText id="xeusuNombre" value="#{crearUsuarioController.nuevoUsuario.xeusuNombre}" 
                                maxlength="100" style="width: 300px"
-                               placeholder="Nombre del usuario"/>
+                               placeholder="Nombre del usuario"
+                               onchange="debug('Nombre cambiado: ' + this.value)"/>
                     <p:message for="xeusuNombre" display="icon"/>
                 </div>
 
@@ -62,10 +87,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                     <p:password id="xeusuContra" value="#{crearUsuarioController.nuevoUsuario.xeusuContra}" 
                               feedback="true" promptLabel="Ingresa contraseña" 
                               weakLabel="Débil" goodLabel="Buena" strongLabel="Fuerte"
-                              style="width: 200px"/>
-                    <p:commandButton value="🔐 Generar" action="#{crearUsuarioController.generarContrasenaAleatoria}"
-                                   update="xeusuContra confirmarContrasena" 
-                                   style="margin-left: 10px;"/>
+                              style="width: 200px"
+                              onchange="debug('Contraseña cambiada (longitud): ' + this.value.length)"/>
+                    
                     <p:message for="xeusuContra" display="icon"/>
                 </div>
 
@@ -73,7 +97,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                 <div class="form-group">
                     <h:outputLabel for="confirmarContrasena" value="Confirmar Contraseña *" styleClass="form-label"/>
                     <p:password id="confirmarContrasena" value="#{crearUsuarioController.confirmarContrasena}" 
-                              style="width: 200px"/>
+                              style="width: 200px"
+                              onchange="debug('Confirmar contraseña cambiada (longitud): ' + this.value.length)"/>
                     <p:message for="confirmarContrasena" display="icon"/>
                 </div>
 
@@ -81,7 +106,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                 <div class="form-group">
                     <h:outputLabel for="xeusuEstado" value="Estado *" styleClass="form-label"/>
                     <p:selectOneMenu id="xeusuEstado" value="#{crearUsuarioController.nuevoUsuario.xeusuEstado}" 
-                                   style="width: 150px">
+                                   style="width: 150px"
+                                   onchange="debug('Estado seleccionado: ' + this.value)">
                         <f:selectItem itemLabel="Seleccione estado" itemValue=""/>
                         <f:selectItem itemLabel="ACTIVO" itemValue="ACTIVO"/>
                         <f:selectItem itemLabel="INACTIVO" itemValue="INACTIVO"/>
@@ -93,25 +119,46 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                 <div class="actions">
                     <p:commandButton value="💾 Crear Usuario" 
                                    action="#{crearUsuarioController.crearUsuario}"
-                                   update="@form"
+                                   update="@form :growl"
                                    icon="pi pi-save"
-                                   style="margin-right: 10px;"/>
+                                   style="margin-right: 10px;"
+                                   onclick="debug('=== INICIANDO CREACIÓN DE USUARIO ==='); 
+                                            debug('Haciendo click en Crear Usuario...');"/>
                     
                     <p:commandButton value="🔄 Limpiar" 
                                    action="#{crearUsuarioController.initNuevoUsuario}"
-                                   update="@form"
+                                   update="@form :growl"
                                    immediate="true"
-                                   icon="pi pi-refresh"/>
+                                   icon="pi pi-refresh"
+                                   onclick="debug('Limpiando formulario...')"/>
                     
-                    <p:button value="📋 Lista Usuarios" 
-                            outcome="lista-usuarios"
-                            icon="pi pi-list"/>
+                   
                 </div>
             </p:panel>
         </h:form>
 
         <!-- Mensajes globales -->
         <p:growl id="growl" showDetail="true" life="3000"/>
+        
+        <!-- Script adicional para capturar eventos del formulario -->
+        <script>
+            // Capturar el evento de submit del formulario
+            document.addEventListener('DOMContentLoaded', function() {
+                var form = document.getElementById('formCrearUsuario');
+                if (form) {
+                    form.addEventListener('submit', function() {
+                        debug('Formulario enviado (submit event)');
+                    });
+                }
+                
+                // Mostrar instrucciones
+                console.log("📝 INSTRUCCIONES:");
+                console.log("1. Llena el formulario");
+                console.log("2. Haz click en 'Crear Usuario'");
+                console.log("3. Revisa los mensajes aquí debajo");
+                console.log("4. Si hay errores, se mostrarán en rojo");
+            });
+        </script>
     </div>
 </h:body>
 </html>

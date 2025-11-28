@@ -37,45 +37,95 @@ public class CrearUsuarioController implements Serializable {
         nuevoUsuario.setXeusuEstado("ACTIVO");
     }
 
-    public void crearUsuario() {
-        try {
-            // Validaciones
-            if (!validarDatos()) {
-                return;
-            }
+   public void crearUsuario() {
+    try {
+        // Mensaje inicial en consola del navegador
+        ejecutarJavaScript("console.log('=== INICIANDO CREACIÓN DE USUARIO ===');");
+        
+        // 1. Mostrar datos recibidos
+        ejecutarJavaScript("console.log('Datos recibidos:');");
+        ejecutarJavaScript("console.log('ID: " + escapeJavaScript(nuevoUsuario.getXeusuId()) + "');");
+        ejecutarJavaScript("console.log('Nombre: " + escapeJavaScript(nuevoUsuario.getXeusuNombre()) + "');");
+        ejecutarJavaScript("console.log('Contraseña (plana): " + escapeJavaScript(nuevoUsuario.getXeusuContra()) + "');");
+        ejecutarJavaScript("console.log('Estado: " + escapeJavaScript(nuevoUsuario.getXeusuEstado()) + "');");
 
-            // Verificar si el ID ya existe
-            if (usuarioFacade.find(nuevoUsuario.getXeusuId()) != null) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El ID de usuario ya existe"));
-                return;
-            }
+        // Validaciones
+        if (!validarDatos()) {
+            ejecutarJavaScript("console.error('❌ Validaciones fallaron');");
+            return;
+        }
+        ejecutarJavaScript("console.log('✅ Validaciones pasadas');");
 
-            // Encriptar contraseña
-            String contrasenaEncriptada = passwordController.encriptarClave(nuevoUsuario.getXeusuContra());
-            nuevoUsuario.setXeusuContra(contrasenaEncriptada);
+        // Verificar si el ID ya existe
+        if (usuarioFacade.find(nuevoUsuario.getXeusuId()) != null) {
+            ejecutarJavaScript("console.error('❌ ID de usuario ya existe: " + escapeJavaScript(nuevoUsuario.getXeusuId()) + "');");
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El ID de usuario ya existe"));
+            return;
+        }
+        ejecutarJavaScript("console.log('✅ ID de usuario disponible');");
 
-            // Establecer campos NULL explícitamente
-            nuevoUsuario.setPeperId(null);
-            nuevoUsuario.setMeestEstud(null);
+        // Encriptar contraseña
+        ejecutarJavaScript("console.log('🔐 Encriptando contraseña...');");
+        String contrasenaEncriptada = passwordController.encriptarClave(nuevoUsuario.getXeusuContra());
+        nuevoUsuario.setXeusuContra(contrasenaEncriptada);
+        ejecutarJavaScript("console.log('✅ Contraseña encriptada. Longitud: " + contrasenaEncriptada.length() + "');");
 
-            // Guardar usuario
-            usuarioFacade.create(nuevoUsuario);
+        // Establecer campos NULL explícitamente
+        nuevoUsuario.setPeperId(null);
+        nuevoUsuario.setMeestEstud(null);
 
+        // Guardar usuario
+        ejecutarJavaScript("console.log('💾 Guardando en base de datos...');");
+        usuarioFacade.create(nuevoUsuario);
+        ejecutarJavaScript("console.log('✅ usuarioFacade.create() ejecutado');");
+
+        // Verificar inserción
+        XeusuUsuar usuarioVerificado = usuarioFacade.find(nuevoUsuario.getXeusuId());
+        if (usuarioVerificado != null) {
+            ejecutarJavaScript("console.log('🎉 USUARIO CREADO EXITOSAMENTE');");
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Usuario creado correctamente"));
-
-            // Limpiar formulario
-            initNuevoUsuario();
-
-        } catch (NoSuchAlgorithmException e) {
+        } else {
+            ejecutarJavaScript("console.error('❌ USUARIO NO SE GUARDÓ EN BD');");
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al encriptar contraseña: " + e.getMessage()));
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al crear usuario: " + e.getMessage()));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al guardar usuario"));
         }
+
+        // Limpiar formulario
+        initNuevoUsuario();
+
+    } catch (NoSuchAlgorithmException e) {
+        ejecutarJavaScript("console.error('❌ Error de encriptación: " + escapeJavaScript(e.getMessage()) + "');");
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al encriptar contraseña: " + e.getMessage()));
+    } catch (Exception e) {
+        ejecutarJavaScript("console.error('💥 ERROR GENERAL: " + escapeJavaScript(e.getMessage()) + "');");
+        ejecutarJavaScript("console.error('Tipo de error: " + escapeJavaScript(e.getClass().getName()) + "');");
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al crear usuario: " + e.getMessage()));
     }
+}
+
+// Método para ejecutar JavaScript desde Java
+private void ejecutarJavaScript(String script) {
+    FacesContext context = FacesContext.getCurrentInstance();
+    if (context != null) {
+        context.getPartialViewContext().getEvalScripts().add(script);
+    }
+    // También imprimir en consola del servidor por si acaso
+    System.out.println("[JS] " + script.replace("console.log('", "").replace("');", ""));
+}
+
+// Método para escapar caracteres especiales en JavaScript
+private String escapeJavaScript(String text) {
+    if (text == null) return "null";
+    return text.replace("'", "\\'")
+               .replace("\"", "\\\"")
+               .replace("\n", "\\n")
+               .replace("\r", "\\r")
+               .replace("\t", "\\t");
+}
 
     private boolean validarDatos() {
         if (nuevoUsuario.getXeusuId() == null || nuevoUsuario.getXeusuId().trim().isEmpty()) {

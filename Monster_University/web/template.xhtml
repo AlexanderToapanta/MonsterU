@@ -77,34 +77,18 @@
                 <div class="user-menu">
                     <h:form id="menuForm">
                         <p:menubar>
-                            <p:menuitem value="#{bundle.Home}" outcome="/index" icon="pi pi-home"/>
-                            <p:submenu label="#{bundle.Maintenance}">
-                                <p:menuitem value="FepagoPago" outcome="/fepagoPago/List.xhtml" />
-                                <p:menuitem value="MeasigAsigna" outcome="/measigAsigna/List.xhtml" />
-                                <p:menuitem value="MecarrCarrera" outcome="/mecarrCarrera/List.xhtml" />
-                                <p:menuitem value="MeestEstud" outcome="/meestEstud/List.xhtml" />
-                                <p:menuitem value="MegrpGrupo" outcome="/megrpGrupo/List.xhtml" />
-                                <p:menuitem value="MehorHorario" outcome="/mehorHorario/List.xhtml" />
-                                <p:menuitem value="MeperiPeriod" outcome="/meperiPeriod/List.xhtml" />
-                                <p:menuitem value="MrMeasigMeasig" outcome="/mrMeasigMeasig/List.xhtml" />
-                                <p:menuitem value="PeescEstciv" outcome="/peescEstciv/List.xhtml" />
-                                <p:menuitem value="PeperPerson" outcome="/peperPerson/List.xhtml" />
-                                <p:menuitem value="PesexSexo" outcome="/pesexSexo/List.xhtml" />
-                                <p:menuitem value="XeaudAudlog" outcome="/xeaudAudlog/List.xhtml" />
-                                <p:menuitem value="XerolRol" outcome="/xerolRol/List.xhtml" />
-                                <p:menuitem value="XeusuUsuar" outcome="/xeusuUsuar/List.xhtml" />
-                            </p:submenu>
+                            <p:menuitem value="#{bundle.Home}" outcome="/index1" icon="pi pi-home"/>
+                         
                             
                             <!-- Menú de usuario - Solo se muestra si está logueado -->
                             <p:submenu label="Usuario" 
                                      rendered="#{loginController.loggedIn}"
                                      icon="pi pi-user"
                                      style="margin-left: auto;">
-                                <p:menuitem value="Mi Perfil" 
-                                          outcome="/xeusuUsuar/View.xhtml" 
-                                          icon="pi pi-user-edit">
-                                    <f:param name="id" value="#{loginController.usuarioLogueado.xeusuId}"/>
-                                </p:menuitem>
+                                <p:menuitem value="Crear Usuario" 
+                                          outcome="/crear-usuario.xhtml" 
+                                          icon="pi pi-key"/>
+                               
                                 <p:menuitem value="Cambiar Contraseña" 
                                           outcome="/cambioContrasena.xhtml" 
                                           icon="pi pi-key"/>
@@ -135,7 +119,7 @@
             <div class="layout-south">
                 <ui:insert name="footer"/>
                 <div style="margin-left: 20px;">
-                    <div style="font-weight: bold;">Sistema de Bienes Monster</div>
+                    <div style="font-weight: bold;">Sistema de Matrículas Monster</div>
                     <div style="font-style: italic;">
                         Usuario: 
                         <h:outputText value="#{loginController.loggedIn ? loginController.usu.usuario : 'No logueado'}" 

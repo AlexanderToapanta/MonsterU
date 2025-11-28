@@ -8,173 +8,103 @@
 
     <ui:composition template="/template.xhtml">
         <ui:define name="title">
-            Inicio - Sistema de Matrículas
+            Inicio - Sistema de Bienes
         </ui:define>
 
         <ui:define name="body">
-            <!-- Contenedor principal con imagen de fondo y overlay -->
-            <div class="main-background">
-                <div class="background-overlay"></div>
-                <div class="dashboard-container">
-          
-                    
-                    <!-- Tarjeta de Bienvenida -->
-                    <p:panel header="Bienvenido al Sistema" style="margin-bottom: 20px; background: rgba(255,255,255,0.95);">
-                        <div class="welcome-section">
-                            <h2>Hola, #{loginController.usu.usuario != null ? loginController.usu.usuario : 'Usuario'}</h2>
-                            <p>Bienvenido al Sistema de Gestión de Matrículas Monster</p>
-                            
-                            <div class="user-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
-                                <h3>Información de tu cuenta:</h3>
-                                <p:panelGrid columns="2" style="width: 100%;" layout="grid">
-                                    <p:outputLabel value="Usuario:"/>
-                                    <p:outputLabel value="#{loginController.usuarioLogueado.xeusuNombre}" 
-                                                 style="font-weight: bold;"/>
-                                    
-                                    <p:outputLabel value="Estado:"/>
-                                    <p:outputLabel value="#{loginController.usuarioLogueado.xeusuEstado}" 
-                                                 style="font-weight: bold; 
-                                                        color: #{loginController.usuarioLogueado.xeusuEstado == 'ACTIVO' ? 'green' : 'red'};"/>
-                                    
-                                    <p:outputLabel value="ID Usuario:"/>
-                                    <p:outputLabel value="#{loginController.usuarioLogueado.xeusuId}" 
-                                                 style="font-weight: bold;"/>
-                                </p:panelGrid>
-                            </div>
-                        </div>
-                    </p:panel>
-
-                    <!-- Accesos Rápidos -->
-                    <p:panel header="Accesos Rápidos" style="text-align: center; margin-bottom: 20px; background: rgba(255,255,255,0.95);">
-                        <div class="quick-actions">
-                            <p:button value="Cambiar Contraseña" 
-                                      icon="pi pi-key"
-                                      outcome="/cambioContrasena.xhtml"
-                                      styleClass="quick-action-btn"/>
-                        </div>
-                    </p:panel>
-
-                    <!-- Información del Sistema -->
-                    <p:panel header="Información del Sistema" style="background: rgba(255,255,255,0.95);">
-                        <div class="system-info">
-                            <p:accordionPanel multiple="true">
-                                <p:tab title="Acerca del Sistema">
-                                    <p>
-                                        <strong>Sistema de Gestión de Matrículas Monster</strong><br/>
-                                        Versión: 1.0<br/>
-                                        Desarrollado para la gestión integral de matrículas, estudiantes, asignaturas y docentes.
-                                    </p>
-                                </p:tab>
+            <div class="dashboard-container">
+                <p:growl id="growl" showDetail="true" life="3000"/>
+                
+                <!-- Tarjeta de Bienvenida -->
+                <p:panel header="Bienvenido al Sistema" style="margin-bottom: 20px;">
+                    <div class="welcome-section">
+                        <h2>Hola, #{loginController.usu.usuario != null ? loginController.usu.usuario : 'Usuario'}</h2>
+                        <p>Bienvenido al Sistema de Gestión de Bienes Monster</p>
+                        
+                        <div class="user-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+                            <h3>Información de tu cuenta:</h3>
+                            <p:panelGrid columns="2" style="width: 100%;" layout="grid">
+                                <p:outputLabel value="Usuario:"/>
+                                <p:outputLabel value="#{loginController.usuarioLogueado.xeusuNombre}" 
+                                             style="font-weight: bold;"/>
                                 
-                                <p:tab title="Últimas Actividades">
-                                    <p>No hay actividades recientes.</p>
-                                </p:tab>
-                            </p:accordionPanel>
+                                <p:outputLabel value="Estado:"/>
+                                <p:outputLabel value="#{loginController.usuarioLogueado.xeusuEstado}" 
+                                             style="font-weight: bold; 
+                                                    color: #{loginController.usuarioLogueado.xeusuEstado == 'ACTIVO' ? 'green' : 'red'};"/>
+                                
+                                <p:outputLabel value="ID Usuario:"/>
+                                <p:outputLabel value="#{loginController.usuarioLogueado.xeusuId}" 
+                                             style="font-weight: bold;"/>
+                            </p:panelGrid>
                         </div>
-                    </p:panel>
-                </div>
+                    </div>
+                </p:panel>
+
+                <!-- Accesos Rápidos -->
+                <p:panel header="Accesos Rápidos" style="text-align: center; margin-bottom: 20px;">
+                    <div class="quick-actions">
+                        
+                        <p:button value="Cambiar Contraseña" 
+                  icon="pi pi-key"
+                  outcome="/cambioContrasena.xhtml"
+                  styleClass="quick-action-btn"/>
+    </div>
+</p:panel>
+
+                <!-- Información del Sistema -->
+                <p:panel header="Información del Sistema">
+                    <div class="system-info">
+                        <p:accordionPanel multiple="true">
+                            <p:tab title="Acerca del Sistema">
+                                <p>
+                                    <strong>Sistema de Gestión de Bienes Monster</strong><br/>
+                                    Versión: 1.0<br/>
+                                    Desarrollado para la gestión integral de bienes y usuarios.
+                                </p>
+                            </p:tab>
+                            
+                            <p:tab title="Últimas Actividades">
+                                <p>No hay actividades recientes.</p>
+                            </p:tab>
+                        </p:accordionPanel>
+                    </div>
+                </p:panel>
             </div>
 
             <style>
-                /* Contenedor principal con imagen de fondo */
-                .main-background {
-                    position: relative;
-                    min-height: 100vh;
-                    background-image: url('../web/resources/img/university-background.jpg');
-                    background-size: cover;
-                    background-position: center;
-                    background-attachment: fixed;
-                    background-repeat: no-repeat;
-                }
-                
-                /* Overlay con filtro de color de la paleta */
-                .background-overlay {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: linear-gradient(135deg, 
-                        rgba(102, 126, 234, 0.7) 0%, 
-                        rgba(118, 75, 162, 0.7) 100%);
-                   mix-blend-mode: multiply;
-                }
-                
-                /* Contenedor del dashboard */
                 .dashboard-container {
-                    position: relative;
-                    z-index: 1;
                     max-width: 1200px;
                     margin: 0 auto;
-                    padding: 40px 20px;
+                    padding: 20px;
                 }
                 
-                /* Estilos para las tarjetas */
                 .welcome-section h2 {
                     color: #2c3e50;
                     margin-bottom: 10px;
-                    font-size: 24px;
                 }
                 
                 .welcome-section p {
                     color: #7f8c8d;
                     font-size: 16px;
-                    line-height: 1.6;
                 }
                 
                 .quick-actions {
                     display: flex;
                     justify-content: center;
                     flex-wrap: wrap;
-                    gap: 15px;
+                    gap: 10px;
                 }
                 
                 .quick-action-btn {
-                    padding: 12px 24px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    border: none;
-                    color: white;
-                    border-radius: 8px;
-                    font-weight: 600;
-                    text-decoration: none;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-                }
-                
-                .quick-action-btn:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-                    color: white;
-                    text-decoration: none;
+                    padding: 10px 20px;
+                    margin: 5px;
                 }
                 
                 .user-info {
-                    border-left: 4px solid #667eea;
-                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    border-left: 4px solid #007bff;
                 }
                 
-                .user-info h3 {
-                    color: #2c3e50;
-                    margin-bottom: 15px;
-                    font-size: 18px;
-                }
-                
-                /* Estilos para los paneles */
-                .ui-panel {
-                    border-radius: 10px;
-                    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-                    border: none;
-                }
-                
-                .ui-panel .ui-panel-titlebar {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    border: none;
-                    border-radius: 10px 10px 0 0;
-                    font-weight: 600;
-                }
-                
-                /* Estilos responsivos */
                 @media (max-width: 768px) {
                     .quick-actions {
                         flex-direction: column;
@@ -183,26 +113,15 @@
                     
                     .quick-action-btn {
                         width: 100%;
-                        max-width: 250px;
                         margin: 5px 0;
-                    }
-                    
-                    .dashboard-container {
-                        padding: 20px 15px;
-                    }
-                    
-                    .main-background {
-                        background-attachment: scroll;
                     }
                 }
             </style>
         </ui:define>
 
         <ui:define name="footer">
-            <div style="text-align: center; width: 100%; position: relative; z-index: 2; background: rgba(255,255,255,0.9); padding: 20px;">
-                <p style="color: #2c3e50; font-weight: 600; margin: 0;">
-                    Sistema de Matrículas Monster - © 2025
-                </p>
+            <div style="text-align: center; width: 100%;">
+                <p>Sistema de Bienes Monster - © 2024</p>
             </div>
         </ui:define>
     </ui:composition>

@@ -5,19 +5,15 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <title>Login - Monster University</title>
+        <title>Login - Matriculas Monster</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </h:head>
     
     <h:body>
-        <!-- Test de inicialización -->
-        <h:outputText value="LoginController inicializado: #{loginController != null}" 
-                     style="color: red; font-weight: bold;"/>
-        
         <div class="login-container">
             <div class="login-card">
                 <div class="login-header">
-                    <h1>MONSTER UNIVERSITY</h1>
+                    <h1>MATRÍCULAS MONSTER</h1>
                     <h2>Iniciar Sesión</h2>
                 </div>
                 
@@ -30,7 +26,7 @@
                                    value="#{loginController.usuario.xeusuNombre}"
                                    placeholder="Ingrese su usuario"
                                    required="true"
-                                   requiredMessage="El usuario es requerida"
+                                   requiredMessage="El usuario es requerido"
                                    style="width: 100%"/>
                     </div>
                     
@@ -46,7 +42,7 @@
                     </div>
                     
                     <p:commandButton value="Ingresar" 
-                                   action="#{loginController.doLogin}"
+                                   action="#{loginController.doLogin()}"
                                    styleClass="login-button"
                                    update="messages"
                                    ajax="false"/>
@@ -71,6 +67,42 @@
                 box-shadow: 0 10px 30px rgba(0,0,0,0.3);
                 width: 100%;
                 max-width: 400px;
+            }
+            
+            .login-header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            
+            .login-header h1 {
+                color: #333;
+                margin-bottom: 10px;
+                font-size: 24px;
+            }
+            
+            .login-header h2 {
+                color: #666;
+                font-size: 18px;
+                font-weight: normal;
+            }
+            
+            .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .login-button {
+                width: 100%;
+                padding: 12px;
+                background: #007bff;
+                border: none;
+                color: white;
+                font-size: 16px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            
+            .login-button:hover {
+                background: #0056b3;
             }
         </style>
     </h:body>

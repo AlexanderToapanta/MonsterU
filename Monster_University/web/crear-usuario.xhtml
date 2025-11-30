@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
--->
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -12,26 +8,20 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
 <h:head>
     <title>Crear Nuevo Usuario</title>
     
-    <!-- Script de debug para la consola del navegador -->
     <script>
-        // Función global para debug
         function debug(message) {
             console.log("[DEBUG] " + message);
         }
         
-        // Función para mostrar errores
         function debugError(message) {
             console.error("[ERROR] " + message);
         }
         
-        // Función para éxito
         function debugSuccess(message) {
             console.log("✅ " + message);
         }
         
-        // Mensaje inicial cuando se carga la página
         console.log("=== FORMULARIO CREAR USUARIO CARGADO ===");
-        console.log("Abre esta consola (F12) para ver los mensajes de debug");
     </script>
     
     <style>
@@ -89,7 +79,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                               weakLabel="Débil" goodLabel="Buena" strongLabel="Fuerte"
                               style="width: 200px"
                               onchange="debug('Contraseña cambiada (longitud): ' + this.value.length)"/>
-                    
                     <p:message for="xeusuContra" display="icon"/>
                 </div>
 
@@ -122,7 +111,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                                    update="@form :growl"
                                    icon="pi pi-save"
                                    style="margin-right: 10px;"
-                                   onclick="debug('=== INICIANDO CREACIÓN DE USUARIO ==='); 
+                                   onstart="debug('=== INICIANDO CREACIÓN DE USUARIO ==='); 
                                             debug('Haciendo click en Crear Usuario...');"/>
                     
                     <p:commandButton value="🔄 Limpiar" 
@@ -130,9 +119,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                                    update="@form :growl"
                                    immediate="true"
                                    icon="pi pi-refresh"
-                                   onclick="debug('Limpiando formulario...')"/>
-                    
-                   
+                                   onstart="debug('Limpiando formulario...')"/>
                 </div>
             </p:panel>
         </h:form>
@@ -140,18 +127,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
         <!-- Mensajes globales -->
         <p:growl id="growl" showDetail="true" life="3000"/>
         
-        <!-- Script adicional para capturar eventos del formulario -->
         <script>
-            // Capturar el evento de submit del formulario
             document.addEventListener('DOMContentLoaded', function() {
-                var form = document.getElementById('formCrearUsuario');
-                if (form) {
-                    form.addEventListener('submit', function() {
-                        debug('Formulario enviado (submit event)');
-                    });
-                }
-                
-                // Mostrar instrucciones
                 console.log("📝 INSTRUCCIONES:");
                 console.log("1. Llena el formulario");
                 console.log("2. Haz click en 'Crear Usuario'");

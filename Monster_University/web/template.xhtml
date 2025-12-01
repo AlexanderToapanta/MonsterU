@@ -13,56 +13,77 @@
     <h:outputStylesheet library="css" name="jsfcrud.css"/>
     <h:outputScript library="js" name="jsfcrud.js"/>
 
-    <style>
-        .layout-container {
-            display: grid;
-            grid-template-rows: 65px auto 60px;
-            min-height: 100vh;
-            width: 100%;
-        }
+   <style>
+    .layout-container {
+        display: grid;
+        grid-template-rows: 65px auto 60px;
+        min-height: 100vh;
+        width: 100%;
+    }
 
-        .layout-north {
-            grid-row: 1;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-            padding: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    .layout-north {
+        grid-row: 1;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 10; /* Asegura que el header esté sobre la imagen */
+    }
 
-        .layout-center {
-            grid-row: 2;
-            padding: 1rem;
-            overflow: auto;
-        }
+    .layout-center {
+        grid-row: 2;
+        padding: 1rem;
+        overflow: auto;
+        /* Imagen de fondo aquí */
+        background-image: url('https://www.bangor.ac.uk/sites/default/files/styles/16x9_1100w/public/2020-05/CB%202018%20May%20%2837%29.jpg?h=41ef3158&amp;itok=zGs3cG5Q');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        position: relative;
+    }
 
-        .layout-south {
-            grid-row: 3;
-            background-color: #e9ecef;
-            border-top: 1px solid #dee2e6;
-            padding: 0.5rem;
-            display: flex;
-            align-items: center;
-        }
+    /* Overlay para el layout-center */
+    .layout-center::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 0;
+    }
 
-        .app-header {
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: #2a64c5;
-        }
+    .layout-south {
+        grid-row: 3;
+        background-color: rgba(233, 236, 239, 0.9); /* Semi-transparente */
+        border-top: 1px solid #dee2e6;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        z-index: 10; /* Asegura que el footer esté sobre la imagen */
+    }
 
-        .menu-btn, .user-btn {
-            font-weight: bold;
-            margin-left: 10px;
-        }
+    .app-header {
+        font-size: 1.6rem;
+        font-weight: bold;
+        color: #2a64c5;
+    }
 
-        .user-menu {
-            display: flex;
-            justify-content: flex-end;
-            width: 100%;
-        }
-    </style>
+    .menu-btn, .user-btn {
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+    .user-menu {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+    }
+</style>
 </h:head>
 
 <h:body>
@@ -113,7 +134,7 @@
 
                         <p:menuitem value="Cerrar sesión"
                                     icon="pi pi-sign-out"
-                                    action="#{loginController.logout}"
+                                    action="#{loginController.doLogout}"
                                     ajax="false"/>
                     </p:menuButton>
 
@@ -142,3 +163,4 @@
 
 </h:body>
 </html>
+    

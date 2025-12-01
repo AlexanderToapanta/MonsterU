@@ -10,9 +10,10 @@
     </h:head>
     
     <h:body>
-        
-        
         <div class="login-container">
+            <!-- Overlay para mejorar legibilidad -->
+            <div class="background-overlay"></div>
+            
             <div class="login-card">
                 <div class="login-header">
                     <h1>MONSTER UNIVERSITY</h1>
@@ -28,7 +29,7 @@
                                    value="#{loginController.usuario.xeusuNombre}"
                                    placeholder="Ingrese su usuario"
                                    required="true"
-                                   requiredMessage="El usuario es requerida"
+                                   requiredMessage="El usuario es requerido"
                                    style="width: 100%"/>
                     </div>
                     
@@ -49,26 +50,189 @@
                                    update="messages"
                                    ajax="false"/>
                 </h:form>
+                
+                <div class="login-footer">
+                    <p>Sistema de Gestión Académica</p>
+                </div>
             </div>
         </div>
         
         <style>
+            /* Paleta de colores que armoniza con la imagen */
+            :root {
+                --primary-purple: #6d28d9;     /* Púrpura principal */
+                --primary-indigo: #4f46e5;     /* Índigo */
+                --accent-amber: #f59e0b;       /* Ámbar para acentos */
+                --light-bg: rgba(255, 255, 255, 0.95);
+                --dark-overlay: rgba(79, 70, 229, 0.7); /* Índigo semi-transparente */
+            }
+            
             .login-container {
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 min-height: 100vh;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 padding: 20px;
+                background-image: url('https://www.usnews.com/dims4/USNEWS/79eb9d6/2147483647/thumbnail/970x647/quality/85/?url=https%3A%2F%2Fwww.usnews.com%2Fcmsmedia%2F9b%2F5a%2Fc2f5a4f84960a66aa9276432b51b%2Fgettyimages-1478520911.jpg');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+                background-repeat: no-repeat;
+                position: relative;
+            }
+            
+            .background-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    135deg, 
+                    rgba(109, 40, 217, 0.8) 0%,    /* Púrpura */
+                    rgba(79, 70, 229, 0.7) 50%,     /* Índigo */
+                    rgba(245, 158, 11, 0.2) 100%    /* Ámbar sutil */
+                );
+                z-index: 0;
             }
             
             .login-card {
-                background: white;
-                padding: 40px;
-                border-radius: 10px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                background: var(--light-bg);
+                padding: 40px 35px;
+                border-radius: 15px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
                 width: 100%;
-                max-width: 400px;
+                max-width: 420px;
+                position: relative;
+                z-index: 1;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+            }
+            
+            .login-header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            
+            .login-header h1 {
+                color: var(--primary-purple);
+                margin: 0 0 10px 0;
+                font-size: 2.2rem;
+                font-weight: 800;
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+                letter-spacing: 1px;
+            }
+            
+            .login-header h2 {
+                color: var(--primary-indigo);
+                margin: 0;
+                font-size: 1.5rem;
+                font-weight: 600;
+                opacity: 0.9;
+            }
+            
+            .form-group {
+                margin-bottom: 25px;
+            }
+            
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: var(--primary-purple);
+                font-weight: 600;
+                font-size: 0.95rem;
+            }
+            
+            .ui-inputtext, .ui-password {
+                width: 100% !important;
+                padding: 12px 15px !important;
+                border: 2px solid #e2e8f0 !important;
+                border-radius: 8px !important;
+                font-size: 1rem !important;
+                transition: all 0.3s ease !important;
+                background: white !important;
+            }
+            
+            .ui-inputtext:focus, .ui-password:focus {
+                outline: none !important;
+                border-color: var(--primary-indigo) !important;
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2) !important;
+            }
+            
+            .ui-inputtext::placeholder, .ui-password::placeholder {
+                color: #94a3b8 !important;
+                opacity: 0.8 !important;
+            }
+            
+            .login-button {
+                width: 100%;
+                padding: 14px !important;
+                background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-indigo) 100%) !important;
+                border: none !important;
+                border-radius: 8px !important;
+                color: white !important;
+                font-size: 1.1rem !important;
+                font-weight: 700 !important;
+                cursor: pointer !important;
+                transition: all 0.3s ease !important;
+                margin-top: 10px !important;
+                box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
+            }
+            
+            .login-button:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 6px 20px rgba(109, 40, 217, 0.4) !important;
+                background: linear-gradient(135deg, var(--primary-indigo) 0%, var(--primary-purple) 100%) !important;
+            }
+            
+            .login-button:active {
+                transform: translateY(0) !important;
+            }
+            
+            .login-footer {
+                text-align: center;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #e2e8f0;
+            }
+            
+            .login-footer p {
+                color: #64748b;
+                font-size: 0.9rem;
+                margin: 0;
+                opacity: 0.8;
+            }
+            
+            /* Estilos para mensajes */
+            .ui-messages {
+                margin-bottom: 25px !important;
+                border-radius: 8px !important;
+            }
+            
+            /* Responsive */
+            @media (max-width: 480px) {
+                .login-card {
+                    padding: 30px 20px;
+                    margin: 0 15px;
+                }
+                
+                .login-header h1 {
+                    font-size: 1.8rem;
+                }
+                
+                .login-header h2 {
+                    font-size: 1.3rem;
+                }
+                
+                .login-container {
+                    background-attachment: scroll;
+                }
+            }
+            
+            @media (max-height: 600px) {
+                .login-container {
+                    padding: 40px 20px;
+                }
             }
         </style>
     </h:body>

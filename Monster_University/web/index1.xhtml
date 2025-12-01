@@ -76,29 +76,27 @@
             </div>
 
             <style>
-                /* Contenedor principal con imagen de fondo */
-                .main-background {
-                    position: relative;
-                    min-height: 100vh;
-                    background-image: url('../web/resources/img/university-background.jpg');
-                    background-size: cover;
-                    background-position: center;
-                    background-attachment: fixed;
-                    background-repeat: no-repeat;
-                }
-                
-                /* Overlay con filtro de color de la paleta */
-                .background-overlay {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: linear-gradient(135deg, 
-                        rgba(102, 126, 234, 0.7) 0%, 
-                        rgba(118, 75, 162, 0.7) 100%);
-                   mix-blend-mode: multiply;
-                }
+                /* Contenedor principal con imagen de fondo - USANDO LA IMAGEN DEL SEGUNDO CÓDIGO */
+                 .main-background {
+        position: relative;
+        min-height: 100vh;
+        background-image: url('https://www.bangor.ac.uk/sites/default/files/styles/16x9_1100w/public/2020-05/CB%202018%20May%20%2837%29.jpg?h=41ef3158&amp;itok=zGs3cG5Q');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+    }
+    
+    /* Overlay con filtro de color de la paleta - MÁS OSCURO PARA MEJOR LEGIBILIDAD */
+    .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4); /* Overlay más oscuro para contraste */
+        z-index: 0;
+    }
                 
                 /* Contenedor del dashboard */
                 .dashboard-container {

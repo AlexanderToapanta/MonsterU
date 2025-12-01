@@ -6,128 +6,139 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:p="http://primefaces.org/ui"
     xmlns:pe="http://primefaces.org/ui/extensions"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    >
-    <h:head>
-        <title><ui:insert name="title">Default Title</ui:insert></title>
-        <h:outputStylesheet library="css" name="jsfcrud.css"/>
-        <h:outputScript library="js" name="jsfcrud.js"/>
-        
-        <style>
-            .layout-container {
-                display: grid;
-                grid-template-rows: 65px auto 60px;
-                min-height: 100vh;
-                width: 100%;
-            }
-            
-            .layout-north {
-                grid-row: 1;
-                background-color: #f8f9fa;
-                border-bottom: 1px solid #dee2e6;
-                padding: 0.5rem;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-            
-            .layout-center {
-                grid-row: 2;
-                padding: 1rem;
-                overflow: auto;
-            }
-            
-            .layout-south {
-                grid-row: 3;
-                background-color: #e9ecef;
-                border-top: 1px solid #dee2e6;
-                padding: 0.5rem;
-                display: flex;
-                align-items: center;
-            }
-            
-            .app-header {
-                font-size: 1.5rem;
-                font-weight: bold;
-                color: #495057;
-            }
-            
-            .user-menu {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            
-            body {
-                margin: 0;
-                padding: 0;
-            }
-        </style>
-    </h:head>
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <h:body>
+<h:head>
+    <title><ui:insert name="title">Default Title</ui:insert></title>
+    <h:outputStylesheet library="css" name="jsfcrud.css"/>
+    <h:outputScript library="js" name="jsfcrud.js"/>
 
-        <p:growl id="growl" life="3000" />
+    <style>
+        .layout-container {
+            display: grid;
+            grid-template-rows: 65px auto 60px;
+            min-height: 100vh;
+            width: 100%;
+        }
 
-        <div class="layout-container">
-            <!-- North Section -->
-            <div class="layout-north">
-                <div class="app-header">#{bundle.AppName}</div>
-                
-                <div class="user-menu">
-                    <h:form id="menuForm">
-                        <p:menubar>
-                            <p:menuitem value="#{bundle.Home}" outcome="/index1" icon="pi pi-home"/>
-                         
-                            
-                            <!-- Menú de usuario - Solo se muestra si está logueado -->
-                            <p:submenu label="Usuario" 
-                                     rendered="#{loginController.loggedIn}"
-                                     icon="pi pi-user"
-                                     style="margin-left: auto;">
-                                <p:menuitem value="Crear Usuario" 
-                                          outcome="/crear-usuario.xhtml" 
-                                          icon="pi pi-key"/>
-                               
-                                <p:menuitem value="Cambiar Contraseña" 
-                                          outcome="/cambioContrasena.xhtml" 
-                                          icon="pi pi-key"/>
-                                <p:separator/>
-                                <p:menuitem value="Cerrar Sesión" 
-                                          action="#{loginController.doLogout}" 
-                                          icon="pi pi-power-off"
-                                          ajax="false"/>
-                            </p:submenu>
-                            
-                            <!-- Opción de login - Solo se muestra si NO está logueado -->
-                            <p:menuitem value="Iniciar Sesión" 
-                                      outcome="/login.xhtml" 
-                                      icon="pi pi-sign-in"
-                                      rendered="#{not loginController.loggedIn}"
-                                      style="margin-left: auto;"/>
-                        </p:menubar>
-                    </h:form>
-                </div>
-            </div>
+        .layout-north {
+            grid-row: 1;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-            <!-- Center Section -->
-            <div class="layout-center">
-                <ui:insert name="body"/>
-            </div>
+        .layout-center {
+            grid-row: 2;
+            padding: 1rem;
+            overflow: auto;
+        }
 
-            <!-- South Section -->
-            <div class="layout-south">
-                <ui:insert name="footer"/>
-                <div style="margin-left: 20px;">
-                    <div style="font-weight: bold;">Sistema de Matrículas Monster</div>
-                    <div style="font-style: italic;">
-                        Usuario: 
-                        <h:outputText value="#{loginController.loggedIn ? loginController.usu.usuario : 'No logueado'}" 
-                                    style="font-weight: bold;"/>
-                    </div>
-                </div>
+        .layout-south {
+            grid-row: 3;
+            background-color: #e9ecef;
+            border-top: 1px solid #dee2e6;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .app-header {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #2a64c5;
+        }
+
+        .menu-btn, .user-btn {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .user-menu {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+        }
+    </style>
+</h:head>
+
+<h:body>
+
+    <p:growl id="growl" life="3000"/>
+
+    <div class="layout-container">
+
+        <!-- ==================================== HEADER ====================================== -->
+        <div class="layout-north">
+
+            <!-- TÍTULO -->
+            <div class="app-header">MONSTER UNIVERSITY</div>
+
+            <!-- MENÚS -->
+            <div class="user-menu">
+                <h:form id="menuForm">
+
+                    <!-- PERSONAL -->
+                    <p:menuButton value="Personal" styleClass="menu-btn">
+                        
+                    </p:menuButton>
+
+                    <!-- FINANZAS -->
+                    <p:menuButton value="Finanzas" styleClass="menu-btn">
+                        
+                    </p:menuButton>
+
+                    <!-- ACADÉMICO -->
+                    <p:menuButton value="Académico" styleClass="menu-btn">
+                        
+                    </p:menuButton>
+
+                    <!-- SEGURIDAD -->
+                    <p:menuButton value="Seguridad" styleClass="menu-btn">
+                        
+                    </p:menuButton>
+
+                    <!-- USUARIO LOGUEADO -->
+                    <p:menuButton value="#{loginController.usuarioLogueado.xeusuNombre}"
+                                  icon="pi pi-user"
+                                  styleClass="menu-btn"
+                                  rendered="#{loginController.loggedIn}">
+
+                        <p:menuitem value="Cambiar contraseña"
+                                    icon="pi pi-key"
+                                    outcome="/cambioContrasena.xhtml"/>
+
+                        <p:menuitem value="Cerrar sesión"
+                                    icon="pi pi-sign-out"
+                                    action="#{loginController.logout}"
+                                    ajax="false"/>
+                    </p:menuButton>
+
+                    <!-- LOGIN SI NO ESTÁ LOGUEADO -->
+                    <p:button value="Iniciar Sesión"
+                              icon="pi pi-sign-in"
+                              outcome="/login.xhtml"
+                              rendered="#{not loginController.loggedIn}" />
+                </h:form>
             </div>
         </div>
 
-    </h:body>
+        <!-- ==================================== CONTENIDO CENTRAL ====================================== -->
+        <div class="layout-center">
+            <ui:insert name="body"/>
+        </div>
+
+        <!-- ==================================== FOOTER ====================================== -->
+        <div class="layout-south">
+            <ui:insert name="footer"/>
+
+            
+        </div>
+
+    </div>
+
+</h:body>
 </html>

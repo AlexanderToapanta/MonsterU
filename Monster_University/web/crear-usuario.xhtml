@@ -1,141 +1,217 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://java.sun.com/jsf/core">
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/template.xhtml">
 
-<h:head>
-    <title>Crear Nuevo Usuario</title>
-    
-    <script>
-        function debug(message) {
-            console.log("[DEBUG] " + message);
-        }
-        
-        function debugError(message) {
-            console.error("[ERROR] " + message);
-        }
-        
-        function debugSuccess(message) {
-            console.log("✅ " + message);
-        }
-        
-        console.log("=== FORMULARIO CREAR USUARIO CARGADO ===");
-    </script>
-    
-    <style>
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .actions {
-            margin-top: 20px;
-            text-align: center;
-        }
-    </style>
-</h:head>
+    <ui:define name="title">Crear Nuevo Usuario</ui:define>
 
-<h:body>
-    <div class="container">
-        <h1>👤 Crear Nuevo Usuario</h1>
-        
-        <h:form id="formCrearUsuario">
-            <p:panel header="Datos del Usuario">
-                <!-- ID Usuario -->
-                <div class="form-group">
-                    <h:outputLabel for="xeusuId" value="ID Usuario *" styleClass="form-label"/>
-                    <p:inputText id="xeusuId" value="#{crearUsuarioController.nuevoUsuario.xeusuId}" 
-                               maxlength="5" style="width: 100px"
-                               placeholder="Ej: USR01"
-                               onchange="debug('ID Usuario cambiado: ' + this.value)"/>
-                    <p:message for="xeusuId" display="icon"/>
-                </div>
-
-                <!-- Nombre -->
-                <div class="form-group">
-                    <h:outputLabel for="xeusuNombre" value="Nombre Completo *" styleClass="form-label"/>
-                    <p:inputText id="xeusuNombre" value="#{crearUsuarioController.nuevoUsuario.xeusuNombre}" 
-                               maxlength="100" style="width: 300px"
-                               placeholder="Nombre del usuario"
-                               onchange="debug('Nombre cambiado: ' + this.value)"/>
-                    <p:message for="xeusuNombre" display="icon"/>
-                </div>
-
-                <!-- Contraseña -->
-                <div class="form-group">
-                    <h:outputLabel for="xeusuContra" value="Contraseña *" styleClass="form-label"/>
-                    <p:password id="xeusuContra" value="#{crearUsuarioController.nuevoUsuario.xeusuContra}" 
-                              feedback="true" promptLabel="Ingresa contraseña" 
-                              weakLabel="Débil" goodLabel="Buena" strongLabel="Fuerte"
-                              style="width: 200px"
-                              onchange="debug('Contraseña cambiada (longitud): ' + this.value.length)"/>
-                    <p:message for="xeusuContra" display="icon"/>
-                </div>
-
-                <!-- Confirmar Contraseña -->
-                <div class="form-group">
-                    <h:outputLabel for="confirmarContrasena" value="Confirmar Contraseña *" styleClass="form-label"/>
-                    <p:password id="confirmarContrasena" value="#{crearUsuarioController.confirmarContrasena}" 
-                              style="width: 200px"
-                              onchange="debug('Confirmar contraseña cambiada (longitud): ' + this.value.length)"/>
-                    <p:message for="confirmarContrasena" display="icon"/>
-                </div>
-
-                <!-- Estado -->
-                <div class="form-group">
-                    <h:outputLabel for="xeusuEstado" value="Estado *" styleClass="form-label"/>
-                    <p:selectOneMenu id="xeusuEstado" value="#{crearUsuarioController.nuevoUsuario.xeusuEstado}" 
-                                   style="width: 150px"
-                                   onchange="debug('Estado seleccionado: ' + this.value)">
-                        <f:selectItem itemLabel="Seleccione estado" itemValue=""/>
-                        <f:selectItem itemLabel="ACTIVO" itemValue="ACTIVO"/>
-                        <f:selectItem itemLabel="INACTIVO" itemValue="INACTIVO"/>
-                    </p:selectOneMenu>
-                    <p:message for="xeusuEstado" display="icon"/>
-                </div>
-
-                <!-- Botones de acción -->
-                <div class="actions">
-                    <p:commandButton value="💾 Crear Usuario" 
-                                   action="#{crearUsuarioController.crearUsuario}"
-                                   update="@form :growl"
-                                   icon="pi pi-save"
-                                   style="margin-right: 10px;"
-                                   onstart="debug('=== INICIANDO CREACIÓN DE USUARIO ==='); 
-                                            debug('Haciendo click en Crear Usuario...');"/>
+    <ui:define name="body">
+        <div class="form-container" style="max-width: 800px; margin: 0 auto; padding: 20px; background-color: rgba(255, 255, 255, 0.95); border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: relative; z-index: 1;">
+            
+            <script>
+                function debug(message) {
+                    console.log("[DEBUG] " + message);
+                }
+                
+                function debugError(message) {
+                    console.error("[ERROR] " + message);
+                }
+                
+                function debugSuccess(message) {
+                    console.log("✅ " + message);
+                }
+                
+                console.log("=== FORMULARIO CREAR USUARIO CARGADO ===");
+                
+                document.addEventListener('DOMContentLoaded', function() {
+                    console.log("📝 INSTRUCCIONES:");
+                    console.log("1. Llena el formulario");
+                    console.log("2. Haz click en 'Crear Usuario'");
+                    console.log("3. Revisa los mensajes aquí debajo");
+                    console.log("4. Si hay errores, se mostrarán en rojo");
+                });
+            </script>
+            
+            <style>
+                .form-header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                    border-bottom: 2px solid #2a64c5;
+                    padding-bottom: 10px;
+                }
+                
+                .form-header h1 {
+                    color: #2a64c5;
+                    font-size: 2rem;
+                    margin-bottom: 5px;
+                }
+                
+                .form-header p {
+                    color: #666;
+                    font-size: 1rem;
+                }
+                
+                .form-group {
+                    margin-bottom: 20px;
+                    padding: 10px;
+                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                }
+                
+                .form-label {
+                    display: block;
+                    margin-bottom: 8px;
+                    font-weight: bold;
+                    color: #495057;
+                    font-size: 0.9rem;
+                }
+                
+                .form-required {
+                    color: #dc3545;
+                    margin-left: 3px;
+                }
+                
+                .form-actions {
+                    margin-top: 30px;
+                    text-align: center;
+                    padding-top: 20px;
+                    border-top: 1px solid #dee2e6;
+                }
+                
+                .form-help {
+                    margin-top: 15px;
+                    padding: 10px;
+                    background-color: #e7f3ff;
+                    border-left: 4px solid #2a64c5;
+                    font-size: 0.9rem;
+                    color: #666;
+                }
+            </style>
+            
+            <div class="form-header">
+                <h1>👤 Crear Nuevo Usuario</h1>
+                <p>Complete todos los campos requeridos para registrar un nuevo usuario en el sistema</p>
+            </div>
+            
+            <h:form id="formCrearUsuario">
+                <p:panel header="Datos del Usuario" styleClass="form-panel" style="border: none; background: transparent;">
                     
-                    <p:commandButton value="🔄 Limpiar" 
-                                   action="#{crearUsuarioController.initNuevoUsuario}"
-                                   update="@form :growl"
-                                   immediate="true"
-                                   icon="pi pi-refresh"
-                                   onstart="debug('Limpiando formulario...')"/>
-                </div>
-            </p:panel>
-        </h:form>
+                    <!-- ID Usuario -->
+                    <div class="form-group">
+                        <h:outputLabel for="xeusuId" value="ID Usuario" styleClass="form-label"/>
+                        <span class="form-required">*</span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <p:inputText id="xeusuId" value="#{crearUsuarioController.nuevoUsuario.xeusuId}" 
+                                       maxlength="5" style="width: 120px;"
+                                       placeholder="Ej: USR01"
+                                       onchange="debug('ID Usuario cambiado: ' + this.value)"
+                                       required="true"
+                                       requiredMessage="El ID de usuario es requerido"/>
+                            <p:outputLabel value="(Máximo 5 caracteres)" style="font-size: 0.8rem; color: #666;"/>
+                        </div>
+                        <p:message for="xeusuId" display="icon"/>
+                    </div>
 
-        <!-- Mensajes globales -->
-        <p:growl id="growl" showDetail="true" life="3000"/>
-        
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log("📝 INSTRUCCIONES:");
-                console.log("1. Llena el formulario");
-                console.log("2. Haz click en 'Crear Usuario'");
-                console.log("3. Revisa los mensajes aquí debajo");
-                console.log("4. Si hay errores, se mostrarán en rojo");
-            });
-        </script>
-    </div>
-</h:body>
-</html>
+                    <!-- Nombre -->
+                    <div class="form-group">
+                        <h:outputLabel for="xeusuNombre" value="Nombre Completo" styleClass="form-label"/>
+                        <span class="form-required">*</span>
+                        <p:inputText id="xeusuNombre" value="#{crearUsuarioController.nuevoUsuario.xeusuNombre}" 
+                                   maxlength="100" style="width: 100%;"
+                                   placeholder="Ingrese el nombre completo del usuario"
+                                   onchange="debug('Nombre cambiado: ' + this.value)"
+                                   required="true"
+                                   requiredMessage="El nombre completo es requerido"/>
+                        <p:message for="xeusuNombre" display="icon"/>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="form-group">
+                        <h:outputLabel for="xeusuContra" value="Contraseña" styleClass="form-label"/>
+                        <span class="form-required">*</span>
+                        <p:password id="xeusuContra" value="#{crearUsuarioController.nuevoUsuario.xeusuContra}" 
+                                  feedback="true" promptLabel="Ingresa contraseña" 
+                                  weakLabel="Débil" goodLabel="Buena" strongLabel="Fuerte"
+                                  style="width: 250px;"
+                                  onchange="debug('Contraseña cambiada (longitud): ' + this.value.length)"
+                                  required="true"
+                                  requiredMessage="La contraseña es requerida"/>
+                        <p:message for="xeusuContra" display="icon"/>
+                    </div>
+
+                    <!-- Confirmar Contraseña -->
+                    <div class="form-group">
+                        <h:outputLabel for="confirmarContrasena" value="Confirmar Contraseña" styleClass="form-label"/>
+                        <span class="form-required">*</span>
+                        <p:password id="confirmarContrasena" value="#{crearUsuarioController.confirmarContrasena}" 
+                                  style="width: 250px;"
+                                  onchange="debug('Confirmar contraseña cambiada (longitud): ' + this.value.length)"
+                                  required="true"
+                                  requiredMessage="Debe confirmar la contraseña"/>
+                        <p:message for="confirmarContrasena" display="icon"/>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="form-group">
+                        <h:outputLabel for="xeusuEstado" value="Estado" styleClass="form-label"/>
+                        <span class="form-required">*</span>
+                        <p:selectOneMenu id="xeusuEstado" value="#{crearUsuarioController.nuevoUsuario.xeusuEstado}" 
+                                       style="width: 200px;"
+                                       onchange="debug('Estado seleccionado: ' + this.value)"
+                                       required="true"
+                                       requiredMessage="Debe seleccionar un estado">
+                            <f:selectItem itemLabel="Seleccione estado" itemValue=""/>
+                            <f:selectItem itemLabel="ACTIVO" itemValue="ACTIVO"/>
+                            <f:selectItem itemLabel="INACTIVO" itemValue="INACTIVO"/>
+                        </p:selectOneMenu>
+                        <p:message for="xeusuEstado" display="icon"/>
+                    </div>
+
+                    <!-- Ayuda -->
+                    <div class="form-help">
+                        <p><strong>📋 Nota:</strong> Todos los campos marcados con <span class="form-required">*</span> son obligatorios.</p>
+                        <p>• El ID de usuario debe ser único en el sistema.</p>
+                        <p>• La contraseña debe tener al menos 8 caracteres para ser segura.</p>
+                        <p>• Los usuarios INACTIVOS no podrán iniciar sesión en el sistema.</p>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="form-actions">
+                        <p:commandButton value="💾 Crear Usuario" 
+                                       action="#{crearUsuarioController.crearUsuario}"
+                                       update="@form :growl"
+                                       icon="pi pi-save"
+                                       styleClass="ui-button-primary"
+                                       style="margin-right: 10px; padding: 8px 20px;"
+                                       onstart="debug('=== INICIANDO CREACIÓN DE USUARIO ==='); 
+                                                debug('Haciendo click en Crear Usuario...');"/>
+                        
+                        <p:commandButton value="🔄 Limpiar" 
+                                       action="#{crearUsuarioController.initNuevoUsuario}"
+                                       update="@form :growl"
+                                       immediate="true"
+                                       icon="pi pi-refresh"
+                                       styleClass="ui-button-secondary"
+                                       style="padding: 8px 20px;"
+                                       onstart="debug('Limpiando formulario...')"/>
+                        
+                        <p:button value="↩️ Cancelar" 
+                                icon="pi pi-times"
+                                outcome="/index1.xhtml"
+                                style="margin-left: 10px; padding: 8px 20px;"/>
+                    </div>
+                </p:panel>
+            </h:form>
+        </div>
+    </ui:define>
+
+    <ui:define name="footer">
+        <div style="width: 100%; text-align: center; font-size: 0.9rem; color: #666;">
+            © #{java.time.LocalDate.now().year} Monster University - Sistema de Gestión Académica
+        </div>
+    </ui:define>
+</ui:composition>

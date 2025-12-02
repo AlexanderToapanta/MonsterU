@@ -101,10 +101,15 @@
             <!-- MENÚS -->
             <div class="user-menu">
                 <h:form id="menuForm">
-
+                    <p:button value="Home"
+                              icon="pi pi-home "
+                              outcome="/index1.xhtml"
+                              />
                     <!-- PERSONAL -->
                     <p:menuButton value="Personal" styleClass="menu-btn">
-                        
+                        <p:menuitem value="Crear usuario"
+                                    icon="pi pi-user"
+                                    outcome="/crear-usuario.xhtml"/>
                     </p:menuButton>
 
                     <!-- FINANZAS -->
@@ -131,6 +136,7 @@
                         <p:menuitem value="Cambiar contraseña"
                                     icon="pi pi-key"
                                     outcome="/cambioContrasena.xhtml"/>
+                        
 
                         <p:menuitem value="Cerrar sesión"
                                     icon="pi pi-sign-out"

@@ -23,7 +23,9 @@
                         <p:outputLabel value="#{bundle.EditMeperiPeriodLabel_meperiActivo}" for="meperiActivo" />
                         <p:selectBooleanCheckbox id="meperiActivo" value="#{meperiPeriodController.selected.meperiActivo}" required="true" requiredMessage="#{bundle.EditMeperiPeriodRequiredMessage_meperiActivo}"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{meperiPeriodController.update}" value="#{bundle.Save}" update="display,:MeperiPeriodListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MeperiPeriodEditDialog');"/>
+                    <p:commandButton actionListener="#{meperiPeriodController.update}" value="#{bundle.Save}" update="display,:MeperiPeriodListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MeperiPeriodEditDialog');">
+                        <p:confirm header="Confirmar guardado" message="¿Deseas guardar los cambios?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
                     <p:commandButton value="#{bundle.Cancel}" onclick="MeperiPeriodEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

@@ -41,7 +41,9 @@
                                            itemValue="#{xeusuIdItem}"/>
                         </p:selectOneMenu>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{meestEstudController.update}" value="#{bundle.Save}" update="display,:MeestEstudListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MeestEstudEditDialog');"/>
+                    <p:commandButton actionListener="#{meestEstudController.update}" value="#{bundle.Save}" update="display,:MeestEstudListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MeestEstudEditDialog');">
+                        <p:confirm header="Confirmar guardado" message="¿Deseas guardar los cambios?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
                     <p:commandButton value="#{bundle.Cancel}" onclick="MeestEstudEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

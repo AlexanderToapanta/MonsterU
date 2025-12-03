@@ -50,7 +50,9 @@
                                            itemValue="#{xeusuIdItem}"/>
                         </p:selectOneMenu>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{peperPersonController.update}" value="#{bundle.Save}" update="display,:PeperPersonListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PeperPersonEditDialog');"/>
+                    <p:commandButton actionListener="#{peperPersonController.update}" value="#{bundle.Save}" update="display,:PeperPersonListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PeperPersonEditDialog');">
+                        <p:confirm header="Confirmar guardado" message="¿Deseas guardar los cambios?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
                     <p:commandButton value="#{bundle.Cancel}" onclick="PeperPersonEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

@@ -35,7 +35,9 @@
                                            itemValue="#{peperIdItem}"/>
                         </p:selectOneMenu>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{xeusuUsuarController.update}" value="#{bundle.Save}" update="display,:XeusuUsuarListForm:datalist,:growl" oncomplete="handleSubmit(args, 'XeusuUsuarEditDialog');"/>
+                    <p:commandButton actionListener="#{xeusuUsuarController.update}" value="#{bundle.Save}" update="display,:XeusuUsuarListForm:datalist,:growl" oncomplete="handleSubmit(args, 'XeusuUsuarEditDialog');">
+                        <p:confirm header="Confirmar guardado" message="¿Deseas guardar los cambios?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
                     <p:commandButton value="#{bundle.Cancel}" onclick="XeusuUsuarEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

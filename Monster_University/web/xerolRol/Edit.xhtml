@@ -19,7 +19,9 @@
                         <p:outputLabel value="#{bundle.EditXerolRolLabel_xerolDescri}" for="xerolDescri" />
                         <p:inputText id="xerolDescri" value="#{xerolRolController.selected.xerolDescri}" title="#{bundle.EditXerolRolTitle_xerolDescri}" />
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{xerolRolController.update}" value="#{bundle.Save}" update="display,:XerolRolListForm:datalist,:growl" oncomplete="handleSubmit(args, 'XerolRolEditDialog');"/>
+                    <p:commandButton actionListener="#{xerolRolController.update}" value="#{bundle.Save}" update="display,:XerolRolListForm:datalist,:growl" oncomplete="handleSubmit(args, 'XerolRolEditDialog');">
+                        <p:confirm header="Confirmar guardado" message="¿Deseas guardar los cambios?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
                     <p:commandButton value="#{bundle.Cancel}" onclick="XerolRolEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

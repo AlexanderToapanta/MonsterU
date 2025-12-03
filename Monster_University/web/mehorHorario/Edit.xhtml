@@ -28,7 +28,9 @@
                                            itemValue="#{megrpGrupoItem}"/>
                         </p:selectOneMenu>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{mehorHorarioController.update}" value="#{bundle.Save}" update="display,:MehorHorarioListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MehorHorarioEditDialog');"/>
+                    <p:commandButton actionListener="#{mehorHorarioController.update}" value="#{bundle.Save}" update="display,:MehorHorarioListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MehorHorarioEditDialog');">
+                        <p:confirm header="Confirmar guardado" message="¿Deseas guardar los cambios?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
                     <p:commandButton value="#{bundle.Cancel}" onclick="MehorHorarioEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

@@ -23,7 +23,9 @@
                         <p:outputLabel value="#{bundle.EditMeasigAsignaLabel_measigDescripcion}" for="measigDescripcion" />
                         <p:inputText id="measigDescripcion" value="#{measigAsignaController.selected.measigDescripcion}" title="#{bundle.EditMeasigAsignaTitle_measigDescripcion}" />
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{measigAsignaController.update}" value="#{bundle.Save}" update="display,:MeasigAsignaListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MeasigAsignaEditDialog');"/>
+                    <p:commandButton actionListener="#{measigAsignaController.update}" value="#{bundle.Save}" update="display,:MeasigAsignaListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MeasigAsignaEditDialog');">
+                        <p:confirm header="Confirmar guardado" message="¿Deseas guardar los cambios?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
                     <p:commandButton value="#{bundle.Cancel}" onclick="MeasigAsignaEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

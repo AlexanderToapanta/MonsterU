@@ -17,7 +17,9 @@
                         <p:outputLabel value="#{bundle.EditPeescEstcivLabel_peescDescri}" for="peescDescri" />
                         <p:inputText id="peescDescri" value="#{peescEstcivController.selected.peescDescri}" title="#{bundle.EditPeescEstcivTitle_peescDescri}" required="true" requiredMessage="#{bundle.EditPeescEstcivRequiredMessage_peescDescri}"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{peescEstcivController.update}" value="#{bundle.Save}" update="display,:PeescEstcivListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PeescEstcivEditDialog');"/>
+                    <p:commandButton actionListener="#{peescEstcivController.update}" value="#{bundle.Save}" update="display,:PeescEstcivListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PeescEstcivEditDialog');">
+                        <p:confirm header="Confirmar guardado" message="¿Deseas guardar los cambios?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
                     <p:commandButton value="#{bundle.Cancel}" onclick="PeescEstcivEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

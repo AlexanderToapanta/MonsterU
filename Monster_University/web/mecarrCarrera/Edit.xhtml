@@ -21,7 +21,9 @@
                         <p:outputLabel value="#{bundle.EditMecarrCarreraLabel_mecarrMinCred}" for="mecarrMinCred" />
                         <p:inputText id="mecarrMinCred" value="#{mecarrCarreraController.selected.mecarrMinCred}" title="#{bundle.EditMecarrCarreraTitle_mecarrMinCred}" required="true" requiredMessage="#{bundle.EditMecarrCarreraRequiredMessage_mecarrMinCred}"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{mecarrCarreraController.update}" value="#{bundle.Save}" update="display,:MecarrCarreraListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MecarrCarreraEditDialog');"/>
+                    <p:commandButton actionListener="#{mecarrCarreraController.update}" value="#{bundle.Save}" update="display,:MecarrCarreraListForm:datalist,:growl" oncomplete="handleSubmit(args, 'MecarrCarreraEditDialog');">
+                        <p:confirm header="Confirmar guardado" message="¿Deseas guardar los cambios?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
                     <p:commandButton value="#{bundle.Cancel}" onclick="MecarrCarreraEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

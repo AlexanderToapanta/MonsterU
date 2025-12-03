@@ -17,7 +17,9 @@
                         <p:outputLabel value="#{bundle.EditPesexSexoLabel_pesexDescri}" for="pesexDescri" />
                         <p:inputText id="pesexDescri" value="#{pesexSexoController.selected.pesexDescri}" title="#{bundle.EditPesexSexoTitle_pesexDescri}" required="true" requiredMessage="#{bundle.EditPesexSexoRequiredMessage_pesexDescri}"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{pesexSexoController.update}" value="#{bundle.Save}" update="display,:PesexSexoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PesexSexoEditDialog');"/>
+                    <p:commandButton actionListener="#{pesexSexoController.update}" value="#{bundle.Save}" update="display,:PesexSexoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PesexSexoEditDialog');">
+                        <p:confirm header="Confirmar guardado" message="¿Deseas guardar los cambios?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
                     <p:commandButton value="#{bundle.Cancel}" onclick="PesexSexoEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

@@ -61,7 +61,9 @@
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{measigAsignaController.prepareCreate}" update=":MeasigAsignaCreateForm" oncomplete="PF('MeasigAsignaCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":MeasigAsignaViewForm" oncomplete="PF('MeasigAsignaViewDialog').show()" disabled="#{empty measigAsignaController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":MeasigAsignaEditForm" oncomplete="PF('MeasigAsignaEditDialog').show()" disabled="#{empty measigAsignaController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{measigAsignaController.destroy}" update=":growl,datalist" disabled="#{empty measigAsignaController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{measigAsignaController.destroy}" update=":growl,datalist" disabled="#{empty measigAsignaController.selected}">
+                                <p:confirm header="Confirmar eliminación" message="¿Seguro que deseas eliminar este registro?" icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
                         </f:facet>
                     </p:dataTable>
                 </p:panel>

@@ -49,7 +49,9 @@
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{xerolRolController.prepareCreate}" update=":XerolRolCreateForm" oncomplete="PF('XerolRolCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":XerolRolViewForm" oncomplete="PF('XerolRolViewDialog').show()" disabled="#{empty xerolRolController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":XerolRolEditForm" oncomplete="PF('XerolRolEditDialog').show()" disabled="#{empty xerolRolController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{xerolRolController.destroy}" update=":growl,datalist" disabled="#{empty xerolRolController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{xerolRolController.destroy}" update=":growl,datalist" disabled="#{empty xerolRolController.selected}">
+                                <p:confirm header="Confirmar eliminación" message="¿Seguro que deseas eliminar este registro?" icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
                         </f:facet>
                     </p:dataTable>
                 </p:panel>

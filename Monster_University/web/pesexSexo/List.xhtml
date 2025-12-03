@@ -43,7 +43,9 @@
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{pesexSexoController.prepareCreate}" update=":PesexSexoCreateForm" oncomplete="PF('PesexSexoCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":PesexSexoViewForm" oncomplete="PF('PesexSexoViewDialog').show()" disabled="#{empty pesexSexoController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":PesexSexoEditForm" oncomplete="PF('PesexSexoEditDialog').show()" disabled="#{empty pesexSexoController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{pesexSexoController.destroy}" update=":growl,datalist" disabled="#{empty pesexSexoController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{pesexSexoController.destroy}" update=":growl,datalist" disabled="#{empty pesexSexoController.selected}">
+                                <p:confirm header="Confirmar eliminación" message="¿Seguro que deseas eliminar este registro?" icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
                         </f:facet>
                     </p:dataTable>
                 </p:panel>

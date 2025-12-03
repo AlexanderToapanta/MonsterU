@@ -79,7 +79,9 @@
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{megrpGrupoController.prepareCreate}" update=":MegrpGrupoCreateForm" oncomplete="PF('MegrpGrupoCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":MegrpGrupoViewForm" oncomplete="PF('MegrpGrupoViewDialog').show()" disabled="#{empty megrpGrupoController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":MegrpGrupoEditForm" oncomplete="PF('MegrpGrupoEditDialog').show()" disabled="#{empty megrpGrupoController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{megrpGrupoController.destroy}" update=":growl,datalist" disabled="#{empty megrpGrupoController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{megrpGrupoController.destroy}" update=":growl,datalist" disabled="#{empty megrpGrupoController.selected}">
+                                <p:confirm header="Confirmar eliminación" message="¿Seguro que deseas eliminar este registro?" icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
                         </f:facet>
                     </p:dataTable>
                 </p:panel>

@@ -43,7 +43,9 @@
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{mrMeasigMeasigController.prepareCreate}" update=":MrMeasigMeasigCreateForm" oncomplete="PF('MrMeasigMeasigCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":MrMeasigMeasigViewForm" oncomplete="PF('MrMeasigMeasigViewDialog').show()" disabled="#{empty mrMeasigMeasigController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":MrMeasigMeasigEditForm" oncomplete="PF('MrMeasigMeasigEditDialog').show()" disabled="#{empty mrMeasigMeasigController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{mrMeasigMeasigController.destroy}" update=":growl,datalist" disabled="#{empty mrMeasigMeasigController.selected}"/>
+                                <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{mrMeasigMeasigController.destroy}" update=":growl,datalist" disabled="#{empty mrMeasigMeasigController.selected}">
+                                    <p:confirm header="Confirmar eliminación" message="¿Seguro que deseas eliminar este registro?" icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
                         </f:facet>
                     </p:dataTable>
                 </p:panel>

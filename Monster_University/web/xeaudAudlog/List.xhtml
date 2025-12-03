@@ -75,7 +75,9 @@
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{xeaudAudlogController.prepareCreate}" update=":XeaudAudlogCreateForm" oncomplete="PF('XeaudAudlogCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":XeaudAudlogViewForm" oncomplete="PF('XeaudAudlogViewDialog').show()" disabled="#{empty xeaudAudlogController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":XeaudAudlogEditForm" oncomplete="PF('XeaudAudlogEditDialog').show()" disabled="#{empty xeaudAudlogController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{xeaudAudlogController.destroy}" update=":growl,datalist" disabled="#{empty xeaudAudlogController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{xeaudAudlogController.destroy}" update=":growl,datalist" disabled="#{empty xeaudAudlogController.selected}">
+                                <p:confirm header="Confirmar eliminación" message="¿Seguro que deseas eliminar este registro?" icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
                         </f:facet>
                     </p:dataTable>
                 </p:panel>

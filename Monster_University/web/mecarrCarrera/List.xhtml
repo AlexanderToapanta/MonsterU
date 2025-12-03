@@ -55,7 +55,9 @@
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{mecarrCarreraController.prepareCreate}" update=":MecarrCarreraCreateForm" oncomplete="PF('MecarrCarreraCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":MecarrCarreraViewForm" oncomplete="PF('MecarrCarreraViewDialog').show()" disabled="#{empty mecarrCarreraController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":MecarrCarreraEditForm" oncomplete="PF('MecarrCarreraEditDialog').show()" disabled="#{empty mecarrCarreraController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{mecarrCarreraController.destroy}" update=":growl,datalist" disabled="#{empty mecarrCarreraController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{mecarrCarreraController.destroy}" update=":growl,datalist" disabled="#{empty mecarrCarreraController.selected}">
+                                <p:confirm header="Confirmar eliminación" message="¿Seguro que deseas eliminar este registro?" icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
                         </f:facet>
                     </p:dataTable>
                 </p:panel>

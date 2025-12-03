@@ -82,6 +82,14 @@
 
     <p:growl id="growl" life="3000"/>
 
+    <!-- Global delete confirmation dialog available to all pages (must be inside a form) -->
+    <h:form id="globalConfirmForm">
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" severity="warn">
+            <p:commandButton value="Sí, eliminar" type="button" styleClass="ui-confirmdialog-yes p-button-danger" icon="pi pi-trash"/>
+            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no p-button-secondary" icon="pi pi-times"/>
+        </p:confirmDialog>
+    </h:form>
+
     <div class="layout-container">
 
         <!-- ==================================== HEADER ====================================== -->

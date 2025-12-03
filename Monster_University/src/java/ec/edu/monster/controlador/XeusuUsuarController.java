@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import java.security.NoSuchAlgorithmException;
 import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -56,6 +57,7 @@ public class XeusuUsuarController implements Serializable {
     }
 
     public void create() {
+        hashPasswordIfNeeded();
         persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("XeusuUsuarCreated"));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
@@ -63,6 +65,7 @@ public class XeusuUsuarController implements Serializable {
     }
 
     public void update() {
+        hashPasswordIfNeeded();
         persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("XeusuUsuarUpdated"));
     }
 
@@ -106,6 +109,30 @@ public class XeusuUsuarController implements Serializable {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
                 JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             }
+        }
+    }
+
+    private void hashPasswordIfNeeded() {
+        if (selected == null) {
+            return;
+        }
+        String plain = selected.getXeusuContra();
+        if (plain == null || plain.trim().isEmpty()) {
+            return;
+        }
+        // Avoid double-hashing: if it looks like a SHA-256 hex (64 hex chars), skip
+        if (plain.matches("^[a-fA-F0-9]{64}$")) {
+            return;
+        }
+        try {
+            PasswordController pc = new PasswordController();
+            String hashed = pc.encriptarClave(plain);
+            selected.setXeusuContra(hashed);
+        } catch (NoSuchAlgorithmException e) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Password hashing failed", e);
+            JsfUtil.addErrorMessage("Error al encriptar la contraseña");
+        } catch (IllegalArgumentException e) {
+            JsfUtil.addErrorMessage(e.getMessage());
         }
     }
 

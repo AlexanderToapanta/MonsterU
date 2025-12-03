@@ -17,7 +17,9 @@
                         <p:outputLabel value="#{bundle.EditXeusuUsuarLabel_xeusuNombre}" for="xeusuNombre" />
                         <p:inputText id="xeusuNombre" value="#{xeusuUsuarController.selected.xeusuNombre}" title="#{bundle.EditXeusuUsuarTitle_xeusuNombre}" required="true" requiredMessage="#{bundle.EditXeusuUsuarRequiredMessage_xeusuNombre}"/>
                         <p:outputLabel value="#{bundle.EditXeusuUsuarLabel_xeusuContra}" for="xeusuContra" />
-                        <p:inputText id="xeusuContra" value="#{xeusuUsuarController.selected.xeusuContra}" title="#{bundle.EditXeusuUsuarTitle_xeusuContra}" required="true" requiredMessage="#{bundle.EditXeusuUsuarRequiredMessage_xeusuContra}"/>
+                        <p:password id="xeusuContra" value="#{xeusuUsuarController.selected.xeusuContra}" title="#{bundle.EditXeusuUsuarTitle_xeusuContra}" required="true" requiredMessage="#{bundle.EditXeusuUsuarRequiredMessage_xeusuContra}" feedback="true" promptLabel="Ingresa contraseña" weakLabel="Débil" goodLabel="Buena" strongLabel="Fuerte">
+                            <f:validateLength minimum="8" />
+                        </p:password>
                         <p:outputLabel value="#{bundle.EditXeusuUsuarLabel_xeusuEstado}" for="xeusuEstado" />
                         <p:inputText id="xeusuEstado" value="#{xeusuUsuarController.selected.xeusuEstado}" title="#{bundle.EditXeusuUsuarTitle_xeusuEstado}" required="true" requiredMessage="#{bundle.EditXeusuUsuarRequiredMessage_xeusuEstado}"/>
                         <p:outputLabel value="#{bundle.EditXeusuUsuarLabel_meestEstud}" for="meestEstud" />

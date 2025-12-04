@@ -163,10 +163,10 @@
                                                required="true"
                                                requiredMessage="Debe seleccionar un tipo">
                                     <f:selectItem itemLabel="Seleccione tipo" itemValue=""/>
-                                    <f:selectItem itemLabel="Administrativo" itemValue="Administrativo"/>
+                                    <f:selectItem itemLabel="Administrador del Sistema" itemValue="Administrador del Sistema"/>
                                     <f:selectItem itemLabel="Docente" itemValue="Docente"/>
-                                    <f:selectItem itemLabel="Personal de apoyo" itemValue="Personal de apoyo"/>
-                                    <f:selectItem itemLabel="Estudiante" itemValue="Estudiante"/>
+                                    <f:selectItem itemLabel="Administrador de matrículas" itemValue="Administrador de matriculas"/>
+                                    <f:selectItem itemLabel="Secretaría Académica" itemValue="Secretaria Academica"/>
                                 </p:selectOneMenu>
                                 <p:message for="peperTipo" display="icon"/>
                             </div>
@@ -306,10 +306,7 @@
                     <p:radioButton id="sexoF" for="codigoSexoSeleccionado" itemIndex="1"/>
                     <h:outputLabel for="sexoF" value="Femenino" styleClass="radio-label"/>
                 </div>
-                <div class="radio-option">
-                    <p:radioButton id="sexoO" for="codigoSexoSeleccionado" itemIndex="2"/>
-                    <h:outputLabel for="sexoO" value="Otro" styleClass="radio-label"/>
-                </div>
+                
             </div>
             <p:message for="codigoSexoSeleccionado" display="icon"/>
         </div>

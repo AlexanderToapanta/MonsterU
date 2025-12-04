@@ -14,41 +14,65 @@
                     <p:panelGrid columns="2" rendered="#{peperPersonController.selected != null}">
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperId}" for="peperId" />
                         <p:inputText id="peperId" value="#{peperPersonController.selected.peperId}" title="#{bundle.CreatePeperPersonTitle_peperId}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperId}"/>
+                        
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperNombre}" for="peperNombre" />
                         <p:inputText id="peperNombre" value="#{peperPersonController.selected.peperNombre}" title="#{bundle.CreatePeperPersonTitle_peperNombre}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperNombre}"/>
+                        
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperApellido}" for="peperApellido" />
                         <p:inputText id="peperApellido" value="#{peperPersonController.selected.peperApellido}" title="#{bundle.CreatePeperPersonTitle_peperApellido}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperApellido}"/>
+                        
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperEmail}" for="peperEmail" />
                         <p:inputText id="peperEmail" value="#{peperPersonController.selected.peperEmail}" title="#{bundle.CreatePeperPersonTitle_peperEmail}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperEmail}"/>
+                        
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperCedula}" for="peperCedula" />
                         <p:inputText id="peperCedula" value="#{peperPersonController.selected.peperCedula}" title="#{bundle.CreatePeperPersonTitle_peperCedula}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperCedula}"/>
+                        
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperCelular}" for="peperCelular" />
                         <p:inputText id="peperCelular" value="#{peperPersonController.selected.peperCelular}" title="#{bundle.CreatePeperPersonTitle_peperCelular}" />
+                        
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peperTipo}" for="peperTipo" />
                         <p:inputText id="peperTipo" value="#{peperPersonController.selected.peperTipo}" title="#{bundle.CreatePeperPersonTitle_peperTipo}" required="true" requiredMessage="#{bundle.CreatePeperPersonRequiredMessage_peperTipo}"/>
+                        
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_pepeperFechIngr}" for="pepeperFechIngr" />
                         <p:calendar id="pepeperFechIngr" pattern="MM/dd/yyyy" value="#{peperPersonController.selected.pepeperFechIngr}" title="#{bundle.EditPeperPersonTitle_pepeperFechIngr}" required="true" requiredMessage="#{bundle.EditPeperPersonRequiredMessage_pepeperFechIngr}" showOn="button"/>
+                        
+                        <!-- CAMPO OPCIONAL: Estado Civil -->
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_peescId}" for="peescId" />
-                        <p:selectOneMenu id="peescId" value="#{peperPersonController.selected.peescId}" >
+                        <p:selectOneMenu id="peescId" value="#{peperPersonController.selected.peescId}">
+                            <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" />
                             <f:selectItems value="#{peescEstcivController.itemsAvailableSelectOne}"
                                            var="peescIdItem"
-                                           itemValue="#{peescIdItem}"/>
+                                           itemValue="#{peescIdItem}"
+                                           itemLabel="#{peescIdItem.peescDescri}" />
                         </p:selectOneMenu>
+                        
+                        <!-- CAMPO OPCIONAL: Sexo (removido required) -->
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_pesexId}" for="pesexId" />
-                        <p:selectOneMenu id="pesexId" value="#{peperPersonController.selected.pesexId}" required="true" requiredMessage="#{bundle.EditPeperPersonRequiredMessage_pesexId}">
+                        <p:selectOneMenu id="pesexId" value="#{peperPersonController.selected.pesexId}">
+                            <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" />
                             <f:selectItems value="#{pesexSexoController.itemsAvailableSelectOne}"
                                            var="pesexIdItem"
-                                           itemValue="#{pesexIdItem}"/>
+                                           itemValue="#{pesexIdItem}"
+                                           itemLabel="#{pesexIdItem.pesexDescri}" />
                         </p:selectOneMenu>
+                        
+                        <!-- CAMPO OPCIONAL: Usuario -->
                         <p:outputLabel value="#{bundle.CreatePeperPersonLabel_xeusuId}" for="xeusuId" />
-                        <p:selectOneMenu id="xeusuId" value="#{peperPersonController.selected.xeusuId}" >
+                        <p:selectOneMenu id="xeusuId" value="#{peperPersonController.selected.xeusuId}">
+                            <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" />
                             <f:selectItems value="#{xeusuUsuarController.itemsAvailableSelectOne}"
                                            var="xeusuIdItem"
-                                           itemValue="#{xeusuIdItem}"/>
+                                           itemValue="#{xeusuIdItem}"
+                                           itemLabel="#{xeusuIdItem.xeusuNombre}" />
                         </p:selectOneMenu>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{peperPersonController.create}" value="#{bundle.Save}" update="display,:PeperPersonListForm:datalist,:growl" oncomplete="handleSubmit(args,'PeperPersonCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="PeperPersonCreateDialog.hide()"/>
+                    
+                    <div style="margin-top: 10px;">
+                        <p:commandButton actionListener="#{peperPersonController.create}" value="#{bundle.Save}" 
+                            update="display,:PeperPersonListForm:datalist,:growl" 
+                            oncomplete="handleSubmit(args,'PeperPersonCreateDialog');"/>
+                        <p:commandButton value="#{bundle.Cancel}" onclick="PeperPersonCreateDialog.hide()" immediate="true"/>
+                    </div>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

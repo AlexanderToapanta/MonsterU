@@ -6,10 +6,14 @@ import ec.edu.monster.facades.PeperPersonFacade;
 import ec.edu.monster.facades.PesexSexoFacade;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.convert.FacesConverter;
 import javax.inject.Named;
 
 @Named(value = "crearPersonaController")
@@ -20,27 +24,154 @@ public class CrearPersonaController implements Serializable {
     private PeperPersonFacade personaFacade;
     
     @EJB
-    private PesexSexoFacade sexoFacade;  // Necesitas el facade para buscar sexo
-    
+    private PesexSexoFacade sexoFacade;
+
     private PeperPerson nuevaPersona;
+    private String idGenerado;
+    private String codigoSexoSeleccionado; // Cambiar de String a String simple
 
     public CrearPersonaController() {
-        initNuevaPersona();
+        nuevaPersona = new PeperPerson();
+    }
+
+    // Este getter es lo que usa el formulario
+    public String getCodigoSexoSeleccionado() {
+        return codigoSexoSeleccionado;
+    }
+
+    public void setCodigoSexoSeleccionado(String codigoSexoSeleccionado) {
+        this.codigoSexoSeleccionado = codigoSexoSeleccionado;
+    }
+
+    public String getIdGenerado() {
+        if (idGenerado == null) {
+            generarNuevoId();
+        }
+        return idGenerado;
     }
 
     public void initNuevaPersona() {
         nuevaPersona = new PeperPerson();
-        // Establecer fecha actual por defecto
+        codigoSexoSeleccionado = null; // Limpiar selección
+        generarNuevoId();
         nuevaPersona.setPepeperFechIngr(new Date());
+        
+        // Opcional: establecer sexo por defecto
+        // codigoSexoSeleccionado = "M";
+    }
+    
+    private void generarNuevoId() {
+        try {
+            System.out.println("=== GENERANDO NUEVO ID ===");
+            
+            List<PeperPerson> todasPersonas = personaFacade.findAll();
+            System.out.println("Total personas en BD: " + todasPersonas.size());
+            
+            if (todasPersonas.isEmpty()) {
+                idGenerado = "PE001";
+                nuevaPersona.setPeperId(idGenerado);
+                System.out.println("✅ No hay personas, ID inicial: " + idGenerado);
+                return;
+            }
+            
+            int maxNumero = 0;
+            for (PeperPerson persona : todasPersonas) {
+                String id = persona.getPeperId();
+                System.out.println("ID encontrado: " + id);
+                
+                if (id != null && id.startsWith("PE") && id.length() == 5) {
+                    try {
+                        String numeroStr = id.substring(2);
+                        int numero = Integer.parseInt(numeroStr);
+                        if (numero > maxNumero) {
+                            maxNumero = numero;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("⚠️ ID con formato incorrecto: " + id);
+                    }
+                }
+            }
+            
+            System.out.println("Máximo número encontrado: " + maxNumero);
+            
+            // Buscar siguiente disponible
+            for (int i = 1; i <= 999; i++) {
+                String idCandidato = String.format("PE%03d", i);
+                
+                boolean existe = false;
+                for (PeperPerson persona : todasPersonas) {
+                    if (idCandidato.equals(persona.getPeperId())) {
+                        existe = true;
+                        break;
+                    }
+                }
+                
+                if (!existe) {
+                    idGenerado = idCandidato;
+                    nuevaPersona.setPeperId(idGenerado);
+                    System.out.println("✅ ID asignado: " + idGenerado);
+                    return;
+                }
+            }
+            
+            idGenerado = String.format("PE%03d", maxNumero + 1);
+            nuevaPersona.setPeperId(idGenerado);
+            System.out.println("✅ ID asignado (del máximo): " + idGenerado);
+            
+        } catch (Exception e) {
+            System.out.println("💥 ERROR: " + e.getMessage());
+            e.printStackTrace();
+            idGenerado = "PE001";
+            nuevaPersona.setPeperId(idGenerado);
+        }
     }
 
     public void crearPersona() {
         try {
-            // Debug en consola del servidor
             System.out.println("=== INICIANDO CREACIÓN DE PERSONA ===");
-            System.out.println("Datos recibidos:");
-            System.out.println("ID: " + nuevaPersona.getPeperId());
-            System.out.println("Nombre: " + nuevaPersona.getPeperNombre());
+            System.out.println("ID actual: " + idGenerado);
+            System.out.println("Código sexo seleccionado: " + codigoSexoSeleccionado);
+            
+            // Validar que se seleccionó un sexo
+            if (codigoSexoSeleccionado == null || codigoSexoSeleccionado.trim().isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                    "Debe seleccionar un sexo"));
+                return;
+            }
+            
+            // Buscar el objeto PesexSexo correspondiente
+            System.out.println("🔍 Buscando sexo con código: " + codigoSexoSeleccionado);
+            PesexSexo sexo = buscarSexoPorCodigo(codigoSexoSeleccionado);
+            
+            if (sexo == null) {
+                System.out.println("❌ No se encontró el sexo con código: " + codigoSexoSeleccionado);
+                
+                // Mostrar sexos disponibles para debug
+                List<PesexSexo> todosSexos = sexoFacade.findAll();
+                System.out.println("Sexos disponibles en BD:");
+                for (PesexSexo s : todosSexos) {
+                    System.out.println("  - Código: '" + s.getPesexId() + 
+                                     "', Descripción: '" + s.getPesexDescri() + "'");
+                }
+                
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                    "El sexo seleccionado no existe en la base de datos. Contacte al administrador."));
+                return;
+            }
+            
+            // Asignar el sexo a la persona
+            nuevaPersona.setPesexId(sexo);
+            System.out.println("✅ Sexo asignado: " + sexo.getPesexDescri() + 
+                             " (Código: " + sexo.getPesexId() + ")");
+
+            // Verificar ID
+            if (personaFacade.existeId(idGenerado)) {
+                System.out.println("⚠️ El ID ya existe, generando uno nuevo...");
+                generarNuevoId();
+                System.out.println("Nuevo ID generado: " + idGenerado);
+            }
 
             // Validaciones
             if (!validarDatos()) {
@@ -49,42 +180,14 @@ public class CrearPersonaController implements Serializable {
             }
             System.out.println("✅ Validaciones pasadas");
 
-            // Verificar si el ID ya existe
-            if (personaFacade.find(nuevaPersona.getPeperId()) != null) {
-                System.out.println("❌ ID de persona ya existe: " + nuevaPersona.getPeperId());
-                FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El ID de persona ya existe"));
-                return;
-            }
-            System.out.println("✅ ID de persona disponible");
-
-            // **ASIGNAR SEXO POR DEFECTO (OBLIGATORIO)**
-            // Buscar un sexo por defecto en la BD, por ejemplo ID "M" para Masculino
-            System.out.println("🔍 Buscando sexo por defecto...");
-            PesexSexo sexoPorDefecto = sexoFacade.find("M"); // Cambia "M" por el ID que uses
-            if (sexoPorDefecto == null) {
-                // Si no existe, buscar el primer sexo disponible
-                System.out.println("⚠️ Sexo 'M' no encontrado, buscando primer sexo disponible...");
-                if (!sexoFacade.findAll().isEmpty()) {
-                    sexoPorDefecto = sexoFacade.findAll().get(0);
-                }
-            }
-            
-            if (sexoPorDefecto != null) {
-                nuevaPersona.setPesexId(sexoPorDefecto);
-                System.out.println("✅ Sexo asignado: " + sexoPorDefecto.getPesexDescri());
-            } else {
-                System.out.println("❌ No se encontró ningún sexo en la BD");
-                FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
-                    "No se encontró sexo en la base de datos. Debe crear al menos un sexo primero."));
-                return;
-            }
-
             // Establecer campos FK opcionales como NULL
-            nuevaPersona.setPeescId(null);      // Estado Civil - NULL (opcional)
-            nuevaPersona.setXeusuId(null);      // Usuario - NULL (opcional)
+            nuevaPersona.setPeescId(null);
+            nuevaPersona.setXeusuId(null);
             System.out.println("✅ Campos FK opcionales establecidos como NULL");
+
+            // Asegurar que el ID esté asignado
+            nuevaPersona.setPeperId(idGenerado);
+            System.out.println("✅ ID asignado a la entidad: " + nuevaPersona.getPeperId());
 
             // Guardar persona
             System.out.println("💾 Guardando en base de datos...");
@@ -92,110 +195,107 @@ public class CrearPersonaController implements Serializable {
             System.out.println("✅ personaFacade.create() ejecutado");
 
             // Verificar inserción
-            PeperPerson personaVerificada = personaFacade.find(nuevaPersona.getPeperId());
+            PeperPerson personaVerificada = personaFacade.find(idGenerado);
             if (personaVerificada != null) {
                 System.out.println("🎉 PERSONA CREADA EXITOSAMENTE");
                 System.out.println("ID: " + personaVerificada.getPeperId());
                 System.out.println("Nombre: " + personaVerificada.getPeperNombre());
-                System.out.println("Sexo: " + personaVerificada.getPesexId().getPesexDescri());
+                System.out.println("Sexo: " + (personaVerificada.getPesexId() != null ? 
+                    personaVerificada.getPesexId().getPesexDescri() : "null"));
                 
                 FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", 
-                    "Persona creada correctamente con sexo: " + personaVerificada.getPesexId().getPesexDescri()));
+                    "Persona creada correctamente con ID: " + personaVerificada.getPeperId()));
             } else {
                 System.out.println("❌ PERSONA NO SE GUARDÓ EN BD");
                 FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al guardar persona"));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                    "Error al guardar persona"));
+                return;
             }
 
             // Limpiar formulario para nueva entrada
             initNuevaPersona();
+            System.out.println("🔄 Formulario reiniciado");
 
         } catch (Exception e) {
             System.out.println("💥 ERROR GENERAL: " + e.getMessage());
-            System.out.println("Tipo de error: " + e.getClass().getName());
             e.printStackTrace();
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al crear persona: " + e.getMessage()));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "Error al crear persona: " + e.getMessage()));
         }
+    }
+    
+    private PesexSexo buscarSexoPorCodigo(String codigo) {
+        try {
+            // Intentar buscar directamente
+            PesexSexo sexo = sexoFacade.find(codigo);
+            if (sexo != null) {
+                return sexo;
+            }
+            
+            // Si no se encuentra, buscar en todos los sexos
+            List<PesexSexo> todosSexos = sexoFacade.findAll();
+            for (PesexSexo s : todosSexos) {
+                // Intentar diferentes formas de comparar
+                if (codigo.equals(s.getPesexId())) {
+                    return s;
+                }
+                // También comparar con la primera letra de la descripción
+                if (s.getPesexDescri() != null && !s.getPesexDescri().isEmpty()) {
+                    String primeraLetra = s.getPesexDescri().substring(0, 1).toUpperCase();
+                    if (codigo.equals(primeraLetra)) {
+                        return s;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("⚠️ Error al buscar sexo: " + e.getMessage());
+        }
+        return null;
     }
 
     private boolean validarDatos() {
-        // (Mantén las mismas validaciones del código anterior)
-        // Validación de ID
-        if (nuevaPersona.getPeperId() == null || nuevaPersona.getPeperId().trim().isEmpty()) {
+        if (nuevaPersona.getPeperNombre() == null || 
+            nuevaPersona.getPeperNombre().trim().isEmpty()) {
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El ID de persona es requerido"));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "El nombre es requerido"));
             return false;
         }
-        if (nuevaPersona.getPeperId().length() > 5) {
+        
+        if (nuevaPersona.getPeperApellido() == null || 
+            nuevaPersona.getPeperApellido().trim().isEmpty()) {
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El ID de persona no puede tener más de 5 caracteres"));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "El apellido es requerido"));
             return false;
         }
-
-        // Validación de Nombre
-        if (nuevaPersona.getPeperNombre() == null || nuevaPersona.getPeperNombre().trim().isEmpty()) {
+        
+        if (nuevaPersona.getPeperCedula() == null || 
+            nuevaPersona.getPeperCedula().trim().isEmpty()) {
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El nombre es requerido"));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "La cédula es requerida"));
             return false;
         }
-        if (nuevaPersona.getPeperNombre().length() > 25) {
+        
+        if (nuevaPersona.getPeperEmail() == null || 
+            nuevaPersona.getPeperEmail().trim().isEmpty()) {
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El nombre no puede tener más de 25 caracteres"));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "El email es requerido"));
             return false;
         }
-
-        // Validación de Apellido
-        if (nuevaPersona.getPeperApellido() == null || nuevaPersona.getPeperApellido().trim().isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El apellido es requerido"));
-            return false;
-        }
-        if (nuevaPersona.getPeperApellido().length() > 25) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El apellido no puede tener más de 25 caracteres"));
-            return false;
-        }
-
-        // Validación de Email
-        if (nuevaPersona.getPeperEmail() == null || nuevaPersona.getPeperEmail().trim().isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El email es requerido"));
-            return false;
-        }
-        if (nuevaPersona.getPeperEmail().length() > 30) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El email no puede tener más de 30 caracteres"));
-            return false;
-        }
-
-        // Validación de Cédula
-        if (nuevaPersona.getPeperCedula() == null || nuevaPersona.getPeperCedula().trim().isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "La cédula es requerida"));
-            return false;
-        }
-        if (nuevaPersona.getPeperCedula().length() > 15) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "La cédula no puede tener más de 15 caracteres"));
-            return false;
-        }
-
-        // Validación de Tipo
-        if (nuevaPersona.getPeperTipo() == null || nuevaPersona.getPeperTipo().trim().isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "El tipo de persona es requerido"));
-            return false;
-        }
-
-        // Validación de Fecha
+        
         if (nuevaPersona.getPepeperFechIngr() == null) {
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "La fecha de ingreso es requerida"));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "La fecha de ingreso es requerida"));
             return false;
         }
-
+        
         return true;
     }
 
@@ -206,5 +306,35 @@ public class CrearPersonaController implements Serializable {
 
     public void setNuevaPersona(PeperPerson nuevaPersona) {
         this.nuevaPersona = nuevaPersona;
+    }
+    
+    public void setIdGenerado(String idGenerado) {
+        this.idGenerado = idGenerado;
+    }
+}
+
+// Opcional: Si necesitas un conversor para mostrar el sexo en otros lugares
+@FacesConverter(forClass = PesexSexo.class)
+class SexoConverter implements Converter {
+    
+    @Override
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        PesexSexoFacade facade = context.getApplication()
+            .evaluateExpressionGet(context, "#{sexoFacade}", PesexSexoFacade.class);
+        return facade.find(value);
+    }
+
+    @Override
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
+        if (value == null) {
+            return "";
+        }
+        if (value instanceof PesexSexo) {
+            return ((PesexSexo) value).getPesexId();
+        }
+        return "";
     }
 }

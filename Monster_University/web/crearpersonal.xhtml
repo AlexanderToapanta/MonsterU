@@ -107,6 +107,25 @@
                     margin-top: 5px;
                     font-style: italic;
                 }
+                
+                .radio-group {
+                    display: flex;
+                    gap: 20px;
+                    margin-top: 5px;
+                    flex-wrap: wrap;
+                }
+                
+                .radio-option {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
+                
+                .radio-label {
+                    font-weight: normal;
+                    color: #495057;
+                    font-size: 0.9rem;
+                }
             </style>
             
             <div class="form-header">
@@ -117,21 +136,19 @@
             <h:form id="formCrearPersona">
                 <p:panel header="Datos Personales" styleClass="form-panel" style="border: none; background: transparent;">
                     
-                    <!-- Fila 1: ID y Tipo -->
                     <div class="form-row">
-                        <!-- ID Persona -->
+                        <!-- ID Persona (Generado automáticamente) -->
                         <div class="form-column">
                             <div class="form-group">
                                 <h:outputLabel for="peperId" value="ID Persona" styleClass="form-label"/>
                                 <span class="form-required">*</span>
-                                <p:inputText id="peperId" value="#{crearPersonaController.nuevaPersona.peperId}" 
-                                           maxlength="5" style="width: 100%;"
-                                           placeholder="Ej: P001"
-                                           onchange="debug('ID Persona cambiado: ' + this.value)"
-                                           required="true"
-                                           requiredMessage="El ID de persona es requerido"/>
-                                <div class="field-hint">(Máximo 5 caracteres)</div>
-                                <p:message for="peperId" display="icon"/>
+                                <p:inputText id="peperId" value="#{crearPersonaController.idGenerado}" 
+                                           style="width: 100%; background-color: #e9ecef;"
+                                           readonly="true"
+                                           placeholder="Se genera automáticamente"/>
+                                <div class="field-hint">(Generado automáticamente)</div>
+                                <!-- Campo oculto para mantener el valor -->
+                                <h:inputHidden value="#{crearPersonaController.nuevaPersona.peperId}"/>
                             </div>
                         </div>
                         
@@ -231,32 +248,32 @@
                                 <h:outputLabel for="peperEmail" value="Email" styleClass="form-label"/>
                                 <span class="form-required">*</span>
                                 <p:inputText id="peperEmail" value="#{crearPersonaController.nuevaPersona.peperEmail}" 
-                                           maxlength="30" style="width: 100%;"
-                                           placeholder="ejemplo@correo.com"
-                                           onchange="debug('Email cambiado: ' + this.value)"
-                                           required="true"
-                                           requiredMessage="El email es requerido">
+                                             maxlength="30" style="width: 100%;"
+                                             placeholder="ejemplo@correo.com"
+                                             onchange="debug('Email cambiado: ' + this.value)"
+                                             required="true"
+                                             requiredMessage="El email es requerido">
                                     <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@(.+)$" />
                                 </p:inputText>
                                 <div class="field-hint">(Máximo 30 caracteres)</div>
                                 <p:message for="peperEmail" display="icon"/>
                             </div>
                         </div>
-                        
+
                         <!-- Fecha de Ingreso -->
                         <div class="form-column">
                             <div class="form-group">
                                 <h:outputLabel for="pepeperFechIngr" value="Fecha de Ingreso" styleClass="form-label"/>
                                 <span class="form-required">*</span>
                                 <p:calendar id="pepeperFechIngr" value="#{crearPersonaController.nuevaPersona.pepeperFechIngr}" 
-                                          style="width: 100%;"
-                                          pattern="dd/MM/yyyy" 
-                                          locale="es" 
-                                          showOn="button"
-                                          placeholder="Seleccione fecha"
-                                          onchange="debug('Fecha de ingreso cambiada: ' + this.value)"
-                                          required="true"
-                                          requiredMessage="La fecha de ingreso es requerida">
+                                            style="width: 100%;"
+                                            pattern="dd/MM/yyyy" 
+                                            locale="es" 
+                                            showOn="button"
+                                            placeholder="Seleccione fecha"
+                                            onchange="debug('Fecha de ingreso cambiada: ' + this.value)"
+                                            required="true"
+                                            requiredMessage="La fecha de ingreso es requerida">
                                     <f:convertDateTime pattern="dd/MM/yyyy" />
                                 </p:calendar>
                                 <p:message for="pepeperFechIngr" display="icon"/>
@@ -264,14 +281,52 @@
                         </div>
                     </div>
 
+                    <!-- Fila 5: Sexo y Estado Civil -->
+                    <div class="form-row">
+    <!-- Sexo (Obligatorio) - Usando radio buttons -->
+    <div class="form-column">
+        <div class="form-group">
+            <h:outputLabel for="codigoSexoSeleccionado" value="Sexo" styleClass="form-label"/>
+            <span class="form-required">*</span>
+            <p:selectOneRadio id="codigoSexoSeleccionado" 
+                            value="#{crearPersonaController.codigoSexoSeleccionado}"
+                            layout="custom"
+                            required="true"
+                            requiredMessage="Debe seleccionar el sexo">
+                <f:selectItem itemLabel="Masculino" itemValue="M"/>
+                <f:selectItem itemLabel="Femenino" itemValue="F"/>
+                <f:selectItem itemLabel="Otro" itemValue="O"/>
+            </p:selectOneRadio>
+            <div class="radio-group">
+                <div class="radio-option">
+                    <p:radioButton id="sexoM" for="codigoSexoSeleccionado" itemIndex="0"/>
+                    <h:outputLabel for="sexoM" value="Masculino" styleClass="radio-label"/>
+                </div>
+                <div class="radio-option">
+                    <p:radioButton id="sexoF" for="codigoSexoSeleccionado" itemIndex="1"/>
+                    <h:outputLabel for="sexoF" value="Femenino" styleClass="radio-label"/>
+                </div>
+                <div class="radio-option">
+                    <p:radioButton id="sexoO" for="codigoSexoSeleccionado" itemIndex="2"/>
+                    <h:outputLabel for="sexoO" value="Otro" styleClass="radio-label"/>
+                </div>
+            </div>
+            <p:message for="codigoSexoSeleccionado" display="icon"/>
+        </div>
+    </div>
+                        
+                        <!-- Estado Civil (Opcional) - Versión simplificada -->
+                       
+                    </div>
+
                     <!-- Ayuda -->
                     <div class="form-help">
                         <p><strong>📋 Información importante:</strong></p>
                         <p>• <span class="form-required">*</span> Campos obligatorios</p>
-                        <p>• El ID de persona debe ser único en el sistema</p>
-                        <p>• Las relaciones FK (Sexo, Estado Civil, Usuario) se establecerán como NULL</p>
+                        <p>• El ID de persona se genera automáticamente</p>
                         <p>• La fecha de ingreso es la fecha en que la persona ingresó a la institución</p>
-                        <p>• Puedes asignar Sexo y Estado Civil posteriormente en la edición</p>
+                        <p>• El sexo es obligatorio para completar el registro</p>
+                        <p>• El estado civil es opcional</p>
                     </div>
 
                     <!-- Botones de acción -->

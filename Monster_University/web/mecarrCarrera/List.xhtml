@@ -17,7 +17,7 @@
             <h:form id="MecarrCarreraListForm">
                 <p:panel header="#{bundle.ListMecarrCarreraTitle}">
                     <p:dataTable id="datalist" value="#{mecarrCarreraController.items}" var="item"
-                                 selectionMode="single" selection="#{mecarrCarreraController.selected}"
+                                 selection="#{mecarrCarreraController.selectedItems}"
                                  paginator="true"
                                  rowKey="#{item.mecarrId}"
                                  rows="10"
@@ -26,6 +26,11 @@
 
                         <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
                         <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+                        <p:ajax event="rowSelectCheckbox"   update="createButton viewButton editButton deleteButton"/>
+                        <p:ajax event="rowUnselectCheckbox" update="createButton viewButton editButton deleteButton"/>
+                        <p:ajax event="toggleSelect" update="createButton viewButton editButton deleteButton"/>
+
+                        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
 
                         <p:column>
                             <f:facet name="header">
@@ -53,9 +58,9 @@
                         </p:column>
                         <f:facet name="footer">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{mecarrCarreraController.prepareCreate}" update=":MecarrCarreraCreateForm" oncomplete="PF('MecarrCarreraCreateDialog').show()"/>
-                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":MecarrCarreraViewForm" oncomplete="PF('MecarrCarreraViewDialog').show()" disabled="#{empty mecarrCarreraController.selected}"/>
-                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":MecarrCarreraEditForm" oncomplete="PF('MecarrCarreraEditDialog').show()" disabled="#{empty mecarrCarreraController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{mecarrCarreraController.destroy}" update=":growl,datalist" disabled="#{empty mecarrCarreraController.selected}">
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" actionListener="#{mecarrCarreraController.prepareView}" update=":MecarrCarreraViewForm" oncomplete="PF('MecarrCarreraViewDialog').show()" disabled="#{mecarrCarreraController.selectedItems == null or mecarrCarreraController.selectedItems.size() != 1}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" actionListener="#{mecarrCarreraController.prepareEdit}" update=":MecarrCarreraEditForm" oncomplete="PF('MecarrCarreraEditDialog').show()" disabled="#{mecarrCarreraController.selectedItems == null or mecarrCarreraController.selectedItems.size() != 1}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{mecarrCarreraController.destroy}" update=":growl,datalist" disabled="#{mecarrCarreraController.selectedItems == null or mecarrCarreraController.selectedItems.size() == 0}">
                                 <p:confirm header="Confirmar eliminación" message="¿Seguro que deseas eliminar este registro?" icon="pi pi-exclamation-triangle"/>
                             </p:commandButton>
                         </f:facet>

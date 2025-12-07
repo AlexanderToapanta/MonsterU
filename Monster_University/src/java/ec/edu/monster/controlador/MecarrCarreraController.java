@@ -27,6 +27,7 @@ public class MecarrCarreraController implements Serializable {
     private ec.edu.monster.facades.MecarrCarreraFacade ejbFacade;
     private List<MecarrCarrera> items = null;
     private MecarrCarrera selected;
+    private List<MecarrCarrera> selectedItems;
 
     public MecarrCarreraController() {
     }
@@ -37,6 +38,14 @@ public class MecarrCarreraController implements Serializable {
 
     public void setSelected(MecarrCarrera selected) {
         this.selected = selected;
+    }
+
+    public List<MecarrCarrera> getSelectedItems() {
+        return selectedItems;
+    }
+
+    public void setSelectedItems(List<MecarrCarrera> selectedItems) {
+        this.selectedItems = selectedItems;
     }
 
     protected void setEmbeddableKeys() {
@@ -73,11 +82,29 @@ public class MecarrCarreraController implements Serializable {
         persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("MecarrCarreraUpdated"));
     }
 
+    public void prepareView() {
+        if (selectedItems != null && !selectedItems.isEmpty()) {
+            selected = selectedItems.get(0);
+        }
+    }
+
+    public void prepareEdit() {
+        if (selectedItems != null && !selectedItems.isEmpty()) {
+            selected = selectedItems.get(0);
+        }
+    }
+
     public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("MecarrCarreraDeleted"));
-        if (!JsfUtil.isValidationFailed()) {
-            selected = null; // Remove selection
-            items = null;    // Invalidate list of items to trigger re-query.
+        if (selectedItems != null && !selectedItems.isEmpty()) {
+            for (MecarrCarrera item : selectedItems) {
+                selected = item;
+                persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("MecarrCarreraDeleted"));
+            }
+            if (!JsfUtil.isValidationFailed()) {
+                selected = null;
+                selectedItems = null;
+                items = null;
+            }
         }
     }
 

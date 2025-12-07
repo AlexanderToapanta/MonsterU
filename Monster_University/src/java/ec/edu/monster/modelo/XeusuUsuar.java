@@ -6,6 +6,7 @@ package ec.edu.monster.modelo;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -77,6 +79,13 @@ public class XeusuUsuar implements Serializable {
     private Collection<MeestEstud> meestEstudCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "xeusuId")
     private Collection<XeaudAudlog> xeaudAudlogCollection;
+    @ManyToMany
+@JoinTable(
+    name = "XEROL_ROL_USU", 
+    joinColumns = @JoinColumn(name = "ID_USUARIO"),
+    inverseJoinColumns = @JoinColumn(name = "ID_ROL")
+)
+private List<XerolRol> roles;
 
     public XeusuUsuar() {
     }
@@ -140,6 +149,14 @@ public class XeusuUsuar implements Serializable {
 
     public void setPeperPersonCollection(Collection<PeperPerson> peperPersonCollection) {
         this.peperPersonCollection = peperPersonCollection;
+    }
+
+    public List<XerolRol> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<XerolRol> roles) {
+        this.roles = roles;
     }
 
     public MeestEstud getMeestEstud() {

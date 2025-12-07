@@ -1,19 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package ec.edu.monster.facades;
 
 import ec.edu.monster.modelo.XeusuUsuar;
 import javax.ejb.Stateless;
-import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.util.List;
 
 /**
- *
- * @author Usuario
+ * Facade para XeusuUsuar
  */
 @Stateless
 public class XeusuUsuarFacade extends AbstractFacade<XeusuUsuar> {
@@ -29,24 +24,31 @@ public class XeusuUsuarFacade extends AbstractFacade<XeusuUsuar> {
     public XeusuUsuarFacade() {
         super(XeusuUsuar.class);
     }
+
+    /**
+     * Login seguro: no lanza excepciones si no encuentra usuario.
+     * Nota: la encriptación/validación de password debe hacerse en el controller
+     * comparando hashes si aplica.
+     */
     public XeusuUsuar doLogin(String username, String password) {
-    try {
-        TypedQuery<XeusuUsuar> query = em.createQuery(
-            "SELECT u FROM XeusuUsuar u WHERE u.xeusuNombre = :username AND u.xeusuContra = :password", 
-            XeusuUsuar.class);
-        query.setParameter("username", username);
-        query.setParameter("password", password);
-        
-        XeusuUsuar usuario = query.getSingleResult();
-        
-       
-        FacesContext.getCurrentInstance().getExternalContext()
-            .getSessionMap().put("usuario", usuario);
-        
-        return usuario;
-    } catch (Exception e) {
-        return null;
+        try {
+            TypedQuery<XeusuUsuar> query = em.createQuery(
+                "SELECT u FROM XeusuUsuar u WHERE u.xeusuNombre = :user AND u.xeusuContra = :pass",
+                XeusuUsuar.class
+            );
+            query.setParameter("user", username);
+            query.setParameter("pass", password);
+
+            List<XeusuUsuar> result = query.getResultList();
+            return result.isEmpty() ? null : result.get(0);
+
+        } catch (Exception e) {
+            return null;
+        }
     }
-}
-    
+
+    /**
+     * Si necesitas métodos para consultas más complejas (usuarios por rol, no asignados, etc.)
+     * los podemos añadir aquí. En la implementación actual manejamos asignaciones desde el controller.
+     */
 }

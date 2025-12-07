@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package ec.edu.monster.facades;
 
 import ec.edu.monster.modelo.XerolRol;
@@ -10,8 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 /**
- *
- * @author Usuario
+ * Facade para XerolRol
  */
 @Stateless
 public class XerolRolFacade extends AbstractFacade<XerolRol> {
@@ -27,5 +22,6 @@ public class XerolRolFacade extends AbstractFacade<XerolRol> {
     public XerolRolFacade() {
         super(XerolRol.class);
     }
-    
+
+    // Puedes añadir consultas custom si las necesitas más adelante
 }

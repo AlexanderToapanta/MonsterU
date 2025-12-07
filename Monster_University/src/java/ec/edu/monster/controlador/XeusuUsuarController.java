@@ -1,11 +1,14 @@
 package ec.edu.monster.controlador;
 
 import ec.edu.monster.modelo.XeusuUsuar;
+import ec.edu.monster.modelo.XerolRol;
 import ec.edu.monster.controlador.util.JsfUtil;
 import ec.edu.monster.controlador.util.JsfUtil.PersistAction;
 import ec.edu.monster.facades.XeusuUsuarFacade;
+import ec.edu.monster.facades.XerolRolFacade;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -15,23 +18,71 @@ import java.security.NoSuchAlgorithmException;
 import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
+import org.primefaces.model.DualListModel;
 
 @Named("xeusuUsuarController")
 @SessionScoped
 public class XeusuUsuarController implements Serializable {
 
     @EJB
-    private ec.edu.monster.facades.XeusuUsuarFacade ejbFacade;
+    private XeusuUsuarFacade ejbFacade;
+
+
     private List<XeusuUsuar> items = null;
     private XeusuUsuar selected;
+    private DualListModel<XerolRol> dualRoles;
+
+    // -----------------------
+    // Campos para asignación
+    // -----------------------
+    private String usuarioSeleccionadoId; // id del usuario seleccionado en la UI
+    private List<XerolRol> rolesAsignados = new ArrayList<>();
+    private List<XerolRol> rolesNoAsignados = new ArrayList<>();
+
+    // selecciones en los listboxes
+    private List<XerolRol> rolesSeleccionadosIzq = new ArrayList<>(); // disponibles -> asignar
+    private List<XerolRol> rolesSeleccionadosDer = new ArrayList<>(); // asignados -> quitar
 
     public XeusuUsuarController() {
     }
+    
+    @Inject
+private XerolRolFacade rolFacade;   // Inyectar facade de roles
 
+private XerolRol rolSeleccionado;   // Rol elegido del combo
+
+public XerolRol getRolSeleccionado() {
+    return rolSeleccionado;
+}
+
+public void setRolSeleccionado(XerolRol rolSeleccionado) {
+    this.rolSeleccionado = rolSeleccionado;
+}
+
+public List<XerolRol> getListaRoles() {
+    return rolFacade.findAll(); // Cargar roles desde BD
+}
+public DualListModel<XerolRol> getDualRoles() {
+    if (dualRoles == null) {
+        dualRoles = new DualListModel<>(rolesNoAsignados, rolesAsignados);
+    }
+    return dualRoles;
+}
+
+public void setDualRoles(DualListModel<XerolRol> dualRoles) {
+    this.dualRoles = dualRoles;
+}
+
+
+    // -----------------------
+    // CRUD original
+    // -----------------------
     public XeusuUsuar getSelected() {
         return selected;
     }
@@ -135,6 +186,218 @@ public class XeusuUsuarController implements Serializable {
             JsfUtil.addErrorMessage(e.getMessage());
         }
     }
+
+    // -----------------------
+    // Métodos para asignación de roles (Option B)
+    // -----------------------
+
+    /**
+     * Cargar listas de roles para el usuario seleccionado:
+     * - rolesAsignados  = roles que ya tiene el usuario
+     * - rolesNoAsignados = todos los roles menos los asignados
+     */
+    public void asignarRol() {
+    try {
+        if (selected == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_WARN, "Seleccione un usuario", "")
+            );
+            return;
+        }
+
+        if (rolSeleccionado == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_WARN, "Seleccione un rol", "")
+            );
+            return;
+        }
+
+        if (!selected.getRoles().contains(rolSeleccionado)) {
+            selected.getRoles().add(rolSeleccionado);
+            getFacade().edit(selected);
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage("Rol asignado correctamente"));
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "El usuario ya tiene este rol", ""));
+        }
+
+    } catch (Exception e) {
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error al asignar rol", e.getMessage()));
+    }
+}
+
+    public void quitarRol(XerolRol rol) {
+    try {
+        selected.getRoles().remove(rol);
+        getFacade().edit(selected);
+
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage("Rol eliminado correctamente"));
+
+    } catch (Exception e) {
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error al quitar rol", e.getMessage()));
+    }
+}
+
+    public void cargarRolesUsuario() {
+    if (usuarioSeleccionadoId == null || usuarioSeleccionadoId.trim().isEmpty()) {
+        rolesAsignados = new ArrayList<>();
+        rolesNoAsignados = rolFacade.findAll();
+        rolesSeleccionadosIzq.clear();
+        rolesSeleccionadosDer.clear();
+        dualRoles = new DualListModel<>(rolesNoAsignados, rolesAsignados);
+        return;
+    }
+
+    XeusuUsuar user = ejbFacade.find(usuarioSeleccionadoId);
+    if (user == null) {
+        JsfUtil.addErrorMessage("Usuario no encontrado.");
+        rolesAsignados = new ArrayList<>();
+        rolesNoAsignados = rolFacade.findAll();
+        dualRoles = new DualListModel<>(rolesNoAsignados, rolesAsignados);
+        return;
+    }
+
+    // roles asignados (copiar para no modificar la colección original)
+    if (user.getXerolRolCollection() != null) {
+        rolesAsignados = new ArrayList<>(user.getXerolRolCollection());
+    } else {
+        rolesAsignados = new ArrayList<>();
+    }
+
+    // roles no asignados = todos - asignados
+    List<XerolRol> todos = rolFacade.findAll();
+    rolesNoAsignados = new ArrayList<>();
+    for (XerolRol r : todos) {
+        boolean esta = false;
+        for (XerolRol ra : rolesAsignados) {
+            if (ra.getXerolId().equals(r.getXerolId())) {
+                esta = true;
+                break;
+            }
+        }
+        if (!esta) {
+            rolesNoAsignados.add(r);
+        }
+    }
+
+    // actualizar DualListModel para PickList
+    dualRoles = new DualListModel<>(rolesNoAsignados, rolesAsignados);
+
+    // limpiar selecciones
+    rolesSeleccionadosIzq.clear();
+    rolesSeleccionadosDer.clear();
+}
+
+    public void moverDerecha() {
+        if (rolesSeleccionadosIzq == null || rolesSeleccionadosIzq.isEmpty()) {
+            JsfUtil.addErrorMessage("Seleccione al menos un rol para asignar.");
+            return;
+        }
+        rolesAsignados.addAll(rolesSeleccionadosIzq);
+        rolesNoAsignados.removeAll(rolesSeleccionadosIzq);
+        rolesSeleccionadosIzq.clear();
+    }
+
+    public void moverTodoDerecha() {
+        rolesAsignados.addAll(rolesNoAsignados);
+        rolesNoAsignados.clear();
+        rolesSeleccionadosIzq.clear();
+    }
+
+    public void moverIzquierda() {
+        if (rolesSeleccionadosDer == null || rolesSeleccionadosDer.isEmpty()) {
+            JsfUtil.addErrorMessage("Seleccione al menos un rol para quitar.");
+            return;
+        }
+        rolesNoAsignados.addAll(rolesSeleccionadosDer);
+        rolesAsignados.removeAll(rolesSeleccionadosDer);
+        rolesSeleccionadosDer.clear();
+    }
+
+    public void moverTodoIzquierda() {
+        rolesNoAsignados.addAll(rolesAsignados);
+        rolesAsignados.clear();
+        rolesSeleccionadosDer.clear();
+    }
+
+    /**
+     * Guardar cambios: persiste la colección de roles del usuario seleccionado.
+     * Actualiza la entidad usuario (merge/edit). Se mantiene la integridad ManyToMany.
+     */
+    public void guardarCambios() {
+    if (usuarioSeleccionadoId == null || usuarioSeleccionadoId.trim().isEmpty()) {
+        JsfUtil.addErrorMessage("Seleccione un usuario primero.");
+        return;
+    }
+
+    try {
+        XeusuUsuar user = ejbFacade.find(usuarioSeleccionadoId);
+        if (user == null) {
+            JsfUtil.addErrorMessage("Usuario no encontrado.");
+            return;
+        }
+
+        // Actualizar roles con los seleccionados en el PickList
+        rolesAsignados = dualRoles.getTarget();
+        user.setXerolRolCollection(new java.util.HashSet<>(rolesAsignados));
+
+        // persistir cambios
+        ejbFacade.edit(user);
+
+        JsfUtil.addSuccessMessage("Asignaciones actualizadas correctamente.");
+        // recargar listas
+        cargarRolesUsuario();
+
+    } catch (Exception e) {
+        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+        JsfUtil.addErrorMessage("Error al guardar las asignaciones: " + e.getMessage());
+    }
+}
+
+    // -----------------------
+    // Getters & Setters para asignación
+    // -----------------------
+
+    public String getUsuarioSeleccionadoId() {
+        return usuarioSeleccionadoId;
+    }
+
+    public void setUsuarioSeleccionadoId(String usuarioSeleccionadoId) {
+        this.usuarioSeleccionadoId = usuarioSeleccionadoId;
+    }
+
+    public List<XerolRol> getRolesAsignados() {
+        return rolesAsignados;
+    }
+
+    public List<XerolRol> getRolesNoAsignados() {
+        return rolesNoAsignados;
+    }
+
+    public List<XerolRol> getRolesSeleccionadosIzq() {
+        return rolesSeleccionadosIzq;
+    }
+
+    public void setRolesSeleccionadosIzq(List<XerolRol> rolesSeleccionadosIzq) {
+        this.rolesSeleccionadosIzq = rolesSeleccionadosIzq;
+    }
+
+    public List<XerolRol> getRolesSeleccionadosDer() {
+        return rolesSeleccionadosDer;
+    }
+
+    public void setRolesSeleccionadosDer(List<XerolRol> rolesSeleccionadosDer) {
+        this.rolesSeleccionadosDer = rolesSeleccionadosDer;
+    }
+
+    // -----------------------
+    // Resto del controller: utilitarios y converters
+    // -----------------------
 
     public XeusuUsuar getXeusuUsuar(java.lang.String id) {
         return getFacade().find(id);

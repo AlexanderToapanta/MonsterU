@@ -52,6 +52,13 @@ public class MecarrCarreraController implements Serializable {
     public MecarrCarrera prepareCreate() {
         selected = new MecarrCarrera();
         initializeEmbeddableKey();
+        try {
+            // Autogenerate next numeric id (max + 1) and assign to selected
+            String nextId = getFacade().nextNumericId("mecarrId");
+            selected.setMecarrId(nextId);
+        } catch (Exception ex) {
+            // ignore and leave id null — creation will fail validation if required
+        }
         return selected;
     }
 

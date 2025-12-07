@@ -13,7 +13,7 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{mecarrCarreraController.selected != null}">
                         <p:outputLabel value="#{bundle.CreateMecarrCarreraLabel_mecarrId}" for="mecarrId" />
-                        <p:inputText id="mecarrId" value="#{mecarrCarreraController.selected.mecarrId}" title="#{bundle.CreateMecarrCarreraTitle_mecarrId}" required="true" requiredMessage="#{bundle.CreateMecarrCarreraRequiredMessage_mecarrId}"/>
+                        <p:inputText id="mecarrId" value="#{mecarrCarreraController.selected.mecarrId}" title="#{bundle.CreateMecarrCarreraTitle_mecarrId}" required="true" requiredMessage="#{bundle.CreateMecarrCarreraRequiredMessage_mecarrId}" readonly="true"/>
                         <p:outputLabel value="#{bundle.CreateMecarrCarreraLabel_mecarrNombre}" for="mecarrNombre" />
                         <p:inputText id="mecarrNombre" value="#{mecarrCarreraController.selected.mecarrNombre}" title="#{bundle.CreateMecarrCarreraTitle_mecarrNombre}" required="true" requiredMessage="#{bundle.CreateMecarrCarreraRequiredMessage_mecarrNombre}"/>
                         <p:outputLabel value="#{bundle.CreateMecarrCarreraLabel_mecarrMaxCred}" for="mecarrMaxCred" />

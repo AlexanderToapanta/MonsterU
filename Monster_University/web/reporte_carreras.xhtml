@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template.xhtml">
+
+        <ui:define name="title">
+            <h:outputText value="Reporte de Carreras" />
+        </ui:define>
+
+        <ui:define name="body">
+
+            <h:form id="ReporteCarrerasForm">
+
+                <p:panel header="Reporte de Carreras">
+
+                    <!-- ========================= -->
+                    <!--        FILTROS           -->
+                    <!-- ========================= -->
+                    <h:panelGrid columns="4" cellpadding="7">
+
+                        <p:outputLabel value="Nombre:" />
+                        <p:inputText value="#{mecarrCarreraController.filtroNombre}"
+                                     style="width:200px" />
+
+                        <p:outputLabel value="Créditos Mínimos:" />
+                        <p:spinner value="#{mecarrCarreraController.filtroMin}"
+                                   style="width:120px" />
+
+                        <p:outputLabel value="Créditos Máximos:" />
+                        <p:spinner value="#{mecarrCarreraController.filtroMax}"
+                                   style="width:120px" />
+
+                        <p:commandButton value="Buscar"
+                                         icon="pi pi-search"
+                                         update="ReporteCarrerasForm"
+                                         action="#{mecarrCarreraController.buscar}"
+                                         style="margin-top:10px" />
+
+                        <p:commandButton id="pdfButton" value="Descargar PDF" icon="pi pi-file-pdf"
+                                         action="#{mecarrCarreraController.generarPdf}"
+                                         ajax="false"/>
+
+                    </h:panelGrid>
+
+                    <br/>
+
+                    <!-- ========================= -->
+                    <!--        TABLA             -->
+                    <!-- ========================= -->
+                    <p:dataTable id="tablaReporte"
+             value="#{mecarrCarreraController.reportes}"
+             var="carrera"
+             paginator="true"
+             rows="10"
+             rowsPerPageTemplate="10,20,30,40,50">
+
+    <p:column>
+        <f:facet name="header">ID</f:facet>
+        #{carrera.mecarrId}
+    </p:column>
+
+    <p:column>
+        <f:facet name="header">Nombre</f:facet>
+        #{carrera.mecarrNombre}
+    </p:column>
+
+    <p:column>
+        <f:facet name="header">Créditos Mínimos</f:facet>
+        #{carrera.mecarrMinCred}
+    </p:column>
+
+    <p:column>
+        <f:facet name="header">Créditos Máximos</f:facet>
+        #{carrera.mecarrMaxCred}
+    </p:column>
+
+</p:dataTable>
+
+
+                </p:panel>
+
+            </h:form>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>
+

@@ -5,6 +5,7 @@
 package ec.edu.monster.facades;
 
 import ec.edu.monster.modelo.MecarrCarrera;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,5 +28,11 @@ public class MecarrCarreraFacade extends AbstractFacade<MecarrCarrera> {
     public MecarrCarreraFacade() {
         super(MecarrCarrera.class);
     }
+    
+    @Override
+    public List<MecarrCarrera> findAll() {
+    return em.createQuery("SELECT m FROM MecarrCarrera m").getResultList();
+}
+
     
 }

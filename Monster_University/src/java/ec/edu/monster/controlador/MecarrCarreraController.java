@@ -6,10 +6,12 @@ import ec.edu.monster.controlador.util.JsfUtil.PersistAction;
 import ec.edu.monster.facades.MecarrCarreraFacade;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.inject.Named;
@@ -24,176 +26,182 @@ import javax.faces.convert.FacesConverter;
 public class MecarrCarreraController implements Serializable {
 
     @EJB
-    private ec.edu.monster.facades.MecarrCarreraFacade ejbFacade;
+    private MecarrCarreraFacade ejbFacade;
+
     private List<MecarrCarrera> items = null;
-    private MecarrCarrera selected;
     private List<MecarrCarrera> selectedItems;
 
+    private MecarrCarrera selected;
+
+    // FILTROS
+    private String filtroNombre;
+    private Integer filtroMin;
+    private Integer filtroMax;
+
+    // LISTA PRINCIPAL DEL REPORTE
+    private List<MecarrCarrera> reportes;
+
+    @PostConstruct
+    public void init() {
+        // 🔥 CARGA AUTOMÁTICA DE DATOS AL ENTRAR A LA PÁGINA
+        reportes = ejbFacade.findAll();
+        items = ejbFacade.findAll();
+    }
+
     public MecarrCarreraController() {
+    }
+
+    // GETTERS Y SETTERS
+    public List<MecarrCarrera> getReportes() {
+        return reportes;
+    }
+
+    public String getFiltroNombre() {
+        return filtroNombre;
+    }
+
+    public Integer getFiltroMin() {
+        return filtroMin;
+    }
+
+    public Integer getFiltroMax() {
+        return filtroMax;
+    }
+
+    public void setFiltroNombre(String filtroNombre) {
+        this.filtroNombre = filtroNombre;
+    }
+
+    public void setFiltroMin(Integer filtroMin) {
+        this.filtroMin = filtroMin;
+    }
+
+    public void setFiltroMax(Integer filtroMax) {
+        this.filtroMax = filtroMax;
     }
 
     public MecarrCarrera getSelected() {
         return selected;
     }
 
-    public void setSelected(MecarrCarrera selected) {
-        this.selected = selected;
-    }
-
     public List<MecarrCarrera> getSelectedItems() {
         return selectedItems;
+    }
+
+    public void setSelected(MecarrCarrera selected) {
+        this.selected = selected;
     }
 
     public void setSelectedItems(List<MecarrCarrera> selectedItems) {
         this.selectedItems = selectedItems;
     }
 
-    protected void setEmbeddableKeys() {
-    }
-
-    protected void initializeEmbeddableKey() {
-    }
-
     private MecarrCarreraFacade getFacade() {
         return ejbFacade;
     }
 
-    public MecarrCarrera prepareCreate() {
-        selected = new MecarrCarrera();
-        initializeEmbeddableKey();
-        try {
-            // Autogenerate next numeric id (max + 1) and assign to selected
-            String nextId = getFacade().nextNumericId("mecarrId");
-            selected.setMecarrId(nextId);
-        } catch (Exception ex) {
-            // ignore and leave id null — creation will fail validation if required
-        }
-        return selected;
-    }
-
-    public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("MecarrCarreraCreated"));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
-        }
-    }
-
-    public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("MecarrCarreraUpdated"));
-    }
-
-    public void prepareView() {
-        if (selectedItems != null && !selectedItems.isEmpty()) {
-            selected = selectedItems.get(0);
-        }
-    }
-
-    public void prepareEdit() {
-        if (selectedItems != null && !selectedItems.isEmpty()) {
-            selected = selectedItems.get(0);
-        }
-    }
-
-    public void destroy() {
-        if (selectedItems != null && !selectedItems.isEmpty()) {
-            for (MecarrCarrera item : selectedItems) {
-                selected = item;
-                persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("MecarrCarreraDeleted"));
-            }
-            if (!JsfUtil.isValidationFailed()) {
-                selected = null;
-                selectedItems = null;
-                items = null;
-            }
-        }
-    }
-
     public List<MecarrCarrera> getItems() {
         if (items == null) {
-            items = getFacade().findAll();
+            items = ejbFacade.findAll();
         }
         return items;
     }
 
+    // ------------------------------
+    //          BUSCAR
+    // ------------------------------
+    public void buscar() {
+        reportes = ejbFacade.findAll(); // Reiniciar lista
+
+        if (filtroNombre != null && !filtroNombre.isEmpty()) {
+            reportes.removeIf(c -> !c.getMecarrNombre().toLowerCase().contains(filtroNombre.toLowerCase()));
+        }
+
+        if (filtroMin != null) {
+            reportes.removeIf(c -> c.getMecarrMinCred() < filtroMin);
+        }
+
+        if (filtroMax != null) {
+            reportes.removeIf(c -> c.getMecarrMaxCred() > filtroMax);
+        }
+    }
+
+    // CRUD BASICO
+    public MecarrCarrera prepareCreate() {
+        selected = new MecarrCarrera();
+        return selected;
+    }
+
+    public void create() {
+        persist(PersistAction.CREATE, "Carrera creada correctamente");
+        if (!JsfUtil.isValidationFailed()) {
+            items = null;
+            reportes = ejbFacade.findAll();   // 🔥 Actualiza tabla tras crear
+        }
+    }
+
+    public void update() {
+        persist(PersistAction.UPDATE, "Carrera actualizada");
+        reportes = ejbFacade.findAll();
+    }
+
+    public void destroy() {
+        if (selectedItems != null) {
+            for (MecarrCarrera c : selectedItems) {
+                selected = c;
+                persist(PersistAction.DELETE, "Carrera eliminada");
+            }
+            items = null;
+            reportes = ejbFacade.findAll();
+        }
+    }
+
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
-            setEmbeddableKeys();
             try {
                 if (persistAction != PersistAction.DELETE) {
-                    getFacade().edit(selected);
+                    ejbFacade.edit(selected);
                 } else {
-                    getFacade().remove(selected);
+                    ejbFacade.remove(selected);
                 }
+
                 JsfUtil.addSuccessMessage(successMessage);
-            } catch (EJBException ex) {
-                String msg = "";
-                Throwable cause = ex.getCause();
-                if (cause != null) {
-                    msg = cause.getLocalizedMessage();
-                }
-                if (msg.length() > 0) {
-                    JsfUtil.addErrorMessage(msg);
-                } else {
-                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-                }
+
             } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+                JsfUtil.addErrorMessage("Error en persistencia");
             }
         }
     }
 
-    public MecarrCarrera getMecarrCarrera(java.lang.String id) {
-        return getFacade().find(id);
-    }
-
-    public List<MecarrCarrera> getItemsAvailableSelectMany() {
-        return getFacade().findAll();
-    }
-
-    public List<MecarrCarrera> getItemsAvailableSelectOne() {
-        return getFacade().findAll();
+    public MecarrCarrera getMecarrCarrera(String id) {
+        if (id == null || id.isEmpty()) {
+            return null;
+        }
+        return ejbFacade.find(id); // aquí sí funciona porque tu PK es String
     }
 
     @FacesConverter(forClass = MecarrCarrera.class)
     public static class MecarrCarreraControllerConverter implements Converter {
 
         @Override
-        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+        public Object getAsObject(FacesContext context, UIComponent component, String value) {
+            if (value == null || value.trim().isEmpty()) {
                 return null;
             }
-            MecarrCarreraController controller = (MecarrCarreraController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "mecarrCarreraController");
-            return controller.getMecarrCarrera(getKey(value));
-        }
 
-        java.lang.String getKey(String value) {
-            java.lang.String key;
-            key = value;
-            return key;
-        }
+            MecarrCarreraController controller = (MecarrCarreraController) context.getApplication().getELResolver()
+                    .getValue(context.getELContext(), null, "mecarrCarreraController");
 
-        String getStringKey(java.lang.String value) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(value);
-            return sb.toString();
+            return controller.getMecarrCarrera(value);
         }
 
         @Override
-        public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
+        public String getAsString(FacesContext context, UIComponent component, Object object) {
             if (object == null) {
-                return null;
+                return "";
             }
-            if (object instanceof MecarrCarrera) {
-                MecarrCarrera o = (MecarrCarrera) object;
-                return getStringKey(o.getMecarrId());
-            } else {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), MecarrCarrera.class.getName()});
-                return null;
-            }
+            return ((MecarrCarrera) object).getMecarrId();
         }
-
     }
 
 }

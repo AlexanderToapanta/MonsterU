@@ -1,25 +1,29 @@
 package ec.edu.monster.controlador;
-
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import ec.edu.monster.modelo.MecarrCarrera;
 import ec.edu.monster.controlador.util.JsfUtil;
 import ec.edu.monster.controlador.util.JsfUtil.PersistAction;
 import ec.edu.monster.facades.MecarrCarreraFacade;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+
 
 @Named("mecarrCarreraController")
 @SessionScoped
@@ -172,6 +176,62 @@ public class MecarrCarreraController implements Serializable {
             }
         }
     }
+    
+    public void generarPdf() {
+    try {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext externalContext = facesContext.getExternalContext();
+
+        externalContext.setResponseContentType("application/pdf");
+        externalContext.setResponseHeader("Content-Disposition", "attachment; filename=\"reporte_carreras.pdf\"");
+        externalContext.addResponseCookie("fileDownload", "true", new java.util.HashMap<>());
+
+        Document document = new Document();
+        PdfWriter.getInstance(document, externalContext.getResponseOutputStream());
+        document.open();
+
+        // ============================
+        //   TÍTULO DEL REPORTE
+        // ============================
+        Font titleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
+        Paragraph title = new Paragraph("Reporte de Carreras\n\n", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+
+        // ============================
+        //       TABLA PDF
+        // ============================
+        PdfPTable table = new PdfPTable(4); 
+        table.setWidthPercentage(100);
+        table.setWidths(new float[]{2f, 4f, 3f, 3f});
+
+        Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+
+        table.addCell(new PdfPCell(new Phrase("ID", headerFont)));
+        table.addCell(new PdfPCell(new Phrase("Nombre", headerFont)));
+        table.addCell(new PdfPCell(new Phrase("Créditos Mínimos", headerFont)));
+        table.addCell(new PdfPCell(new Phrase("Créditos Máximos", headerFont)));
+
+        // ============================
+        //   AGREGAR FILAS DEL REPORTE
+        // ============================
+        for (MecarrCarrera c : reportes) {
+            table.addCell(c.getMecarrId());
+            table.addCell(c.getMecarrNombre());
+            table.addCell(String.valueOf(c.getMecarrMinCred()));
+            table.addCell(String.valueOf(c.getMecarrMaxCred()));
+        }
+
+        document.add(table);
+        document.close();
+
+        facesContext.responseComplete();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 
     public MecarrCarrera getMecarrCarrera(String id) {
         if (id == null || id.isEmpty()) {

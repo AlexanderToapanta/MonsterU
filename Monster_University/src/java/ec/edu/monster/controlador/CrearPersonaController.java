@@ -9,6 +9,7 @@ import ec.edu.monster.facades.XeusuUsuarFacade;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -30,11 +31,18 @@ public class CrearPersonaController implements Serializable {
     
     @EJB
     private XeusuUsuarFacade usuarioFacade;
-
+    
+    private static final Pattern PATRON_EMAIL = 
+        Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    private static final Pattern PATRON_CELULAR = 
+        Pattern.compile("^09[0-9]{8}$");
+    
     private PeperPerson nuevaPersona;
     private String idGenerado;
     private String codigoSexoSeleccionado;
-    private boolean crearUsuarioAutomatico = true; // Siempre true según tu requerimiento
+    private boolean cedulaValida = false;
+    private boolean emailValido = false;
+    private boolean celularValido = false;
 
     public CrearPersonaController() {
         nuevaPersona = new PeperPerson();
@@ -58,6 +66,9 @@ public class CrearPersonaController implements Serializable {
     public void initNuevaPersona() {
         nuevaPersona = new PeperPerson();
         codigoSexoSeleccionado = null;
+        cedulaValida = false;
+        emailValido = false;
+        celularValido = false;
         generarNuevoId();
         nuevaPersona.setPepeperFechIngr(new Date());
     }
@@ -93,7 +104,6 @@ public class CrearPersonaController implements Serializable {
                 }
             }
             
-            // Buscar siguiente disponible
             for (int i = 1; i <= 999; i++) {
                 String idCandidato = String.format("PE%03d", i);
                 
@@ -129,13 +139,11 @@ public class CrearPersonaController implements Serializable {
         try {
             System.out.println("=== INICIANDO PROCESO COMPLETO: PERSONA + USUARIO ===");
             
-            // Validaciones iniciales
-            if (!validarDatosPersona()) {
-                System.out.println("❌ Validaciones de persona fallaron");
+            if (!validarDatosCompletos()) {
+                System.out.println("❌ Validaciones completas fallaron");
                 return;
             }
             
-            // Validar que se seleccionó un sexo
             if (codigoSexoSeleccionado == null || codigoSexoSeleccionado.trim().isEmpty()) {
                 FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
@@ -143,7 +151,6 @@ public class CrearPersonaController implements Serializable {
                 return;
             }
             
-            // Buscar el objeto PesexSexo
             System.out.println("🔍 Buscando sexo con código: " + codigoSexoSeleccionado);
             PesexSexo sexo = buscarSexoPorCodigo(codigoSexoSeleccionado);
             
@@ -154,30 +161,24 @@ public class CrearPersonaController implements Serializable {
                 return;
             }
             
-            // Asignar el sexo a la persona
             nuevaPersona.setPesexId(sexo);
             System.out.println("✅ Sexo asignado: " + sexo.getPesexDescri());
 
-            // Verificar ID
             if (personaFacade.existeId(idGenerado)) {
                 System.out.println("⚠️ El ID ya existe, generando uno nuevo...");
                 generarNuevoId();
                 System.out.println("Nuevo ID generado: " + idGenerado);
             }
 
-            // Establecer campos FK opcionales como NULL temporalmente
             nuevaPersona.setPeescId(null);
             nuevaPersona.setXeusuId(null);
             
-            // Asegurar que el ID esté asignado
             nuevaPersona.setPeperId(idGenerado);
             System.out.println("✅ ID de persona asignado: " + nuevaPersona.getPeperId());
 
-            // PASO 1: Guardar persona
             System.out.println("💾 Guardando persona en base de datos...");
             personaFacade.create(nuevaPersona);
             
-            // Verificar inserción de persona
             PeperPerson personaVerificada = personaFacade.find(idGenerado);
             if (personaVerificada == null) {
                 System.out.println("❌ PERSONA NO SE GUARDÓ EN BD");
@@ -191,29 +192,24 @@ public class CrearPersonaController implements Serializable {
             System.out.println("ID: " + personaVerificada.getPeperId());
             System.out.println("Nombre: " + personaVerificada.getPeperNombre());
 
-            // PASO 2: Crear usuario automáticamente
             System.out.println("🔄 Creando usuario automático...");
             XeusuUsuar usuarioCreado = crearUsuarioParaPersona(personaVerificada);
             
             if (usuarioCreado != null) {
-                // PASO 3: Actualizar la persona con el ID del usuario
                 personaVerificada.setXeusuId(usuarioCreado);
                 personaFacade.edit(personaVerificada);
                 System.out.println("✅ Persona actualizada con XEUSU_ID: " + usuarioCreado.getXeusuId());
                 
-                // Mensaje de éxito completo
                 FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", 
                     "Persona creada con ID: " + personaVerificada.getPeperId() + 
                     " y Usuario creado con ID: " + usuarioCreado.getXeusuId()));
             } else {
-                // Mensaje de advertencia (persona creada pero usuario no)
                 FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", 
                     "Persona creada pero no se pudo crear el usuario automático. ID: " + personaVerificada.getPeperId()));
             }
 
-            // Limpiar formulario para nueva entrada
             initNuevaPersona();
             System.out.println("🔄 Formulario reiniciado");
 
@@ -231,39 +227,32 @@ public class CrearPersonaController implements Serializable {
             System.out.println("=== CREANDO USUARIO PARA PERSONA ===");
             System.out.println("Persona ID: " + persona.getPeperId());
             
-            // Generar ID de usuario (US001, US002, etc.)
             String usuarioId = generarIdUsuario();
             System.out.println("ID de usuario generado: " + usuarioId);
             
-            // Generar nombre de usuario: primera letra del nombre + apellido completo
             String nombreUsuario = generarNombreUsuario(persona);
             System.out.println("Nombre de usuario generado: " + nombreUsuario);
             
-            // La contraseña será la cédula
             String contrasenia = persona.getPeperCedula();
             System.out.println("Contraseña (cédula): " + contrasenia);
             
-            // Crear el objeto usuario
             XeusuUsuar nuevoUsuario = new XeusuUsuar();
             nuevoUsuario.setXeusuId(usuarioId);
             nuevoUsuario.setXeusuNombre(nombreUsuario);
             nuevoUsuario.setXeusuContra(contrasenia);
             nuevoUsuario.setXeusuEstado("ACTIVO");
-            nuevoUsuario.setPeperId(persona); // Establecer la referencia a la persona
+            nuevoUsuario.setPeperId(persona);
             
-            // Encriptar contraseña
             PasswordController passwordController = new PasswordController();
             String contrasenaEncriptada = passwordController.encriptarClave(contrasenia);
             nuevoUsuario.setXeusuContra(contrasenaEncriptada);
             
-            // Verificar si el ID de usuario ya existe
             if (usuarioFacade.find(usuarioId) != null) {
                 System.out.println("⚠️ ID de usuario ya existe, generando nuevo...");
                 usuarioId = generarIdUsuarioDisponible(usuarioId);
                 nuevoUsuario.setXeusuId(usuarioId);
             }
             
-            // Guardar usuario
             usuarioFacade.create(nuevoUsuario);
             System.out.println("✅ Usuario creado: " + usuarioId);
             
@@ -301,7 +290,6 @@ public class CrearPersonaController implements Serializable {
                 }
             }
             
-            // Buscar siguiente disponible
             for (int i = 1; i <= 999; i++) {
                 String idCandidato = String.format("US%03d", i);
                 
@@ -348,16 +336,201 @@ public class CrearPersonaController implements Serializable {
             return "usuario_" + persona.getPeperCedula();
         }
         
-        // Primera letra del nombre en mayúscula + apellido completo
         String primeraLetra = nombre.substring(0, 1).toUpperCase();
         String nombreUsuario = primeraLetra + apellido;
         
-        // Limitar a 100 caracteres si es necesario
         if (nombreUsuario.length() > 100) {
             nombreUsuario = nombreUsuario.substring(0, 100);
         }
         
         return nombreUsuario;
+    }
+    
+    public void validarCedula() {
+        String cedula = nuevaPersona.getPeperCedula();
+        if (cedula == null || cedula.trim().isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperCedula",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "La cédula es requerida"));
+            cedulaValida = false;
+            return;
+        }
+        
+        cedula = cedula.trim();
+        if (cedula.length() != 10) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperCedula",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "La cédula debe tener 10 dígitos"));
+            cedulaValida = false;
+            return;
+        }
+        
+        if (!cedula.matches("[0-9]+")) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperCedula",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "La cédula debe contener solo números"));
+            cedulaValida = false;
+            return;
+        }
+        
+        if (!validarCedulaEcuatoriana(cedula)) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperCedula",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "Cédula inválida - Verifique los dígitos"));
+            cedulaValida = false;
+            return;
+        }
+        
+        if (personaFacade.existeCedula(cedula)) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperCedula",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "Esta cédula ya está registrada en el sistema"));
+            cedulaValida = false;
+            return;
+        }
+        
+        cedulaValida = true;
+        FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperCedula",
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", 
+            "Cédula válida"));
+    }
+    
+    public void validarEmail() {
+        String email = nuevaPersona.getPeperEmail();
+        if (email == null || email.trim().isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperEmail",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "El email es requerido"));
+            emailValido = false;
+            return;
+        }
+        
+        email = email.trim().toLowerCase();
+        
+        if (!PATRON_EMAIL.matcher(email).matches()) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperEmail",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "Formato de email inválido"));
+            emailValido = false;
+            return;
+        }
+        
+        if (email.length() > 50) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperEmail",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "El email no puede exceder 50 caracteres"));
+            emailValido = false;
+            return;
+        }
+        
+        if (personaFacade.existeEmail(email)) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperEmail",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "Este email ya está registrado en el sistema"));
+            emailValido = false;
+            return;
+        }
+        
+        emailValido = true;
+        FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperEmail",
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", 
+            "Email válido"));
+    }
+    
+    public void validarCelular() {
+        String celular = nuevaPersona.getPeperCelular();
+        
+        if (celular == null || celular.trim().isEmpty()) {
+            celularValido = true;
+            return;
+        }
+        
+        celular = celular.trim();
+        
+        if (!PATRON_CELULAR.matcher(celular).matches()) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperCelular",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "Celular inválido. Use formato: 09XXXXXXXX"));
+            celularValido = false;
+            return;
+        }
+        
+        if (personaFacade.existeCelular(celular)) {
+            FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperCelular",
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "Este número de celular ya está registrado"));
+            celularValido = false;
+            return;
+        }
+        
+        celularValido = true;
+        FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperCelular",
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", 
+            "Celular válido"));
+    }
+    
+    private boolean validarCedulaEcuatoriana(String cedula) {
+        try {
+            int provincia = Integer.parseInt(cedula.substring(0, 2));
+            if (provincia < 1 || provincia > 24) {
+                return false;
+            }
+            
+            int tercerDigito = Integer.parseInt(cedula.substring(2, 3));
+            if (tercerDigito < 0 || tercerDigito > 6) {
+                return false;
+            }
+            
+            int total = 0;
+            int[] coeficientes = {2, 1, 2, 1, 2, 1, 2, 1, 2};
+            int verificador = Integer.parseInt(cedula.substring(9, 10));
+            
+            for (int i = 0; i < 9; i++) {
+                int valor = Integer.parseInt(cedula.substring(i, i + 1)) * coeficientes[i];
+                if (valor > 9) {
+                    valor -= 9;
+                }
+                total += valor;
+            }
+            
+            int residuo = total % 10;
+            int digitoVerificador = (residuo == 0) ? 0 : 10 - residuo;
+            
+            return digitoVerificador == verificador;
+            
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    
+    private boolean validarDatosCompletos() {
+        validarCedula();
+        validarEmail();
+        validarCelular();
+        
+        if (!cedulaValida) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "La cédula no es válida o ya está registrada"));
+            return false;
+        }
+        
+        if (!emailValido) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "El email no es válido o ya está registrado"));
+            return false;
+        }
+        
+        if (!celularValido && nuevaPersona.getPeperCelular() != null 
+            && !nuevaPersona.getPeperCelular().trim().isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "El celular no es válido o ya está registrado"));
+            return false;
+        }
+        
+        return validarDatosPersona();
     }
     
     private boolean validarDatosPersona() {
@@ -400,7 +573,6 @@ public class CrearPersonaController implements Serializable {
             return false;
         }
         
-        // Validar que la cédula tenga al menos 6 caracteres para la contraseña
         if (nuevaPersona.getPeperCedula().trim().length() < 6) {
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
@@ -413,13 +585,11 @@ public class CrearPersonaController implements Serializable {
     
     private PesexSexo buscarSexoPorCodigo(String codigo) {
         try {
-            // Buscar directamente por ID
             PesexSexo sexo = sexoFacade.find(codigo);
             if (sexo != null) {
                 return sexo;
             }
             
-            // Si no encuentra, buscar en todos
             List<PesexSexo> todosSexos = sexoFacade.findAll();
             for (PesexSexo s : todosSexos) {
                 if (codigo.equals(s.getPesexId())) {
@@ -432,7 +602,6 @@ public class CrearPersonaController implements Serializable {
         return null;
     }
 
-    // Getters y Setters
     public PeperPerson getNuevaPersona() {
         return nuevaPersona;
     }
@@ -443,6 +612,30 @@ public class CrearPersonaController implements Serializable {
     
     public void setIdGenerado(String idGenerado) {
         this.idGenerado = idGenerado;
+    }
+    
+    public boolean isCedulaValida() {
+        return cedulaValida;
+    }
+    
+    public void setCedulaValida(boolean cedulaValida) {
+        this.cedulaValida = cedulaValida;
+    }
+    
+    public boolean isEmailValido() {
+        return emailValido;
+    }
+    
+    public void setEmailValido(boolean emailValido) {
+        this.emailValido = emailValido;
+    }
+    
+    public boolean isCelularValido() {
+        return celularValido;
+    }
+    
+    public void setCelularValido(boolean celularValido) {
+        this.celularValido = celularValido;
     }
 }
 

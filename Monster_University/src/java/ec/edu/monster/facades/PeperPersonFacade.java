@@ -9,6 +9,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 /**
@@ -90,6 +91,137 @@ public boolean existeId(String id) {
         return find(id) != null;
     } catch (Exception e) {
         return false;
+    }
+}
+
+// Validar si la cédula ya existe en la base de datos
+public boolean existeCedula(String cedula) {
+    try {
+        if (cedula == null || cedula.trim().isEmpty()) {
+            return false;
+        }
+        
+        TypedQuery<Long> query = em.createQuery(
+            "SELECT COUNT(p) FROM PeperPerson p WHERE p.peperCedula = :cedula", 
+            Long.class
+        );
+        query.setParameter("cedula", cedula.trim());
+        
+        Long count = query.getSingleResult();
+        System.out.println("🔍 Verificando cédula " + cedula + " - Existencias: " + count);
+        
+        return count > 0;
+        
+    } catch (Exception e) {
+        System.out.println("❌ ERROR en existeCedula: " + e.getMessage());
+        e.printStackTrace();
+        return false;
+    }
+}
+
+// Validar si el email ya existe en la base de datos
+public boolean existeEmail(String email) {
+    try {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        
+        TypedQuery<Long> query = em.createQuery(
+            "SELECT COUNT(p) FROM PeperPerson p WHERE LOWER(p.peperEmail) = LOWER(:email)", 
+            Long.class
+        );
+        query.setParameter("email", email.trim());
+        
+        Long count = query.getSingleResult();
+        System.out.println("🔍 Verificando email " + email + " - Existencias: " + count);
+        
+        return count > 0;
+        
+    } catch (Exception e) {
+        System.out.println("❌ ERROR en existeEmail: " + e.getMessage());
+        e.printStackTrace();
+        return false;
+    }
+}
+
+// Validar si el celular ya existe en la base de datos
+public boolean existeCelular(String celular) {
+    try {
+        if (celular == null || celular.trim().isEmpty()) {
+            return false;
+        }
+        
+        TypedQuery<Long> query = em.createQuery(
+            "SELECT COUNT(p) FROM PeperPerson p WHERE p.peperCelular = :celular", 
+            Long.class
+        );
+        query.setParameter("celular", celular.trim());
+        
+        Long count = query.getSingleResult();
+        System.out.println("🔍 Verificando celular " + celular + " - Existencias: " + count);
+        
+        return count > 0;
+        
+    } catch (Exception e) {
+        System.out.println("❌ ERROR en existeCelular: " + e.getMessage());
+        e.printStackTrace();
+        return false;
+    }
+}
+
+// Método para buscar persona por cédula
+public PeperPerson buscarPorCedula(String cedula) {
+    try {
+        if (cedula == null || cedula.trim().isEmpty()) {
+            return null;
+        }
+        
+        TypedQuery<PeperPerson> query = em.createQuery(
+            "SELECT p FROM PeperPerson p WHERE p.peperCedula = :cedula", 
+            PeperPerson.class
+        );
+        query.setParameter("cedula", cedula.trim());
+        
+        List<PeperPerson> resultados = query.getResultList();
+        
+        if (resultados.isEmpty()) {
+            return null;
+        }
+        
+        return resultados.get(0);
+        
+    } catch (Exception e) {
+        System.out.println("❌ ERROR en buscarPorCedula: " + e.getMessage());
+        e.printStackTrace();
+        return null;
+    }
+}
+
+// Método para buscar persona por email
+public PeperPerson buscarPorEmail(String email) {
+    try {
+        if (email == null || email.trim().isEmpty()) {
+            return null;
+        }
+        
+        TypedQuery<PeperPerson> query = em.createQuery(
+            "SELECT p FROM PeperPerson p WHERE LOWER(p.peperEmail) = LOWER(:email)", 
+            PeperPerson.class
+        );
+        query.setParameter("email", email.trim());
+        
+        List<PeperPerson> resultados = query.getResultList();
+        
+        if (resultados.isEmpty()) {
+            return null;
+        }
+        
+        return resultados.get(0);
+        
+    } catch (Exception e) {
+        System.out.println("❌ ERROR en buscarPorEmail: " + e.getMessage());
+        e.printStackTrace();
+        return null;
     }
 }
 }

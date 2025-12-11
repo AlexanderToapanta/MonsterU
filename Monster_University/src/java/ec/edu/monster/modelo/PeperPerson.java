@@ -43,7 +43,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PeperPerson.findByPeperCedula", query = "SELECT p FROM PeperPerson p WHERE p.peperCedula = :peperCedula"),
     @NamedQuery(name = "PeperPerson.findByPeperCelular", query = "SELECT p FROM PeperPerson p WHERE p.peperCelular = :peperCelular"),
     @NamedQuery(name = "PeperPerson.findByPeperTipo", query = "SELECT p FROM PeperPerson p WHERE p.peperTipo = :peperTipo"),
-    @NamedQuery(name = "PeperPerson.findByPepeperFechIngr", query = "SELECT p FROM PeperPerson p WHERE p.pepeperFechIngr = :pepeperFechIngr")})
+    @NamedQuery(name = "PeperPerson.findByPepeperFechIngr", query = "SELECT p FROM PeperPerson p WHERE p.pepeperFechIngr = :pepeperFechIngr"),
+    @NamedQuery(name = "PeperPerson.findByPepeperFecNa", query = "SELECT p FROM PeperPerson p WHERE p.pepeperFecNa = :pepeperFecNa"),
+    @NamedQuery(name = "PeperPerson.findByPepeperImag", query = "SELECT p FROM PeperPerson p WHERE p.pepeperImag = :pepeperImag")})
 public class PeperPerson implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -86,6 +88,12 @@ public class PeperPerson implements Serializable {
     @Column(name = "PEPEPER_FECH_INGR")
     @Temporal(TemporalType.DATE)
     private Date pepeperFechIngr;
+    @Column(name = "PEPEPER_FEC_NA")
+    @Temporal(TemporalType.DATE)
+    private Date pepeperFecNa;
+    @Size(max = 500)
+    @Column(name = "PEPEPER_IMAG")
+    private String pepeperImag;
     @JoinColumn(name = "PEESC_ID", referencedColumnName = "PEESC_ID")
     @ManyToOne
     private PeescEstciv peescId;
@@ -179,6 +187,22 @@ public class PeperPerson implements Serializable {
 
     public void setPepeperFechIngr(Date pepeperFechIngr) {
         this.pepeperFechIngr = pepeperFechIngr;
+    }
+
+    public Date getPepeperFecNa() {
+        return pepeperFecNa;
+    }
+
+    public void setPepeperFecNa(Date pepeperFecNa) {
+        this.pepeperFecNa = pepeperFecNa;
+    }
+
+    public String getPepeperImag() {
+        return pepeperImag;
+    }
+
+    public void setPepeperImag(String pepeperImag) {
+        this.pepeperImag = pepeperImag;
     }
 
     public PeescEstciv getPeescId() {

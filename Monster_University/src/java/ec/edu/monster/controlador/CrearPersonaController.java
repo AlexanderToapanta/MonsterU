@@ -2,11 +2,21 @@ package ec.edu.monster.controlador;
 
 import ec.edu.monster.modelo.PeperPerson;
 import ec.edu.monster.modelo.PesexSexo;
+import ec.edu.monster.modelo.PeescEstciv;
 import ec.edu.monster.modelo.XeusuUsuar;
 import ec.edu.monster.facades.PeperPersonFacade;
 import ec.edu.monster.facades.PesexSexoFacade;
+import ec.edu.monster.facades.PeescEstcivFacade;
 import ec.edu.monster.facades.XeusuUsuarFacade;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -18,6 +28,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.inject.Named;
+import org.primefaces.model.file.UploadedFile;
+import java.util.Base64;
 
 @Named(value = "crearPersonaController")
 @SessionScoped
@@ -30,6 +42,9 @@ public class CrearPersonaController implements Serializable {
     private PesexSexoFacade sexoFacade;
     
     @EJB
+    private PeescEstcivFacade estcivFacade;
+    
+    @EJB
     private XeusuUsuarFacade usuarioFacade;
     
     private static final Pattern PATRON_EMAIL = 
@@ -40,12 +55,24 @@ public class CrearPersonaController implements Serializable {
     private PeperPerson nuevaPersona;
     private String idGenerado;
     private String codigoSexoSeleccionado;
+    private String codigoEstcivSeleccionado;
     private boolean cedulaValida = false;
     private boolean emailValido = false;
     private boolean celularValido = false;
+    private UploadedFile imagenSubida;
+    private String nombreArchivoImagen; 
+
 
     public CrearPersonaController() {
         nuevaPersona = new PeperPerson();
+    }
+
+    public UploadedFile getImagenSubida() {
+        return imagenSubida;
+    }
+
+    public void setImagenSubida(UploadedFile imagenSubida) {
+        this.imagenSubida = imagenSubida;
     }
 
     public String getCodigoSexoSeleccionado() {
@@ -56,6 +83,14 @@ public class CrearPersonaController implements Serializable {
         this.codigoSexoSeleccionado = codigoSexoSeleccionado;
     }
 
+    public String getCodigoEstcivSeleccionado() {
+        return codigoEstcivSeleccionado;
+    }
+
+    public void setCodigoEstcivSeleccionado(String codigoEstcivSeleccionado) {
+        this.codigoEstcivSeleccionado = codigoEstcivSeleccionado;
+    }
+
     public String getIdGenerado() {
         if (idGenerado == null) {
             generarNuevoId();
@@ -63,15 +98,177 @@ public class CrearPersonaController implements Serializable {
         return idGenerado;
     }
 
+    public String getNombreArchivoImagen() {
+        return nombreArchivoImagen;
+    }
+
+    public void setNombreArchivoImagen(String nombreArchivoImagen) {
+        this.nombreArchivoImagen = nombreArchivoImagen;
+    }
+
     public void initNuevaPersona() {
         nuevaPersona = new PeperPerson();
         codigoSexoSeleccionado = null;
+        codigoEstcivSeleccionado = null;
         cedulaValida = false;
         emailValido = false;
         celularValido = false;
+        imagenSubida = null;
+        nombreArchivoImagen = null; // Limpiar nombre de archivo
         generarNuevoId();
         nuevaPersona.setPepeperFechIngr(new Date());
+        nuevaPersona.setPepeperFecNa(null);
+        nuevaPersona.setPepeperImag(null);
     }
+    
+/**
+ * Método para asignar la imagen (convertir a Base64 y asignar a la persona)
+ */
+public void subirImagen() {
+    System.out.println("=== DEBUG: SUBIR IMAGEN ===");
+    
+    if (imagenSubida == null) {
+        System.out.println("❌ ERROR: No hay imagen seleccionada");
+        return;
+    }
+    
+    System.out.println("📤 Archivo seleccionado: " + imagenSubida.getFileName());
+    System.out.println("📏 Tamaño: " + imagenSubida.getSize() + " bytes");
+    
+    try {
+        // 1. Verificar cédula
+        if (nuevaPersona.getPeperCedula() == null || nuevaPersona.getPeperCedula().trim().isEmpty()) {
+            System.out.println("⚠️ ADVERTENCIA: No hay cédula, usando nombre temporal");
+            // Puedes continuar con nombre temporal
+        }
+        
+        // 2. Generar nombre único
+        String cedula = "temp";
+        if (nuevaPersona.getPeperCedula() != null && !nuevaPersona.getPeperCedula().trim().isEmpty()) {
+            cedula = nuevaPersona.getPeperCedula().replaceAll("[^0-9]", "");
+        } else {
+            cedula = "temp_" + System.currentTimeMillis();
+        }
+        
+        String nombreOriginal = imagenSubida.getFileName();
+        String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
+        nombreArchivoImagen = cedula + "_" + System.currentTimeMillis() + extension;
+        
+        // 3. Definir ruta EXACTA
+        String rutaBase = "C:\\Users\\Usuario\\Documents\\MonsterUniversity\\Monster_University\\web\\img\\";
+        String rutaCompleta = rutaBase + nombreArchivoImagen;
+        
+        System.out.println("📁 RUTA COMPLETA: " + rutaCompleta);
+        
+        // 4. Crear directorio si no existe
+        File dir = new File(rutaBase);
+        if (!dir.exists()) {
+            System.out.println("Creando directorio...");
+            boolean creado = dir.mkdirs();
+            System.out.println("✅ Directorio creado: " + creado);
+        }
+        
+        // 5. Guardar archivo
+        System.out.println("💾 Guardando archivo...");
+        try (InputStream in = imagenSubida.getInputStream();
+             FileOutputStream out = new FileOutputStream(rutaCompleta)) {
+            
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            long totalBytes = 0;
+            
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+                totalBytes += bytesRead;
+            }
+            
+            System.out.println("✅ Bytes escritos: " + totalBytes);
+        }
+        
+        // 6. VERIFICAR que se guardó
+        File archivoGuardado = new File(rutaCompleta);
+        if (archivoGuardado.exists()) {
+            System.out.println("🎉 ARCHIVO GUARDADO EXITOSAMENTE");
+            System.out.println("   Nombre: " + archivoGuardado.getName());
+            System.out.println("   Tamaño: " + archivoGuardado.length() + " bytes");
+            System.out.println("   Ruta: " + archivoGuardado.getAbsolutePath());
+        } else {
+            System.out.println("❌ ERROR: El archivo NO se guardó");
+        }
+        
+        // 7. Asignar a la persona
+        nuevaPersona.setPepeperImag(nombreArchivoImagen);
+        System.out.println("📝 Asignado a persona: " + nuevaPersona.getPepeperImag());
+        
+        // 8. Mensaje de éxito
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", 
+            "Imagen '" + nombreOriginal + "' guardada como: " + nombreArchivoImagen));
+        
+        // 9. Limpiar
+        imagenSubida = null;
+        
+    } catch (Exception e) {
+        System.out.println("💥 ERROR CRÍTICO: " + e.getMessage());
+        e.printStackTrace();
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+            "Error: " + e.getMessage()));
+    }
+}
+    /**
+     * Método para eliminar la imagen
+     */
+    public void eliminarImagen() {
+    try {
+        // 1. Eliminar archivo físico si existe
+        if (nuevaPersona.getPepeperImag() != null && !nuevaPersona.getPepeperImag().isEmpty()) {
+            String rutaBase = "C:\\Users\\Usuario\\Documents\\MonsterUniversity\\Monster_University\\web\\img\\";
+            String rutaCompleta = rutaBase + nuevaPersona.getPepeperImag();
+            
+            System.out.println("🗑️ Intentando eliminar: " + rutaCompleta);
+            
+            if (Files.deleteIfExists(Paths.get(rutaCompleta))) {
+                System.out.println("✅ Imagen eliminada del servidor: " + nuevaPersona.getPepeperImag());
+            } else {
+                System.out.println("⚠️ La imagen no existía en el servidor: " + nuevaPersona.getPepeperImag());
+            }
+        }
+        
+        // 2. Limpiar referencia en la persona
+        nuevaPersona.setPepeperImag(null);
+        nombreArchivoImagen = null;
+        imagenSubida = null;
+        
+        System.out.println("🔄 Referencias de imagen limpiadas");
+        
+        FacesContext.getCurrentInstance().addMessage("formCrearPersona:imagenPersona",
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", 
+            "Imagen eliminada"));
+            
+    } catch (Exception e) {
+        System.out.println("⚠️ Error al eliminar imagen: " + e.getMessage());
+        e.printStackTrace();
+        FacesContext.getCurrentInstance().addMessage("formCrearPersona:imagenPersona",
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+            "Error al eliminar la imagen: " + e.getMessage()));
+    }
+}
+    
+ public String getUrlImagen() {
+    if (nuevaPersona.getPepeperImag() == null || nuevaPersona.getPepeperImag().isEmpty()) {
+        System.out.println("⚠️ getUrlImagen: pepeperImag es null/vacío");
+        return null;
+    }
+    
+    String url = "img/" + nuevaPersona.getPepeperImag();
+ 
+    String rutaFisica = "C:\\Users\\Usuario\\Documents\\MonsterUniversity\\Monster_University\\web" + url;
+    File archivo = new File(rutaFisica);
+    System.out.println("📁 Archivo existe físicamente: " + archivo.exists());
+   
+    return url;
+}
     
     private void generarNuevoId() {
         try {
@@ -137,7 +334,17 @@ public class CrearPersonaController implements Serializable {
 
     public void crearPersona() {
         try {
-            System.out.println("=== INICIANDO PROCESO COMPLETO: PERSONA + USUARIO ===");
+            System.out.println("=== INICIANDO PROCESO CREAR PERSONA ===");
+            
+            // Verificar si hay imagen subida que no se ha procesado
+           // Verificar si hay imagen seleccionada pero no subida
+if (imagenSubida != null && imagenSubida.getSize() > 0 && 
+                (nuevaPersona.getPepeperImag() == null || nuevaPersona.getPepeperImag().isEmpty())) {
+                FacesContext.getCurrentInstance().addMessage("formCrearPersona:imagenPersona",
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", 
+                    "Tiene una imagen seleccionada. Por favor haga clic en 'Subir Imagen' para procesarla"));
+                return;
+            }
             
             if (!validarDatosCompletos()) {
                 System.out.println("❌ Validaciones completas fallaron");
@@ -164,17 +371,38 @@ public class CrearPersonaController implements Serializable {
             nuevaPersona.setPesexId(sexo);
             System.out.println("✅ Sexo asignado: " + sexo.getPesexDescri());
 
+            if (codigoEstcivSeleccionado != null && !codigoEstcivSeleccionado.trim().isEmpty()) {
+                System.out.println("🔍 Buscando estado civil con código: " + codigoEstcivSeleccionado);
+                PeescEstciv estciv = buscarEstcivPorCodigo(codigoEstcivSeleccionado);
+                
+                if (estciv != null) {
+                    nuevaPersona.setPeescId(estciv);
+                    System.out.println("✅ Estado civil asignado: " + estciv.getPeescDescri());
+                } else {
+                    System.out.println("⚠️ Estado civil no encontrado, dejando como null");
+                    nuevaPersona.setPeescId(null);
+                }
+            } else {
+                nuevaPersona.setPeescId(null);
+                System.out.println("✅ Estado civil no seleccionado, dejando como null");
+            }
+
             if (personaFacade.existeId(idGenerado)) {
                 System.out.println("⚠️ El ID ya existe, generando uno nuevo...");
                 generarNuevoId();
                 System.out.println("Nuevo ID generado: " + idGenerado);
             }
 
-            nuevaPersona.setPeescId(null);
             nuevaPersona.setXeusuId(null);
-            
             nuevaPersona.setPeperId(idGenerado);
             System.out.println("✅ ID de persona asignado: " + nuevaPersona.getPeperId());
+            
+            // Verificar imagen en Base64
+              if (nuevaPersona.getPepeperImag() != null) {
+                System.out.println("📷 Nombre de imagen guardado: " + nuevaPersona.getPepeperImag());
+            } else {
+                System.out.println("📷 Sin imagen adjunta");
+            }
 
             System.out.println("💾 Guardando persona en base de datos...");
             personaFacade.create(nuevaPersona);
@@ -346,6 +574,8 @@ public class CrearPersonaController implements Serializable {
         return nombreUsuario;
     }
     
+  
+    
     public void validarCedula() {
         String cedula = nuevaPersona.getPeperCedula();
         if (cedula == null || cedula.trim().isEmpty()) {
@@ -415,10 +645,10 @@ public class CrearPersonaController implements Serializable {
             return;
         }
         
-        if (email.length() > 50) {
+        if (email.length() > 30) {
             FacesContext.getCurrentInstance().addMessage("formCrearPersona:peperEmail",
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
-                "El email no puede exceder 50 caracteres"));
+                "El email no puede exceder 30 caracteres"));
             emailValido = false;
             return;
         }
@@ -469,6 +699,18 @@ public class CrearPersonaController implements Serializable {
             "Celular válido"));
     }
     
+    public void validarFechaNacimiento() {
+        Date fechaNac = nuevaPersona.getPepeperFecNa();
+        if (fechaNac != null) {
+            Date hoy = new Date();
+            if (fechaNac.after(hoy)) {
+                FacesContext.getCurrentInstance().addMessage("formCrearPersona:pepeperFecNa",
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                    "La fecha de nacimiento no puede ser futura"));
+            }
+        }
+    }
+    
     private boolean validarCedulaEcuatoriana(String cedula) {
         try {
             int provincia = Integer.parseInt(cedula.substring(0, 2));
@@ -507,6 +749,7 @@ public class CrearPersonaController implements Serializable {
         validarCedula();
         validarEmail();
         validarCelular();
+        validarFechaNacimiento();
         
         if (!cedulaValida) {
             FacesContext.getCurrentInstance().addMessage(null,
@@ -601,6 +844,34 @@ public class CrearPersonaController implements Serializable {
         }
         return null;
     }
+    
+    private PeescEstciv buscarEstcivPorCodigo(String codigo) {
+        try {
+            PeescEstciv estciv = estcivFacade.find(codigo);
+            if (estciv != null) {
+                return estciv;
+            }
+            
+            List<PeescEstciv> todosEstciv = estcivFacade.findAll();
+            for (PeescEstciv e : todosEstciv) {
+                if (codigo.equals(e.getPeescId())) {
+                    return e;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("⚠️ Error al buscar estado civil: " + e.getMessage());
+        }
+        return null;
+    }
+
+
+    public List<PeescEstciv> getEstadosCiviles() {
+        return estcivFacade.findAll();
+    }
+    
+    public List<PesexSexo> getSexos() {
+        return sexoFacade.findAll();
+    }
 
     public PeperPerson getNuevaPersona() {
         return nuevaPersona;
@@ -659,6 +930,31 @@ class SexoConverter implements Converter {
         }
         if (value instanceof PesexSexo) {
             return ((PesexSexo) value).getPesexId();
+        }
+        return "";
+    }
+}
+
+@FacesConverter(forClass = PeescEstciv.class)
+class EstcivConverter implements Converter {
+    
+    @Override
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        PeescEstcivFacade facade = context.getApplication()
+            .evaluateExpressionGet(context, "#{estcivFacade}", PeescEstcivFacade.class);
+        return facade.find(value);
+    }
+
+    @Override
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
+        if (value == null) {
+            return "";
+        }
+        if (value instanceof PeescEstciv) {
+            return ((PeescEstciv) value).getPeescId();
         }
         return "";
     }

@@ -4,6 +4,21 @@
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
+    <context-param>
+    <param-name>primefaces.UPLOADER</param-name>
+    <param-value>native</param-value>
+</context-param>
+
+<context-param>
+    <param-name>primefaces.PARTIAL_AJAX</param-name>
+    <param-value>true</param-value>
+</context-param>
+
+<!-- Tamaño máximo de upload (10MB) -->
+<context-param>
+    <param-name>primefaces.UPLOAD_MAX_SIZE</param-name>
+    <param-value>10000000</param-value>
+</context-param>
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -21,4 +36,7 @@
     <welcome-file-list>
         <welcome-file>faces/login.xhtml</welcome-file>
     </welcome-file-list>
+    
+    
+
 </web-app>

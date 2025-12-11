@@ -126,6 +126,71 @@
                     color: #495057;
                     font-size: 0.9rem;
                 }
+                
+                .tab-container {
+                    margin-top: 20px;
+                    border: 1px solid #dee2e6;
+                    border-radius: 5px;
+                    overflow: hidden;
+                }
+                
+                .tab-buttons {
+                    display: flex;
+                    background-color: #f8f9fa;
+                    border-bottom: 1px solid #dee2e6;
+                }
+                
+                .tab-button {
+                    padding: 12px 20px;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    font-size: 0.95rem;
+                    font-weight: 500;
+                    color: #495057;
+                    transition: all 0.3s;
+                    border-bottom: 3px solid transparent;
+                }
+                
+                .tab-button:hover {
+                    background-color: #e9ecef;
+                }
+                
+                .tab-button.active {
+                    color: #2a64c5;
+                    border-bottom: 3px solid #2a64c5;
+                    background-color: #e7f3ff;
+                }
+                
+                .tab-content {
+                    padding: 20px;
+                    background-color: white;
+                }
+                
+                .tab-pane {
+                    display: none;
+                }
+                
+                .tab-pane.active {
+                    display: block;
+                }
+                
+                .basic-info-section {
+                    background-color: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 5px;
+                    margin-bottom: 20px;
+                }
+                
+                .basic-info-row {
+                    display: flex;
+                    gap: 15px;
+                    margin-bottom: 15px;
+                }
+                
+                .basic-info-column {
+                    flex: 1;
+                }
             </style>
             
             <div class="form-header">
@@ -133,12 +198,17 @@
                 <p>Complete los datos para registrar una nueva persona en el sistema</p>
             </div>
             
-            <h:form id="formCrearPersona">
-                <p:panel header="Datos Personales" styleClass="form-panel" style="border: none; background: transparent;">
+            <h:form id="formCrearPersona" enctype="multipart/form-data">
+                
+                <!-- Sección de información básica -->
+                <div class="basic-info-section">
+                    <h3 style="color: #2a64c5; margin-bottom: 20px; border-bottom: 1px solid #dee2e6; padding-bottom: 10px;">
+                        📝 Información Básica
+                    </h3>
                     
-                    <div class="form-row">
-                        <!-- ID Persona (Generado automáticamente) -->
-                        <div class="form-column">
+                    <div class="basic-info-row">
+                        <!-- ID Persona -->
+                        <div class="basic-info-column">
                             <div class="form-group">
                                 <h:outputLabel for="peperId" value="ID Persona" styleClass="form-label"/>
                                 <span class="form-required">*</span>
@@ -152,116 +222,8 @@
                             </div>
                         </div>
                         
-                        <!-- Tipo de Persona -->
-                        <div class="form-column">
-                            <div class="form-group">
-                                <h:outputLabel for="peperTipo" value="Tipo de Persona" styleClass="form-label"/>
-                                <span class="form-required">*</span>
-                                <p:selectOneMenu id="peperTipo" value="#{crearPersonaController.nuevaPersona.peperTipo}" 
-                                               style="width: 100%;"
-                                               onchange="debug('Tipo de persona seleccionado: ' + this.value)"
-                                               required="true"
-                                               requiredMessage="Debe seleccionar un tipo">
-                                    <f:selectItem itemLabel="Seleccione tipo" itemValue=""/>
-                                    <f:selectItem itemLabel="Administrador del Sistema" itemValue="Administrador del Sistema"/>
-                                    <f:selectItem itemLabel="Docente" itemValue="Docente"/>
-                                    <f:selectItem itemLabel="Administrador de matrículas" itemValue="Administrador de matriculas"/>
-                                    <f:selectItem itemLabel="Secretaría Académica" itemValue="Secretaria Academica"/>
-                                </p:selectOneMenu>
-                                <p:message for="peperTipo" display="icon"/>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Fila 2: Nombre y Apellido -->
-                    <div class="form-row">
-                        <!-- Nombre -->
-                        <div class="form-column">
-                            <div class="form-group">
-                                <h:outputLabel for="peperNombre" value="Nombre" styleClass="form-label"/>
-                                <span class="form-required">*</span>
-                                <p:inputText id="peperNombre" value="#{crearPersonaController.nuevaPersona.peperNombre}" 
-                                           maxlength="25" style="width: 100%;"
-                                           placeholder="Ingrese el nombre"
-                                           onchange="debug('Nombre cambiado: ' + this.value)"
-                                           required="true"
-                                           requiredMessage="El nombre es requerido"/>
-                                <div class="field-hint">(Máximo 25 caracteres)</div>
-                                <p:message for="peperNombre" display="icon"/>
-                            </div>
-                        </div>
-                        
-                        <!-- Apellido -->
-                        <div class="form-column">
-                            <div class="form-group">
-                                <h:outputLabel for="peperApellido" value="Apellido" styleClass="form-label"/>
-                                <span class="form-required">*</span>
-                                <p:inputText id="peperApellido" value="#{crearPersonaController.nuevaPersona.peperApellido}" 
-                                           maxlength="25" style="width: 100%;"
-                                           placeholder="Ingrese el apellido"
-                                           onchange="debug('Apellido cambiado: ' + this.value)"
-                                           required="true"
-                                           requiredMessage="El apellido es requerido"/>
-                                <div class="field-hint">(Máximo 25 caracteres)</div>
-                                <p:message for="peperApellido" display="icon"/>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Fila 3: Cédula y Celular -->
-                    <div class="form-row">
-                        <!-- Cédula -->
-                        <div class="form-column">
-                            <div class="form-group">
-                                <h:outputLabel for="peperCedula" value="Cédula" styleClass="form-label"/>
-                                <span class="form-required">*</span>
-                                <p:inputText id="peperCedula" value="#{crearPersonaController.nuevaPersona.peperCedula}" 
-                                           maxlength="15" style="width: 100%;"
-                                           placeholder="Ej: 1234567890"
-                                           onchange="debug('Cédula cambiada: ' + this.value)"
-                                           required="true"
-                                           requiredMessage="La cédula es requerida"/>
-                                <div class="field-hint">(Máximo 15 caracteres)</div>
-                                <p:message for="peperCedula" display="icon"/>
-                            </div>
-                        </div>
-                        
-                        <!-- Celular (Opcional) -->
-                        <div class="form-column">
-                            <div class="form-group">
-                                <h:outputLabel for="peperCelular" value="Celular" styleClass="form-label"/>
-                                <p:inputText id="peperCelular" value="#{crearPersonaController.nuevaPersona.peperCelular}" 
-                                           maxlength="15" style="width: 100%;"
-                                           placeholder="Ej: 0991234567 (opcional)"
-                                           onchange="debug('Celular cambiado: ' + this.value)"/>
-                                <div class="field-hint">(Máximo 15 caracteres, opcional)</div>
-                                <p:message for="peperCelular" display="icon"/>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Fila 4: Email y Fecha -->
-                    <div class="form-row">
-                        <!-- Email -->
-                        <div class="form-column">
-                            <div class="form-group">
-                                <h:outputLabel for="peperEmail" value="Email" styleClass="form-label"/>
-                                <span class="form-required">*</span>
-                                <p:inputText id="peperEmail" value="#{crearPersonaController.nuevaPersona.peperEmail}" 
-                                             maxlength="30" style="width: 100%;"
-                                             placeholder="ejemplo@correo.com"
-                                             onchange="debug('Email cambiado: ' + this.value)"
-                                             required="true"
-                                             requiredMessage="El email es requerido">
-                                    <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@(.+)$" />
-                                </p:inputText>
-                                <div class="field-hint">(Máximo 30 caracteres)</div>
-                                <p:message for="peperEmail" display="icon"/>
-                            </div>
-                        </div>
-
                         <!-- Fecha de Ingreso -->
-                        <div class="form-column">
+                        <div class="basic-info-column">
                             <div class="form-group">
                                 <h:outputLabel for="pepeperFechIngr" value="Fecha de Ingreso" styleClass="form-label"/>
                                 <span class="form-required">*</span>
@@ -271,7 +233,6 @@
                                             locale="es" 
                                             showOn="button"
                                             placeholder="Seleccione fecha"
-                                            onchange="debug('Fecha de ingreso cambiada: ' + this.value)"
                                             required="true"
                                             requiredMessage="La fecha de ingreso es requerida">
                                     <f:convertDateTime pattern="dd/MM/yyyy" />
@@ -281,82 +242,362 @@
                         </div>
                     </div>
 
-                    <!-- Fila 5: Sexo y Estado Civil -->
-                    <div class="form-row">
-    <!-- Sexo (Obligatorio) - Usando radio buttons -->
-    <div class="form-column">
-        <div class="form-group">
-            <h:outputLabel for="codigoSexoSeleccionado" value="Sexo" styleClass="form-label"/>
-            <span class="form-required">*</span>
-            <p:selectOneRadio id="codigoSexoSeleccionado" 
-                            value="#{crearPersonaController.codigoSexoSeleccionado}"
-                            layout="custom"
-                            required="true"
-                            requiredMessage="Debe seleccionar el sexo">
-                <f:selectItem itemLabel="Masculino" itemValue="M"/>
-                <f:selectItem itemLabel="Femenino" itemValue="F"/>
-                <f:selectItem itemLabel="Otro" itemValue="O"/>
-            </p:selectOneRadio>
-            <div class="radio-group">
-                <div class="radio-option">
-                    <p:radioButton id="sexoM" for="codigoSexoSeleccionado" itemIndex="0"/>
-                    <h:outputLabel for="sexoM" value="Masculino" styleClass="radio-label"/>
-                </div>
-                <div class="radio-option">
-                    <p:radioButton id="sexoF" for="codigoSexoSeleccionado" itemIndex="1"/>
-                    <h:outputLabel for="sexoF" value="Femenino" styleClass="radio-label"/>
+                    <div class="basic-info-row">
+                        <!-- Nombre -->
+                        <div class="basic-info-column">
+                            <div class="form-group">
+                                <h:outputLabel for="peperNombre" value="Nombre" styleClass="form-label"/>
+                                <span class="form-required">*</span>
+                                <p:inputText id="peperNombre" value="#{crearPersonaController.nuevaPersona.peperNombre}" 
+                                           maxlength="25" style="width: 100%;"
+                                           placeholder="Ingrese el nombre"
+                                           required="true"
+                                           requiredMessage="El nombre es requerido"/>
+                                <div class="field-hint">(Máximo 25 caracteres)</div>
+                                <p:message for="peperNombre" display="icon"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Apellido -->
+                        <div class="basic-info-column">
+                            <div class="form-group">
+                                <h:outputLabel for="peperApellido" value="Apellido" styleClass="form-label"/>
+                                <span class="form-required">*</span>
+                                <p:inputText id="peperApellido" value="#{crearPersonaController.nuevaPersona.peperApellido}" 
+                                           maxlength="25" style="width: 100%;"
+                                           placeholder="Ingrese el apellido"
+                                           required="true"
+                                           requiredMessage="El apellido es requerido"/>
+                                <div class="field-hint">(Máximo 25 caracteres)</div>
+                                <p:message for="peperApellido" display="icon"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="basic-info-row">
+                        <!-- Fecha de Nacimiento -->
+                        <div class="basic-info-column">
+                            <div class="form-group">
+                                <h:outputLabel for="pepeperFecNa" value="Fecha de Nacimiento" styleClass="form-label"/>
+                                <p:calendar id="pepeperFecNa" value="#{crearPersonaController.nuevaPersona.pepeperFecNa}" 
+                                            style="width: 100%;"
+                                            pattern="dd/MM/yyyy" 
+                                            locale="es" 
+                                            showOn="button"
+                                            placeholder="Seleccione fecha"
+                                            yearRange="c-100:c"
+                                            required="false">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </p:calendar>
+                                <div class="field-hint">(Opcional)</div>
+                                <p:message for="pepeperFecNa" display="icon"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Celular (moviéndolo a información básica para balance) -->
+                        <div class="basic-info-column">
+                            <div class="form-group">
+                                <h:outputLabel for="peperCelular" value="Celular" styleClass="form-label"/>
+                                <p:inputText id="peperCelular" value="#{crearPersonaController.nuevaPersona.peperCelular}" 
+                                           maxlength="15" style="width: 100%;"
+                                           placeholder="Ej: 0991234567 (opcional)"/>
+                                <div class="field-hint">(Opcional, formato: 09XXXXXXXX)</div>
+                                <p:message for="peperCelular" display="icon"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
-            </div>
-            <p:message for="codigoSexoSeleccionado" display="icon"/>
-        </div>
+                <!-- Sección de pestañas -->
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                        <button type="button" class="tab-button active" onclick="showTab('datosPersonales')">
+                            📋 Datos Personales
+                        </button>
+                        <button type="button" class="tab-button" onclick="showTab('contactos')">
+                            📧 Contactos
+                        </button>
+                    </div>
+                    
+                    <!-- Pestaña Datos Personales -->
+                    <div class="tab-content">
+                        <div id="datosPersonales" class="tab-pane active">
+                            <div style="padding: 15px;">
+                                <!-- Tipo de Persona -->
+                                <div class="form-group">
+                                    <h:outputLabel for="peperTipo" value="Tipo de Persona" styleClass="form-label"/>
+                                    <span class="form-required">*</span>
+                                    <p:selectOneMenu id="peperTipo" value="#{crearPersonaController.nuevaPersona.peperTipo}" 
+                                                   style="width: 100%;"
+                                                   required="true"
+                                                   requiredMessage="Debe seleccionar un tipo">
+                                        <f:selectItem itemLabel="Seleccione tipo" itemValue=""/>
+                                        <f:selectItem itemLabel="Administrador del Sistema" itemValue="Administrador del Sistema"/>
+                                        <f:selectItem itemLabel="Docente" itemValue="Docente"/>
+                                        <f:selectItem itemLabel="Administrador de matrículas" itemValue="Administrador de matriculas"/>
+                                        <f:selectItem itemLabel="Secretaría Académica" itemValue="Secretaria Academica"/>
+                                    </p:selectOneMenu>
+                                    <p:message for="peperTipo" display="icon"/>
+                                </div>
+                                
+                                <!-- Cédula -->
+                                <div class="form-group">
+                                    <h:outputLabel for="peperCedula" value="Cédula" styleClass="form-label"/>
+                                    <span class="form-required">*</span>
+                                    <p:inputText id="peperCedula" value="#{crearPersonaController.nuevaPersona.peperCedula}" 
+                                               maxlength="15" style="width: 100%;"
+                                               placeholder="Ej: 1234567890"
+                                               required="true"
+                                               requiredMessage="La cédula es requerida"/>
+                                    <div class="field-hint">(Máximo 15 caracteres)</div>
+                                    <p:message for="peperCedula" display="icon"/>
+                                </div>
+
+                                <!-- Sexo -->
+                                <div class="form-group">
+                                    <h:outputLabel for="codigoSexoSeleccionado" value="Sexo" styleClass="form-label"/>
+                                    <span class="form-required">*</span>
+                                    <p:selectOneRadio id="codigoSexoSeleccionado" 
+                                                    value="#{crearPersonaController.codigoSexoSeleccionado}"
+                                                    layout="custom"
+                                                    required="true"
+                                                    requiredMessage="Debe seleccionar el sexo">
+                                        <f:selectItem itemLabel="Masculino" itemValue="M"/>
+                                        <f:selectItem itemLabel="Femenino" itemValue="F"/>
+                                    </p:selectOneRadio>
+                                    <div class="radio-group">
+                                        <div class="radio-option">
+                                            <p:radioButton id="sexoM" for="codigoSexoSeleccionado" itemIndex="0"/>
+                                            <h:outputLabel for="sexoM" value="Masculino" styleClass="radio-label"/>
+                                        </div>
+                                        <div class="radio-option">
+                                            <p:radioButton id="sexoF" for="codigoSexoSeleccionado" itemIndex="1"/>
+                                            <h:outputLabel for="sexoF" value="Femenino" styleClass="radio-label"/>
+                                        </div>
+                                    </div>
+                                    <p:message for="codigoSexoSeleccionado" display="icon"/>
+                                </div>
+                                
+                                <!-- Estado Civil -->
+                                <div class="form-group">
+                                    <h:outputLabel for="codigoEstcivSeleccionado" value="Estado Civil" styleClass="form-label"/>
+                                    <p:selectOneMenu id="codigoEstcivSeleccionado" 
+                                                   value="#{crearPersonaController.codigoEstcivSeleccionado}"
+                                                   style="width: 100%;">
+                                        <f:selectItem itemLabel="Seleccione estado civil" itemValue=""/>
+                                        <f:selectItems value="#{crearPersonaController.estadosCiviles}" 
+                                                     var="estciv"
+                                                     itemLabel="#{estciv.peescDescri}"
+                                                     itemValue="#{estciv.peescId}"/>
+                                    </p:selectOneMenu>
+                                    <div class="field-hint">(Opcional)</div>
+                                    <p:message for="codigoEstcivSeleccionado" display="icon"/>
+                                </div>
+                                
+                               <!-- Imagen de perfil -->
+                                    <!-- Imagen de perfil - VERSIÓN FINAL SIMPLIFICADA -->
+                                    <!-- Imagen de perfil - Versión corregida -->
+<div class="form-group">
+    <h:outputLabel for="imagenPersona" value="Imagen de Perfil" styleClass="form-label"/>
+    
+    <!-- FileUpload SIMPLE sin auto-upload -->
+    <p:fileUpload id="imagenPersona" 
+                  value="#{crearPersonaController.imagenSubida}"
+                  mode="simple"
+                  skinSimple="true"
+                  sizeLimit="1048576"
+                  allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
+                  style="width: 100%; margin-bottom: 10px;"
+                  required="false"/>
+    
+    <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <!-- Botón Subir Imagen - AJAX simple -->
+        <p:commandButton value="Subir Imagen"
+                         action="#{crearPersonaController.subirImagen}"
+                         ajax="true"
+                         process="@form"
+                         update=":formCrearPersona:vistaPreviaImagen 
+                                 :formCrearPersona:mensajeImagen
+                                 :formCrearPersona:infoImagen"
+                         oncomplete="if(args &amp;&amp; !args.validationFailed) {PF('imagenWidget').clear();}"
+                         icon="pi pi-upload"
+                         styleClass="ui-button-success"/>
+        
+        <!-- Botón Eliminar Imagen -->
+        <p:commandButton value="Eliminar Imagen"
+                         action="#{crearPersonaController.eliminarImagen}"
+                         ajax="true"
+                         process="@this"
+                         update=":formCrearPersona:vistaPreviaImagen 
+                                 :formCrearPersona:mensajeImagen
+                                 :formCrearPersona:infoImagen"
+                         icon="pi pi-trash"
+                         styleClass="ui-button-danger"
+                         rendered="#{not empty crearPersonaController.nuevaPersona.pepeperImag}"/>
     </div>
+    
+    <div class="field-hint">(Opcional, máximo 1MB, formatos: JPG, PNG, GIF)</div>
+    <p:message for="imagenPersona" id="mensajeImagen" />
+    
+    <!-- Información de la imagen subida -->
+    <h:panelGroup id="infoImagen">
+        <div style="margin-top: 10px; padding: 8px; background-color: #f8f9fa; border-radius: 4px; font-size: 0.9rem;">
+            <h:outputText value="📁 Archivo: #{crearPersonaController.nuevaPersona.pepeperImag}"
+                          rendered="#{not empty crearPersonaController.nuevaPersona.pepeperImag}"
+                          style="font-weight: bold;"/>
+        </div>
+    </h:panelGroup>
+    
+    <!-- Vista previa de imagen -->
+    <h:panelGroup id="vistaPreviaImagen">
+       <!-- Vista previa de imagen -->
+<div style="margin-top: 15px; text-align: center;">
+    <p:graphicImage value="#{crearPersonaController.urlImagen}"
+                    rendered="#{not empty crearPersonaController.nuevaPersona.pepeperImag}"
+                    cache="false"
+                    width="150"
+                    height="150"
+                    style="border-radius: 8px; border: 2px solid #ddd;
+                           object-fit: cover; max-width: 150px; max-height: 150px;
+                           box-shadow: 0 2px 5px rgba(0,0,0,0.1);"/>
+</div>
+    </h:panelGroup>
+</div>
+                            </div>
+                        </div>
                         
-                        <!-- Estado Civil (Opcional) - Versión simplificada -->
-                       
+                        <!-- Pestaña Contactos -->
+                        <div id="contactos" class="tab-pane">
+                            <div style="padding: 15px;">
+                                <!-- Email -->
+                                <div class="form-group">
+                                    <h:outputLabel for="peperEmail" value="Email" styleClass="form-label"/>
+                                    <span class="form-required">*</span>
+                                    <p:inputText id="peperEmail" value="#{crearPersonaController.nuevaPersona.peperEmail}" 
+                                                 maxlength="30" style="width: 100%;"
+                                                 placeholder="ejemplo@correo.com"
+                                                 required="true"
+                                                 requiredMessage="El email es requerido">
+                                        <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@(.+)$" />
+                                    </p:inputText>
+                                    <div class="field-hint">(Máximo 30 caracteres)</div>
+                                    <p:message for="peperEmail" display="icon"/>
+                                </div>
+                                
+                                <!-- Nota informativa -->
+                                <div class="form-help" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #17a2b8;">
+                                    <p><strong>📞 Información de contacto:</strong></p>
+                                    <p>• El celular ya fue completado en la sección de Información Básica</p>
+                                    <p>• Para modificar el celular, regrese a la sección superior</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                
+                <!-- Script para manejar las pestañas -->
+                <script>
+                    function showTab(tabName) {
+                        // Ocultar todas las pestañas
+                        document.querySelectorAll('.tab-pane').forEach(function(tab) {
+                            tab.classList.remove('active');
+                        });
+                        
+                        // Mostrar la pestaña seleccionada
+                        document.getElementById(tabName).classList.add('active');
+                        
+                        // Actualizar botones activos
+                        document.querySelectorAll('.tab-button').forEach(function(button) {
+                            button.classList.remove('active');
+                        });
+                        
+                        // Activar el botón correspondiente
+                        event.target.classList.add('active');
+                    }
+                    
+                    // Validación de formulario
+                    function validateForm() {
+                        var isValid = true;
+                        
+                        // Validar nombre
+                        var nombre = document.getElementById('formCrearPersona:peperNombre').value;
+                        if (!nombre || nombre.trim() === '') {
+                            alert('El nombre es requerido');
+                            isValid = false;
+                        }
+                        
+                        // Validar apellido
+                        var apellido = document.getElementById('formCrearPersona:peperApellido').value;
+                        if (!apellido || apellido.trim() === '') {
+                            alert('El apellido es requerido');
+                            isValid = false;
+                        }
+                        
+                        // Validar cédula
+                        var cedula = document.getElementById('formCrearPersona:peperCedula').value;
+                        if (!cedula || cedula.trim() === '') {
+                            alert('La cédula es requerida');
+                            isValid = false;
+                        }
+                        
+                        // Validar email
+                        var email = document.getElementById('formCrearPersona:peperEmail').value;
+                        var emailPattern = /^[A-Za-z0-9+_.-]+@(.+)$/;
+                        if (!email || email.trim() === '') {
+                            alert('El email es requerido');
+                            isValid = false;
+                        } else if (!emailPattern.test(email)) {
+                            alert('Formato de email inválido');
+                            isValid = false;
+                        }
+                        
+                        // Validar tipo de persona
+                      
+                        
+                        // Validar fecha de ingreso
+                        var fechaIngreso = document.getElementById('formCrearPersona:pepeperFechIngr_input').value;
+                        if (!fechaIngreso || fechaIngreso.trim() === '') {
+                            alert('La fecha de ingreso es requerida');
+                            isValid = false;
+                        }
+                        
+                        return isValid;
+                    }
+                </script>
 
-                    <!-- Ayuda -->
-                    <div class="form-help">
-                        <p><strong>📋 Información importante:</strong></p>
-                        <p>• <span class="form-required">*</span> Campos obligatorios</p>
-                        <p>• El ID de persona se genera automáticamente</p>
-                        <p>• La fecha de ingreso es la fecha en que la persona ingresó a la institución</p>
-                        <p>• El sexo es obligatorio para completar el registro</p>
-                        <p>• El estado civil es opcional</p>
-                    </div>
+                <!-- Ayuda -->
+                <div class="form-help">
+                    <p><strong>📋 Información importante:</strong></p>
+                    <p>• <span class="form-required">*</span> Campos obligatorios</p>
+                    <p>• El ID de persona se genera automáticamente</p>
+                    <p>• <strong>Datos Personales:</strong> Tipo, Cédula, Sexo, Estado Civil e Imagen</p>
+                    <p>• <strong>Contactos:</strong> Email (el celular está en Información Básica)</p>
+                    <p>• La imagen de perfil es opcional y se almacenará en formato Base64</p>
+                </div>
 
-                    <!-- Botones de acción -->
-                    <div class="form-actions">
-                        <p:commandButton value="💾 Crear Persona" 
-                                       action="#{crearPersonaController.crearPersona}"
-                                       update="@form :growl"
-                                       icon="pi pi-save"
-                                       styleClass="ui-button-primary"
-                                       style="margin-right: 10px; padding: 8px 20px;"
-                                       onstart="debug('=== INICIANDO CREACIÓN DE PERSONA ===');
-                                                console.log('Validando formulario...');"
-                                       oncomplete="if(!args.validationFailed) { 
-                                                   debugSuccess('Persona creada exitosamente!');
-                                                   } else {
-                                                   debugError('Error en el formulario');
-                                                   }"/>
-                        
-                        <p:commandButton value="🔄 Limpiar" 
-                                       action="#{crearPersonaController.initNuevaPersona}"
-                                       update="@form :growl"
-                                       immediate="true"
-                                       icon="pi pi-refresh"
-                                       styleClass="ui-button-secondary"
-                                       style="margin-right: 10px; padding: 8px 20px;"
-                                       onstart="debug('Limpiando formulario...')"/>
-                        
-                        <p:button value="↩️ Cancelar" 
-                                icon="pi pi-times"
-                                outcome="/index.xhtml"
-                                style="padding: 8px 20px;"/>
-                    </div>
-                </p:panel>
+                <!-- Botones de acción -->
+                <div class="form-actions">
+                    <p:commandButton value="💾 Crear Persona" 
+                                   action="#{crearPersonaController.crearPersona}"
+                                   update="@form :growl"
+                                   icon="pi pi-save"
+                                   styleClass="ui-button-primary"
+                                   style="margin-right: 10px; padding: 8px 20px;"
+                                   onclick="return validateForm();"/>
+                    
+                    <p:commandButton value="🔄 Limpiar" 
+                                   action="#{crearPersonaController.initNuevaPersona}"
+                                   update="@form :growl"
+                                   immediate="true"
+                                   icon="pi pi-refresh"
+                                   styleClass="ui-button-secondary"
+                                   style="margin-right: 10px; padding: 8px 20px;"/>
+                    
+                    <p:button value="↩️ Cancelar" 
+                            icon="pi pi-times"
+                            outcome="/index.xhtml"
+                            style="padding: 8px 20px;"/>
+                </div>
             </h:form>
         </div>
     </ui:define>

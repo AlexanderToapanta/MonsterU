@@ -1,0 +1,29 @@
+<!-- Agrega esto al formulario -->
+<h:form>
+    <h:commandButton value="🔍 Probar Conexión" 
+                   action="#{correoController.probarConexionSimple}"
+                   style="background-color: #ff9900; margin-bottom: 10px;"/>
+    
+    <h:commandButton value="📧 Enviar Correo (Gmail 465)" 
+                   action="#{correoController.enviarCorreo}"
+                   style="background-color: #4CAF50;"/>
+</h:form>
+
+<!-- Panel de ayuda -->
+<div style="background-color: #e8f4fd; padding: 15px; margin-top: 20px; border-radius: 5px; border: 1px solid #b3d9ff;">
+    <h3>🛠️ Para enviar correos desde casa necesitas:</h3>
+    <ol>
+        <li><b>Cuenta de Gmail</b> (no Monster)</li>
+        <li><b>Activar Verificación en 2 pasos</b> en Google</li>
+        <li><b>Generar Contraseña de aplicación</b>:
+            <ul>
+                <li>Ve a: <a href="https://myaccount.google.com/" target="_blank">Mi Cuenta Google</a></li>
+                <li>Seguridad → Verificación en 2 pasos → ACTIVAR</li>
+                <li>Busca "Contraseñas de aplicaciones"</li>
+                <li>Selecciona "Otra aplicación" y ponle un nombre</li>
+                <li>Copia la contraseña de 16 caracteres</li>
+                <li>Úsala en el código donde dice SMTP_PASSWORD</li>
+            </ul>
+        </li>
+    </ol>
+</div>

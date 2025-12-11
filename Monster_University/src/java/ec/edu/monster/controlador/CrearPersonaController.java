@@ -30,6 +30,19 @@ import javax.faces.convert.FacesConverter;
 import javax.inject.Named;
 import org.primefaces.model.file.UploadedFile;
 import java.util.Base64;
+import java.util.Properties;
+import javax.mail.AuthenticationFailedException;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 @Named(value = "crearPersonaController")
 @SessionScoped
@@ -61,6 +74,12 @@ public class CrearPersonaController implements Serializable {
     private boolean celularValido = false;
     private UploadedFile imagenSubida;
     private String nombreArchivoImagen; 
+ // Cambia estas constantes con la información de SendGrid
+private final String CORREO_REMITENTE = "alexandertoapantaj05@gmail.com"; // ¡Debe ser el correo que verificaste en SendGrid!
+// ¡VERIFICA CADA CARÁCTER!
+private final String CONTRASENIA_REMITENTE = "";
+private final String SERVIDOR_SMTP = "smtp.sendgrid.net";
+private final int PUERTO_SMTP = 587; // Puerto 587 para usar TLS/STARTTLS
 
 
     public CrearPersonaController() {
@@ -432,6 +451,11 @@ if (imagenSubida != null && imagenSubida.getSize() > 0 &&
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", 
                     "Persona creada con ID: " + personaVerificada.getPeperId() + 
                     " y Usuario creado con ID: " + usuarioCreado.getXeusuId()));
+        enviarCorreoCredenciales(
+        personaVerificada.getPeperEmail(),      // Correo de la persona
+        usuarioCreado.getXeusuNombre(),         // Nombre de usuario generado
+        nuevaPersona.getPeperCedula()           // Contraseña (cédula)
+    );
             } else {
                 FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", 
@@ -863,7 +887,222 @@ if (imagenSubida != null && imagenSubida.getSize() > 0 &&
         }
         return null;
     }
+/**
+ * Método para enviar correo con credenciales usando Elastic Email SMTP
+ */
+private void enviarCorreoCredenciales(String destinatario, String nombreUsuario, String contrasenia) {
+    try {
+        // CAMBIO 1: Cambiar el mensaje inicial
+        System.out.println("=== ENVIANDO CORREO CON SENDGRID (SMTP) ===");
+        System.out.println("📧 Destinatario: " + destinatario);
+        System.out.println("👤 Usuario: " + nombreUsuario);
+        System.out.println("🔐 Contraseña: " + contrasenia);
+        
+        // Validar que el destinatario no sea null
+        if (destinatario == null || destinatario.trim().isEmpty()) {
+            System.out.println("❌ ERROR: El destinatario está vacío");
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", 
+                "No se pudo enviar correo: El email del destinatario está vacío"));
+            return;
+        }
+        
+        // Configuración SMTP para SendGrid
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true"); // Usa TLS (obligatorio para puerto 587)
+        props.put("mail.smtp.host", SERVIDOR_SMTP);  // Debe ser "smtp.sendgrid.net"
+        props.put("mail.smtp.port", String.valueOf(PUERTO_SMTP)); // Debe ser 587
+        props.put("mail.smtp.ssl.trust", SERVIDOR_SMTP);
+        
+        // Configuración adicional para mejor rendimiento
+        props.put("mail.smtp.connectiontimeout", "5000"); // 5 segundos
+        props.put("mail.smtp.timeout", "5000"); // 5 segundos
+        props.put("mail.smtp.writetimeout", "5000"); // 5 segundos
+        
+        // Crear sesión con autenticación
+        // La autenticación YA ESTÁ CORRECTA (usuario: "apikey", contraseña: CONTRASENIA_REMITENTE)
+        Session session = Session.getInstance(props,
+            new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    System.out.println("🔑 Autenticando con SendGrid...");
+                    System.out.println("     Usuario: apikey"); 
+                    System.out.println("     API Key: " + CONTRASENIA_REMITENTE.substring(0, 4) + "...");
+                    
+                    return new PasswordAuthentication("apikey", CONTRASENIA_REMITENTE);
+                }
+            });
+        
+        // Habilitar depuración para ver errores detallados
+        session.setDebug(true);
+        
+        // Crear mensaje de correo
+        Message message = new MimeMessage(session);
+        
+        // Configurar remitente
+        message.setFrom(new InternetAddress(CORREO_REMITENTE, "Monsters University"));
+        
+        // Configurar destinatario
+        message.setRecipients(Message.RecipientType.TO, 
+            InternetAddress.parse(destinatario.trim()));
+        
+        // Asunto del correo
+        message.setSubject("Credenciales de Acceso - Monsters University");
+        message.setSentDate(new Date());
+        
+        // Contenido del correo en HTML
+        String contenidoHTML = construirContenidoHTML(nombreUsuario, contrasenia);
+        
+        // Contenido en texto plano (para clientes que no soportan HTML)
+        String textoPlano = construirContenidoTextoPlano(nombreUsuario, contrasenia);
+        
+        // Configurar contenido multipart (HTML + texto plano)
+        MimeMultipart multipart = new MimeMultipart("alternative");
+        
+        // 1. Parte de texto plano
+        MimeBodyPart textPart = new MimeBodyPart();
+        textPart.setText(textoPlano, "utf-8");
+        multipart.addBodyPart(textPart);
+        
+        // 2. Parte HTML
+        MimeBodyPart htmlPart = new MimeBodyPart();
+        htmlPart.setContent(contenidoHTML, "text/html; charset=utf-8");
+        multipart.addBodyPart(htmlPart);
+        
+        // Asignar el contenido al mensaje
+        message.setContent(multipart);
+        
+        // Enviar el correo
+        System.out.println("🚀 Enviando correo...");
+        Transport.send(message);
+        
+        System.out.println("✅ CORREO ENVIADO EXITOSAMENTE");
+        System.out.println("    📨 De: " + CORREO_REMITENTE);
+        System.out.println("    📬 Para: " + destinatario);
+        System.out.println("    🕐 Fecha: " + new Date());
+        
+        // Mostrar mensaje de éxito en la interfaz
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", 
+            "Credenciales enviadas por correo a: " + destinatario));
+            
+    } catch (MessagingException e) {
+        System.out.println("❌ ERROR SMTP: " + e.getMessage());
+        e.printStackTrace();
+        
+        String mensajeError = "Error al enviar correo: ";
+        if (e.getMessage().contains("535")) {
+            // Mantenemos este mensaje de error ya que es el que estás experimentando
+            mensajeError += "Credenciales SMTP incorrectas (Error 535). Verifica API Key o que el usuario sea 'apikey'.";
+        } else if (e.getMessage().contains("550") || e.getMessage().contains("554")) {
+            mensajeError += "Correo rechazado por el servidor. Verifica el destinatario y que el remitente esté verificado en SendGrid.";
+        } else if (e.getMessage().contains("Connection timed out")) {
+            mensajeError += "Timeout de conexión. Verifica tu conexión a internet o el bloqueo del puerto 587.";
+        } else {
+            mensajeError += e.getMessage();
+        }
+        
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error correo", 
+            mensajeError));
+            
+    } catch (Exception e) {
+        System.out.println("❌ ERROR inesperado: " + e.getMessage());
+        e.printStackTrace();
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+            "Error inesperado al enviar correo: " + e.getMessage()));
+    }
+}
+/**
+ * Construye el contenido HTML del correo
+ */
+private String construirContenidoHTML(String nombreUsuario, String contrasenia) {
+    return "<!DOCTYPE html>" +
+           "<html lang='es'>" +
+           "<head>" +
+           "<meta charset='UTF-8'>" +
+           "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+           "<title>Credenciales Monsters University</title>" +
+           "<style>" +
+           "body { font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }" +
+           ".container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }" +
+           ".header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center; }" +
+           ".header h1 { margin: 0; font-size: 28px; }" +
+           ".content { padding: 30px; }" +
+           ".credentials-box { background: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin: 25px 0; border-radius: 0 5px 5px 0; }" +
+           ".credential-item { margin: 15px 0; font-size: 16px; }" +
+           ".label { font-weight: bold; color: #555; display: inline-block; width: 120px; }" +
+           ".value { color: #222; font-family: 'Courier New', monospace; background: #e9ecef; padding: 5px 10px; border-radius: 3px; }" +
+           ".instructions { background: #e7f3ff; border: 1px solid #b6d4fe; border-radius: 5px; padding: 20px; margin: 25px 0; }" +
+           ".instructions h3 { color: #084298; margin-top: 0; }" +
+           ".btn-container { text-align: center; margin: 30px 0; }" +
+           ".btn-access { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 30px; font-weight: bold; display: inline-block; transition: transform 0.3s; }" +
+           ".btn-access:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }" +
+           ".warning { background: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center; font-weight: bold; }" +
+           ".footer { background: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; border-top: 1px solid #dee2e6; }" +
+           ".logo { max-width: 200px; margin-bottom: 20px; }" +
+           "</style>" +
+           "</head>" +
+           "<body>" +
+           "<div class='container'>" +
+           "<div class='header'>" +
+           "<h1>Monsters University</h1>" +
+           "<p>Sistema de Gestión de Bienes</p>" +
+           "</div>" +
+           "<div class='content'>" +
+           "<h2>¡Bienvenido/a al Sistema!</h2>" +
+           "<p>Se han creado tus credenciales para acceder al sistema de gestión:</p>" +
+           "<div class='credentials-box'>" +
+           "<div class='credential-item'><span class='label'>👤 Usuario:</span> <span class='value'>" + nombreUsuario + "</span></div>" +
+           "<div class='credential-item'><span class='label'>🔑 Contraseña:</span> <span class='value'>" + contrasenia + "</span></div>" +
+           "</div>" +
+           "<div class='instructions'>" +
+           "<h3>📋 Instrucciones de Acceso:</h3>" +
+           "<ol>" +
+           "<li>Accede al sistema a través del siguiente enlace</li>" +
+           "<li>Ingresa las credenciales proporcionadas</li>" +
+           "<li>Cambia tu contraseña en tu primer inicio de sesión</li>" +
+           "</ol>" +
+           "</div>" +
+           "<div class='btn-container'>" +
+           "<a href='http://localhost:8080/Monster_University' class='btn-access'>🔗 Acceder al Sistema</a>" +
+           "</div>" +
+           "<div class='warning'>" +
+           "⚠️ IMPORTANTE: Esta es una contraseña temporal. Por seguridad, cámbiala inmediatamente después de tu primer acceso." +
+           "</div>" +
+           "</div>" +
+           "<div class='footer'>" +
+           "<p>© 2023 Monsters University. Todos los derechos reservados.</p>" +
+           "<p>Este es un correo automático, por favor no responder.</p>" +
+           "<p><small>Si no solicitaste estas credenciales, por favor ignora este mensaje.</small></p>" +
+           "</div>" +
+           "</div>" +
+           "</body>" +
+           "</html>";
+}
 
+/**
+ * Construye el contenido en texto plano del correo
+ */
+private String construirContenidoTextoPlano(String nombreUsuario, String contrasenia) {
+    return "MONSTERS UNIVERSITY\n" +
+           "=====================\n\n" +
+           "CREDENCIALES DE ACCESO AL SISTEMA\n\n" +
+           "¡Bienvenido/a!\n\n" +
+           "Se han creado tus credenciales para acceder al sistema de gestión:\n\n" +
+           "USUARIO: " + nombreUsuario + "\n" +
+           "CONTRASEÑA: " + contrasenia + "\n\n" +
+           "INSTRUCCIONES DE ACCESO:\n" +
+           "1. Accede al sistema: http://localhost:8080/Monster_University\n" +
+           "2. Ingresa las credenciales proporcionadas\n" +
+           "3. Cambia tu contraseña en tu primer inicio de sesión\n\n" +
+           "IMPORTANTE: Esta es una contraseña temporal. Por seguridad, cámbiala inmediatamente después de tu primer acceso.\n\n" +
+           "----------------------------------------\n" +
+           "© 2023 Monsters University\n" +
+           "Este es un correo automático, no responder.\n" +
+           "Si no solicitaste estas credenciales, ignora este mensaje.";
+}
 
     public List<PeescEstciv> getEstadosCiviles() {
         return estcivFacade.findAll();

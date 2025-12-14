@@ -22,28 +22,28 @@
             <div style="padding:20px; max-width:1000px; margin:0 auto;">
                 <h3>Asignación de Perfiles a Usuario</h3>
 
-                <!-- Selección de usuario -->
+                <!-- Selección de ROL (no usuario) -->
                 <div style="margin-bottom:15px;">
-                    <h:outputLabel value="Usuario:" style="font-weight:bold; margin-right:10px;"/>
-                    <p:selectOneMenu id="usuarioSel" value="#{xeusuUsuarController.usuarioSeleccionadoId}"
+                    <h:outputLabel value="Rol:" style="font-weight:bold; margin-right:10px;"/>
+                    <p:selectOneMenu id="rolSel" value="#{xerolRolController.rolSeleccionadoId}"
                                      style="width:300px;">
-                        <f:selectItem itemLabel="-- Seleccione usuario --" itemValue="" />
-                        <f:selectItems value="#{xeusuUsuarController.itemsAvailableSelectOne}"
-                                       var="u"
-                                       itemLabel="#{u.xeusuNombre} (#{u.xeusuId})"
-                                       itemValue="#{u.xeusuId}" />
-                        <p:ajax listener="#{xeusuUsuarController.cargarRolesUsuario}"
+                        <f:selectItem itemLabel="-- Seleccione rol --" itemValue="" />
+                        <f:selectItems value="#{xerolRolController.itemsAvailableSelectOne}"
+                                       var="r"
+                                       itemLabel="#{r.xerolNombre} "
+                                       itemValue="#{r.xerolId}" />
+                        <p:ajax listener="#{xerolRolController.cargarUsuariosRol}"
                                 update="pickRoles growl"/>
                     </p:selectOneMenu>
                 </div>
 
                 <!-- PickList -->
-                <p:panel header="Asignación de Roles">
+                <p:panel header="Asignación de Usuarios">
                     <p:pickList id="pickRoles"
-                                value="#{xeusuUsuarController.dualRoles}"
-                                var="r"
-                                itemLabel="#{r.xerolNombre}"
-                                itemValue="#{r.xerolId}" 
+                                value="#{xerolRolController.dualUsuarios}"
+                                var="u"
+                                itemLabel="#{u.xeusuNombre} (#{u.xeusuId})"
+                                itemValue="#{u.xeusuId}" 
                                 showSourceFilter="true"
                                 showTargetFilter="true"
                                 filterMatchMode="contains"
@@ -52,14 +52,8 @@
                     </p:pickList>
                 </p:panel>
 
-                <!-- Botón Guardar -->
-                <div style="text-align:center; margin-top:18px;">
-                    <p:commandButton value="Guardar Cambios"
-                                     icon="pi pi-check"
-                                     styleClass="ui-button-success"
-                                     action="#{xeusuUsuarController.guardarCambios}"
-                                     update="growl,pickRoles"/>
-                </div>
+                
+              
 
             </div>
         </h:form>

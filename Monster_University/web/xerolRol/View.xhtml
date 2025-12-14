@@ -8,16 +8,16 @@
 
     <ui:composition>
 
-        <p:dialog id="XerolRolViewDlg" widgetVar="XerolRolViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewXerolRolTitle}">
+        <p:dialog id="XerolRolViewDlg" widgetVar="XerolRolViewDialog" modal="true" resizable="false" appendTo="@(body)" header="Vista">
             <h:form id="XerolRolViewForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{xerolRolController.selected != null}">
                         <h:outputText value="#{bundle.ViewXerolRolLabel_xerolId}"/>
-                        <h:outputText value="#{xerolRolController.selected.xerolId}" title="#{bundle.ViewXerolRolTitle_xerolId}"/>
+                        <h:outputText value="#{xerolRolController.selected.xerolId}" title="ID}"/>
                         <h:outputText value="#{bundle.ViewXerolRolLabel_xerolNombre}"/>
-                        <h:outputText value="#{xerolRolController.selected.xerolNombre}" title="#{bundle.ViewXerolRolTitle_xerolNombre}"/>
+                        <h:outputText value="#{xerolRolController.selected.xerolNombre}" title="Nombre"/>
                         <h:outputText value="#{bundle.ViewXerolRolLabel_xerolDescri}"/>
-                        <h:outputText value="#{xerolRolController.selected.xerolDescri}" title="#{bundle.ViewXerolRolTitle_xerolDescri}"/>
+                        <h:outputText value="#{xerolRolController.selected.xerolDescri}" title="Descripción"/>
                     </p:panelGrid>
                     <p:commandButton value="#{bundle.Close}" onclick="XerolRolViewDialog.hide()"/>
                 </h:panelGroup>

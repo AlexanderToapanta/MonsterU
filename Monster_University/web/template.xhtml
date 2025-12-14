@@ -133,8 +133,14 @@
 
                     <!-- SEGURIDAD -->
                     <p:menuButton value="Seguridad" styleClass="menu-btn">
-                        
+                         <p:menuitem value="Administrar Roles"
+                                    icon="pi pi-users"
+                                    outcome="/xerolRol/List.xhtml"/>
+                         <p:menuitem value="Asignar Roles"
+                                    icon="pi pi-shield"
+                                    outcome="/faces/asignacion_roles.xhtml"/>
                     </p:menuButton>
+                     
 
                     <!-- USUARIO LOGUEADO -->
                     <p:menuButton value="#{loginController.usuarioLogueado.xeusuNombre}"

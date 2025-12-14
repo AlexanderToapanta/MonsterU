@@ -8,15 +8,15 @@
 
     <ui:composition>
 
-        <p:dialog id="XerolRolEditDlg" widgetVar="XerolRolEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditXerolRolTitle}">
+        <p:dialog id="XerolRolEditDlg" widgetVar="XerolRolEditDialog" modal="true" resizable="false" appendTo="@(body)" header="Editar Rol">
             <h:form id="XerolRolEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{xerolRolController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditXerolRolLabel_xerolId}" for="xerolId" />
-                        <p:inputText id="xerolId" value="#{xerolRolController.selected.xerolId}" title="#{bundle.EditXerolRolTitle_xerolId}" required="true" requiredMessage="#{bundle.EditXerolRolRequiredMessage_xerolId}"/>
-                        <p:outputLabel value="#{bundle.EditXerolRolLabel_xerolNombre}" for="xerolNombre" />
+                        <p:outputLabel value="ID" for="xerolId" />
+                        <p:inputText id="xerolId" value="#{xerolRolController.selected.xerolId}" title="#{bundle.EditXerolRolTitle_xerolId}" required="true"  readonly="true" requiredMessage="#{bundle.EditXerolRolRequiredMessage_xerolId}"/>
+                        <p:outputLabel value="Nombre" for="xerolNombre" />
                         <p:inputText id="xerolNombre" value="#{xerolRolController.selected.xerolNombre}" title="#{bundle.EditXerolRolTitle_xerolNombre}" />
-                        <p:outputLabel value="#{bundle.EditXerolRolLabel_xerolDescri}" for="xerolDescri" />
+                        <p:outputLabel value="#Descripción" for="xerolDescri" />
                         <p:inputText id="xerolDescri" value="#{xerolRolController.selected.xerolDescri}" title="#{bundle.EditXerolRolTitle_xerolDescri}" />
                     </p:panelGrid>
                     <p:commandButton actionListener="#{xerolRolController.update}" value="#{bundle.Save}" update="display,:XerolRolListForm:datalist,:growl" oncomplete="handleSubmit(args, 'XerolRolEditDialog');">

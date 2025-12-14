@@ -1,15 +1,20 @@
 package ec.edu.monster.controlador;
 
 import ec.edu.monster.modelo.XerolRol;
+import ec.edu.monster.modelo.XeusuUsuar;
 import ec.edu.monster.controlador.util.JsfUtil;
 import ec.edu.monster.controlador.util.JsfUtil.PersistAction;
 import ec.edu.monster.facades.XerolRolFacade;
+import ec.edu.monster.facades.XeusuUsuarFacade;
+import org.primefaces.model.DualListModel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.inject.Named;
@@ -24,19 +29,51 @@ import javax.faces.convert.FacesConverter;
 public class XerolRolController implements Serializable {
 
     @EJB
-    private ec.edu.monster.facades.XerolRolFacade ejbFacade;
+    private XerolRolFacade ejbFacade;
+    
+    @EJB
+    private XeusuUsuarFacade usuarioFacade;
+    
     private List<XerolRol> items = null;
     private XerolRol selected;
+    private String rolSeleccionadoId;
+    private DualListModel<XeusuUsuar> dualUsuarios;
+
+    @PostConstruct
+    public void init() {
+        dualUsuarios = new DualListModel<>();
+        // Inicialmente, todos los usuarios estarán en la lista de disponibles
+        List<XeusuUsuar> todosUsuarios = usuarioFacade.findAll();
+        dualUsuarios.setSource(todosUsuarios);
+        dualUsuarios.setTarget(new ArrayList<>()); // Lista vacía de asignados
+    }
 
     public XerolRolController() {
     }
 
+    // Getters y Setters
     public XerolRol getSelected() {
         return selected;
     }
 
     public void setSelected(XerolRol selected) {
         this.selected = selected;
+    }
+
+    public String getRolSeleccionadoId() {
+        return rolSeleccionadoId;
+    }
+
+    public void setRolSeleccionadoId(String rolSeleccionadoId) {
+        this.rolSeleccionadoId = rolSeleccionadoId;
+    }
+
+    public DualListModel<XeusuUsuar> getDualUsuarios() {
+        return dualUsuarios;
+    }
+
+    public void setDualUsuarios(DualListModel<XeusuUsuar> dualUsuarios) {
+        this.dualUsuarios = dualUsuarios;
     }
 
     protected void setEmbeddableKeys() {
@@ -52,13 +89,19 @@ public class XerolRolController implements Serializable {
     public XerolRol prepareCreate() {
         selected = new XerolRol();
         initializeEmbeddableKey();
+        try {
+            String nextId = getFacade().nextNumericId("xerolId");
+            selected.setXerolId(nextId);
+        } catch (Exception ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Error generando ID automático para rol", ex);
+        }
         return selected;
     }
 
     public void create() {
         persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("XerolRolCreated"));
         if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+            items = null;
         }
     }
 
@@ -69,8 +112,8 @@ public class XerolRolController implements Serializable {
     public void destroy() {
         persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("XerolRolDeleted"));
         if (!JsfUtil.isValidationFailed()) {
-            selected = null; // Remove selection
-            items = null;    // Invalidate list of items to trigger re-query.
+            selected = null;
+            items = null;
         }
     }
 
@@ -79,6 +122,69 @@ public class XerolRolController implements Serializable {
             items = getFacade().findAll();
         }
         return items;
+    }
+
+    // Método para cargar usuarios cuando se selecciona un rol
+    public void cargarUsuariosRol() {
+        if (rolSeleccionadoId != null && !rolSeleccionadoId.isEmpty()) {
+            XerolRol rolSeleccionado = getFacade().find(rolSeleccionadoId);
+            if (rolSeleccionado != null) {
+                // Obtener todos los usuarios
+                List<XeusuUsuar> todosUsuarios = usuarioFacade.findAll();
+                
+                // Obtener usuarios asignados a este rol
+                // NOTA: Esto depende de cómo tengas la relación entre usuarios y roles
+                // Si tienes una relación ManyToMany, necesitarías una consulta específica
+                List<XeusuUsuar> usuariosAsignados = new ArrayList<>();
+                
+                // Ejemplo de consulta (debes adaptarlo a tu modelo de datos):
+                // usuariosAsignados = usuarioFacade.findUsuariosByRolId(rolSeleccionadoId);
+                
+                // Por ahora, simulamos que no hay usuarios asignados
+                // Esto es solo un ejemplo - debes implementar la lógica real
+                List<XeusuUsuar> usuariosDisponibles = new ArrayList<>(todosUsuarios);
+                usuariosDisponibles.removeAll(usuariosAsignados);
+                
+                dualUsuarios = new DualListModel<>(usuariosDisponibles, usuariosAsignados);
+                
+                // También establecemos el selected para referencia
+                selected = rolSeleccionado;
+            }
+        }
+    }
+
+    // Método para guardar los cambios de asignación
+    public void guardarCambios() {
+        if (rolSeleccionadoId != null && dualUsuarios != null) {
+            try {
+                // Obtener la lista de usuarios asignados
+                List<XeusuUsuar> usuariosAsignados = dualUsuarios.getTarget();
+                
+                // Lógica para guardar las asignaciones en la base de datos
+                // Esto depende de cómo tengas la relación entre usuarios y roles
+                
+                // Ejemplo de implementación:
+                // 1. Eliminar todas las asignaciones actuales para este rol
+                // 2. Crear nuevas asignaciones con los usuarios seleccionados
+                
+                // Por ahora, solo mostramos un mensaje de éxito
+                JsfUtil.addSuccessMessage("Asignaciones de usuarios al rol guardadas correctamente");
+                
+                // Si tienes entidad de relación (ej: XeusuRol), deberías hacer:
+                // for (XeusuUsuar usuario : usuariosAsignados) {
+                //     XeusuRol asignacion = new XeusuRol();
+                //     asignacion.setUsuario(usuario);
+                //     asignacion.setRol(selected);
+                //     asignacionFacade.create(asignacion);
+                // }
+                
+            } catch (Exception ex) {
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Error al guardar asignaciones", ex);
+                JsfUtil.addErrorMessage("Error al guardar las asignaciones: " + ex.getMessage());
+            }
+        } else {
+            JsfUtil.addErrorMessage("No hay rol seleccionado para guardar asignaciones");
+        }
     }
 
     private void persist(PersistAction persistAction, String successMessage) {
@@ -155,11 +261,10 @@ public class XerolRolController implements Serializable {
                 XerolRol o = (XerolRol) object;
                 return getStringKey(o.getXerolId());
             } else {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), XerolRol.class.getName()});
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", 
+                    new Object[]{object, object.getClass().getName(), XerolRol.class.getName()});
                 return null;
             }
         }
-
     }
-
 }

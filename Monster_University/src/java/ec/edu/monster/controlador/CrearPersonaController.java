@@ -1048,7 +1048,7 @@ private String construirContenidoHTML(String nombreUsuario, String contrasenia) 
            "<div class='container'>" +
            "<div class='header'>" +
            "<h1>Monsters University</h1>" +
-           "<p>Sistema de Gestión de Bienes</p>" +
+           "<p>Sistema de Gestión de Matrículas</p>" +
            "</div>" +
            "<div class='content'>" +
            "<h2>¡Bienvenido/a al Sistema!</h2>" +

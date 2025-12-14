@@ -8,15 +8,15 @@
 
     <ui:composition>
 
-        <p:dialog id="XerolRolCreateDlg" widgetVar="XerolRolCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateXerolRolTitle}">
+        <p:dialog id="XerolRolCreateDlg" widgetVar="XerolRolCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="Crear un nuevo rol">
             <h:form id="XerolRolCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{xerolRolController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateXerolRolLabel_xerolId}" for="xerolId" />
-                        <p:inputText id="xerolId" value="#{xerolRolController.selected.xerolId}" title="#{bundle.CreateXerolRolTitle_xerolId}" required="true" requiredMessage="#{bundle.CreateXerolRolRequiredMessage_xerolId}"/>
-                        <p:outputLabel value="#{bundle.CreateXerolRolLabel_xerolNombre}" for="xerolNombre" />
+                        <p:outputLabel value="ID" for="xerolId"  />
+                        <p:inputText id="xerolId" value="#{xerolRolController.selected.xerolId}" title="#{bundle.CreateXerolRolTitle_xerolId}" required="true" readonly="true" requiredMessage="#{bundle.CreateXerolRolRequiredMessage_xerolId}"/>
+                        <p:outputLabel value="Nombre" for="xerolNombre" />
                         <p:inputText id="xerolNombre" value="#{xerolRolController.selected.xerolNombre}" title="#{bundle.CreateXerolRolTitle_xerolNombre}" />
-                        <p:outputLabel value="#{bundle.CreateXerolRolLabel_xerolDescri}" for="xerolDescri" />
+                        <p:outputLabel value="Descripción" for="xerolDescri" />
                         <p:inputText id="xerolDescri" value="#{xerolRolController.selected.xerolDescri}" title="#{bundle.CreateXerolRolTitle_xerolDescri}" />
                     </p:panelGrid>
                     <p:commandButton actionListener="#{xerolRolController.create}" value="#{bundle.Save}" update="display,:XerolRolListForm:datalist,:growl" oncomplete="handleSubmit(args,'XerolRolCreateDialog');"/>

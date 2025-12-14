@@ -294,17 +294,7 @@
                             </div>
                         </div>
                         
-                        <!-- Celular (moviéndolo a información básica para balance) -->
-                        <div class="basic-info-column">
-                            <div class="form-group">
-                                <h:outputLabel for="peperCelular" value="Celular" styleClass="form-label"/>
-                                <p:inputText id="peperCelular" value="#{crearPersonaController.nuevaPersona.peperCelular}" 
-                                           maxlength="15" style="width: 100%;"
-                                           placeholder="Ej: 0991234567 (opcional)"/>
-                                <div class="field-hint">(Opcional, formato: 09XXXXXXXX)</div>
-                                <p:message for="peperCelular" display="icon"/>
-                            </div>
-                        </div>
+                      
                     </div>
                 </div>
                 
@@ -484,12 +474,17 @@
                                     <p:message for="peperEmail" display="icon"/>
                                 </div>
                                 
-                                <!-- Nota informativa -->
-                                <div class="form-help" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #17a2b8;">
-                                    <p><strong>📞 Información de contacto:</strong></p>
-                                    <p>• El celular ya fue completado en la sección de Información Básica</p>
-                                    <p>• Para modificar el celular, regrese a la sección superior</p>
-                                </div>
+                                  <!-- Celular  -->
+                        <div class="basic-info-column">
+                            <div class="form-group">
+                                <h:outputLabel for="peperCelular" value="Celular" styleClass="form-label"/>
+                                <p:inputText id="peperCelular" value="#{crearPersonaController.nuevaPersona.peperCelular}" 
+                                           maxlength="15" style="width: 100%;"
+                                           placeholder="Ej: 0991234567 (opcional)"/>
+                                <div class="field-hint">(Opcional, formato: 09XXXXXXXX)</div>
+                                <p:message for="peperCelular" display="icon"/>
+                            </div>
+                        </div>
                             </div>
                         </div>
                     </div>

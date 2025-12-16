@@ -46,6 +46,19 @@ public class XeusuUsuarFacade extends AbstractFacade<XeusuUsuar> {
             return null;
         }
     }
+    
+    public List<XeusuUsuar> findAll() {
+        try {
+            TypedQuery<XeusuUsuar> query = em.createQuery(
+                "SELECT u FROM XeusuUsuar u ORDER BY u.xeusuId",
+                XeusuUsuar.class
+            );
+            return query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en findAll: " + e.getMessage());
+            return null;
+        }
+    }
 
     /**
      * Si necesitas métodos para consultas más complejas (usuarios por rol, no asignados, etc.)

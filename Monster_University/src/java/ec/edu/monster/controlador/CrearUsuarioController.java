@@ -6,6 +6,7 @@ import ec.edu.monster.facades.XeusuUsuarFacade;
 import ec.edu.monster.facades.PeperPersonFacade;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
@@ -50,6 +51,16 @@ public class CrearUsuarioController implements Serializable {
      * Genera un ID único basado en el máximo entre personas y usuarios
      * Esto asegura que no haya duplicados entre ambas entidades
      */
+    public List<XeusuUsuar> getTodosUsuarios() {
+    try {
+        // Si tu AbstractFacade tiene el método findAll()
+        return usuarioFacade.findAll();
+    } catch (Exception e) {
+        System.out.println("❌ Error obteniendo usuarios: " + e.getMessage());
+        return new ArrayList<>();
+    }
+    
+}
     public void generarIdUsuarioAutomatico() {
         try {
             // Obtener todos los IDs de personas

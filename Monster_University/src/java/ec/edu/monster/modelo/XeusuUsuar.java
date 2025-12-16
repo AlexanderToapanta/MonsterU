@@ -6,7 +6,7 @@ package ec.edu.monster.modelo;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,13 +14,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -42,50 +42,57 @@ import javax.xml.bind.annotation.XmlTransient;
 public class XeusuUsuar implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 5)
     @Column(name = "XEUSU_ID")
     private String xeusuId;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "XEUSU_NOMBRE")
     private String xeusuNombre;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "XEUSU_CONTRA")
     private String xeusuContra;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 30)
     @Column(name = "XEUSU_ESTADO")
     private String xeusuEstado;
-    @ManyToMany(mappedBy = "xeusuUsuarCollection")
-    private Collection<XerolRol> xerolRolCollection;
-    @OneToMany(mappedBy = "xeusuId")
-    private Collection<PeperPerson> peperPersonCollection;
-    @JoinColumns({
-        @JoinColumn(name = "MECARR_ID", referencedColumnName = "MECARR_ID"),
-        @JoinColumn(name = "MEEST_ID", referencedColumnName = "MEEST_ID")})
+    
+    // RELACIÓN CON ROL (UN USUARIO TIENE UN ROL)
+    @JoinColumn(name = "XEROL_ID", referencedColumnName = "XEROL_ID")
     @ManyToOne
-    private MeestEstud meestEstud;
+    private XerolRol xerolId;
+    
+    // RELACIÓN CON PERSONA (UN USUARIO PUEDE ESTAR ASOCIADO A UNA PERSONA)
     @JoinColumn(name = "PEPER_ID", referencedColumnName = "PEPER_ID")
     @ManyToOne
     private PeperPerson peperId;
-    @OneToMany(mappedBy = "xeusuId")
-    private Collection<MeestEstud> meestEstudCollection;
+    
+    // RELACIÓN CON ESTUDIANTE (UN USUARIO PUEDE ESTAR ASOCIADO A UN ESTUDIANTE)
+    @JoinColumns({
+        @JoinColumn(name = "MECARR_ID", referencedColumnName = "MECARR_ID"),
+        @JoinColumn(name = "MEEST_ID", referencedColumnName = "MEEST_ID")
+    })
+    @ManyToOne
+    private MeestEstud meestEstud;
+    
+    // RELACIÓN ONE-TO-MANY CON AUDITORÍA (UN USUARIO TIENE MUCHOS LOGS DE AUDITORÍA)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "xeusuId")
     private Collection<XeaudAudlog> xeaudAudlogCollection;
-    @ManyToMany
-@JoinTable(
-    name = "XEROL_ROL_USU", 
-    joinColumns = @JoinColumn(name = "ID_USUARIO"),
-    inverseJoinColumns = @JoinColumn(name = "ID_ROL")
-)
-private List<XerolRol> roles;
+    
+    // RELACIÓN ONE-TO-MANY CON ESTUDIANTES (PARA LA RELACIÓN BIDIRECCIONAL)
+    @OneToMany(mappedBy = "xeusuId")
+    private Collection<MeestEstud> meestEstudCollection;
 
     public XeusuUsuar() {
     }
@@ -133,38 +140,12 @@ private List<XerolRol> roles;
         this.xeusuEstado = xeusuEstado;
     }
 
-    @XmlTransient
-    public Collection<XerolRol> getXerolRolCollection() {
-        return xerolRolCollection;
+    public XerolRol getXerolId() {
+        return xerolId;
     }
 
-    public void setXerolRolCollection(Collection<XerolRol> xerolRolCollection) {
-        this.xerolRolCollection = xerolRolCollection;
-    }
-
-    @XmlTransient
-    public Collection<PeperPerson> getPeperPersonCollection() {
-        return peperPersonCollection;
-    }
-
-    public void setPeperPersonCollection(Collection<PeperPerson> peperPersonCollection) {
-        this.peperPersonCollection = peperPersonCollection;
-    }
-
-    public List<XerolRol> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<XerolRol> roles) {
-        this.roles = roles;
-    }
-
-    public MeestEstud getMeestEstud() {
-        return meestEstud;
-    }
-
-    public void setMeestEstud(MeestEstud meestEstud) {
-        this.meestEstud = meestEstud;
+    public void setXerolId(XerolRol xerolId) {
+        this.xerolId = xerolId;
     }
 
     public PeperPerson getPeperId() {
@@ -174,15 +155,13 @@ private List<XerolRol> roles;
     public void setPeperId(PeperPerson peperId) {
         this.peperId = peperId;
     }
-    
 
-    @XmlTransient
-    public Collection<MeestEstud> getMeestEstudCollection() {
-        return meestEstudCollection;
+    public MeestEstud getMeestEstud() {
+        return meestEstud;
     }
 
-    public void setMeestEstudCollection(Collection<MeestEstud> meestEstudCollection) {
-        this.meestEstudCollection = meestEstudCollection;
+    public void setMeestEstud(MeestEstud meestEstud) {
+        this.meestEstud = meestEstud;
     }
 
     @XmlTransient
@@ -194,6 +173,15 @@ private List<XerolRol> roles;
         this.xeaudAudlogCollection = xeaudAudlogCollection;
     }
 
+    @XmlTransient
+    public Collection<MeestEstud> getMeestEstudCollection() {
+        return meestEstudCollection;
+    }
+
+    public void setMeestEstudCollection(Collection<MeestEstud> meestEstudCollection) {
+        this.meestEstudCollection = meestEstudCollection;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -203,12 +191,12 @@ private List<XerolRol> roles;
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof XeusuUsuar)) {
             return false;
         }
         XeusuUsuar other = (XeusuUsuar) object;
-        if ((this.xeusuId == null && other.xeusuId != null) || (this.xeusuId != null && !this.xeusuId.equals(other.xeusuId))) {
+        if ((this.xeusuId == null && other.xeusuId != null) || 
+            (this.xeusuId != null && !this.xeusuId.equals(other.xeusuId))) {
             return false;
         }
         return true;
@@ -216,7 +204,6 @@ private List<XerolRol> roles;
 
     @Override
     public String toString() {
-        return "ec.edu.monster.controlador.XeusuUsuar[ xeusuId=" + xeusuId + " ]";
+        return "ec.edu.monster.modelo.XeusuUsuar[ xeusuId=" + xeusuId + " ]";
     }
-    
 }

@@ -437,6 +437,14 @@ public class CrearUsuarioController implements Serializable {
                 "Error al generar contraseña: " + e.getMessage()));
         }
     }
+    public List<XeusuUsuar> getUsuariosSinRol() {
+    try {
+        return usuarioFacade.findByCriteria("x.xerolId IS NULL");
+    } catch (Exception e) {
+        System.out.println("Error obteniendo usuarios sin rol: " + e.getMessage());
+        return new ArrayList<>();
+    }
+}
     
     /**
      * Método para regenerar el ID si el usuario lo necesita

@@ -38,14 +38,15 @@ public class XerolRolController implements Serializable {
     private XerolRol selected;
     private String rolSeleccionadoId;
     private DualListModel<XeusuUsuar> dualUsuarios;
+    
+    private List<XeusuUsuar> usuariosSinRol; // Usuarios sin rol (lista izquierda)
+    private List<XeusuUsuar> usuariosConRol; // Usuarios con este rol específico (lista derecha)
+    private List<XeusuUsuar> usuariosSeleccionadosSinRol = new ArrayList<>();
+private List<XeusuUsuar> usuariosSeleccionadosConRol = new ArrayList<>();
 
     @PostConstruct
     public void init() {
-        dualUsuarios = new DualListModel<>();
-        // Inicialmente, todos los usuarios estarán en la lista de disponibles
-        List<XeusuUsuar> todosUsuarios = usuarioFacade.findAll();
-        dualUsuarios.setSource(todosUsuarios);
-        dualUsuarios.setTarget(new ArrayList<>()); // Lista vacía de asignados
+        dualUsuarios = new DualListModel<>(new ArrayList<>(), new ArrayList<>());
     }
 
     public XerolRolController() {
@@ -75,7 +76,29 @@ public class XerolRolController implements Serializable {
     public void setDualUsuarios(DualListModel<XeusuUsuar> dualUsuarios) {
         this.dualUsuarios = dualUsuarios;
     }
+    
+    public List<XeusuUsuar> getUsuariosSinRol() {
+        return usuariosSinRol;
+    }
+    
+    public List<XeusuUsuar> getUsuariosConRol() {
+        return usuariosConRol;
+    }
+public List<XeusuUsuar> getUsuariosSeleccionadosSinRol() {
+    return usuariosSeleccionadosSinRol;
+}
 
+public void setUsuariosSeleccionadosSinRol(List<XeusuUsuar> usuariosSeleccionadosSinRol) {
+    this.usuariosSeleccionadosSinRol = usuariosSeleccionadosSinRol;
+}
+
+public List<XeusuUsuar> getUsuariosSeleccionadosConRol() {
+    return usuariosSeleccionadosConRol;
+}
+
+public void setUsuariosSeleccionadosConRol(List<XeusuUsuar> usuariosSeleccionadosConRol) {
+    this.usuariosSeleccionadosConRol = usuariosSeleccionadosConRol;
+}
     protected void setEmbeddableKeys() {
     }
 
@@ -124,67 +147,170 @@ public class XerolRolController implements Serializable {
         return items;
     }
 
+    
+    public void asignarUsuariosSeleccionados() {
+    if (selected == null || usuariosSeleccionadosSinRol.isEmpty()) {
+        JsfUtil.addErrorMessage("Seleccione usuarios para asignar");
+        return;
+    }
+    
+    // Mover de sin rol a con rol
+    for (XeusuUsuar usuario : usuariosSeleccionadosSinRol) {
+        if (usuariosSinRol.contains(usuario)) {
+            usuariosSinRol.remove(usuario);
+            usuariosConRol.add(usuario);
+        }
+    }
+    
+    // Actualizar las tablas
+    usuariosSeleccionadosSinRol.clear();
+    JsfUtil.addSuccessMessage("Usuarios movidos a la lista de asignados");
+}
+
+public void quitarUsuariosSeleccionados() {
+    if (selected == null || usuariosSeleccionadosConRol.isEmpty()) {
+        JsfUtil.addErrorMessage("Seleccione usuarios para quitar");
+        return;
+    }
+    
+    // Mover de con rol a sin rol
+    for (XeusuUsuar usuario : usuariosSeleccionadosConRol) {
+        if (usuariosConRol.contains(usuario)) {
+            usuariosConRol.remove(usuario);
+            usuariosSinRol.add(usuario);
+        }
+    }
+    
+    // Actualizar las tablas
+    usuariosSeleccionadosConRol.clear();
+    JsfUtil.addSuccessMessage("Usuarios movidos a la lista de disponibles");
+}
+
+// Modificar el método guardarCambios
+public void guardarCambios() {
+    if (selected == null) {
+        JsfUtil.addErrorMessage("No hay rol seleccionado para guardar asignaciones");
+        return;
+    }
+    
+    try {
+        // 1. Quitar rol a todos los usuarios que estaban en usuariosConRol originalmente
+        List<XeusuUsuar> usuariosConRolOriginal = usuarioFacade.findUsuariosByRolId(selected.getXerolId());
+        
+        for (XeusuUsuar usuarioOriginal : usuariosConRolOriginal) {
+            boolean sigueEnLista = false;
+            for (XeusuUsuar usuarioActual : usuariosConRol) {
+                if (usuarioActual.getXeusuId().equals(usuarioOriginal.getXeusuId())) {
+                    sigueEnLista = true;
+                    break;
+                }
+            }
+            
+            if (!sigueEnLista) {
+                usuarioOriginal.setXerolId(null);
+                usuarioFacade.edit(usuarioOriginal);
+                System.out.println("Rol quitado de: " + usuarioOriginal.getXeusuId());
+            }
+        }
+        
+        // 2. Asignar rol a los usuarios que están en usuariosConRol ahora
+        for (XeusuUsuar usuarioActual : usuariosConRol) {
+            boolean yaTieneRol = false;
+            for (XeusuUsuar usuarioOriginal : usuariosConRolOriginal) {
+                if (usuarioOriginal.getXeusuId().equals(usuarioActual.getXeusuId())) {
+                    yaTieneRol = true;
+                    break;
+                }
+            }
+            
+            if (!yaTieneRol) {
+                usuarioActual.setXerolId(selected);
+                usuarioFacade.edit(usuarioActual);
+                System.out.println("Rol asignado a: " + usuarioActual.getXeusuId());
+            }
+        }
+        
+        JsfUtil.addSuccessMessage("Asignaciones guardadas correctamente en la base de datos");
+        
+    } catch (Exception ex) {
+        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Error al guardar asignaciones", ex);
+        JsfUtil.addErrorMessage("Error al guardar las asignaciones: " + ex.getMessage());
+    }
+}
+    
     // Método para cargar usuarios cuando se selecciona un rol
     public void cargarUsuariosRol() {
         if (rolSeleccionadoId != null && !rolSeleccionadoId.isEmpty()) {
-            XerolRol rolSeleccionado = getFacade().find(rolSeleccionadoId);
-            if (rolSeleccionado != null) {
-                // Obtener todos los usuarios
-                List<XeusuUsuar> todosUsuarios = usuarioFacade.findAll();
+            selected = getFacade().find(rolSeleccionadoId);
+            if (selected != null) {
+                // Obtener TODOS los usuarios SIN rol
+                usuariosSinRol = usuarioFacade.findUsuariosSinRol();
                 
-                // Obtener usuarios asignados a este rol
-                // NOTA: Esto depende de cómo tengas la relación entre usuarios y roles
-                // Si tienes una relación ManyToMany, necesitarías una consulta específica
-                List<XeusuUsuar> usuariosAsignados = new ArrayList<>();
+                // Obtener usuarios CON este rol específico
+                usuariosConRol = usuarioFacade.findUsuariosByRolId(rolSeleccionadoId);
                 
-                // Ejemplo de consulta (debes adaptarlo a tu modelo de datos):
-                // usuariosAsignados = usuarioFacade.findUsuariosByRolId(rolSeleccionadoId);
+                // Configurar el DualListModel
+                dualUsuarios = new DualListModel<>(usuariosSinRol, usuariosConRol);
                 
-                // Por ahora, simulamos que no hay usuarios asignados
-                // Esto es solo un ejemplo - debes implementar la lógica real
-                List<XeusuUsuar> usuariosDisponibles = new ArrayList<>(todosUsuarios);
-                usuariosDisponibles.removeAll(usuariosAsignados);
+                // Log para depuración
+                System.out.println("=== Cargando usuarios para rol: " + selected.getXerolNombre() + " ===");
+                System.out.println("Usuarios sin rol (izquierda): " + (usuariosSinRol != null ? usuariosSinRol.size() : 0));
+                System.out.println("Usuarios con este rol (derecha): " + (usuariosConRol != null ? usuariosConRol.size() : 0));
                 
-                dualUsuarios = new DualListModel<>(usuariosDisponibles, usuariosAsignados);
+                if (usuariosSinRol != null && !usuariosSinRol.isEmpty()) {
+                    System.out.println("Ejemplo de usuario sin rol: " + usuariosSinRol.get(0).getXeusuNombre());
+                }
+                if (usuariosConRol != null && !usuariosConRol.isEmpty()) {
+                    System.out.println("Ejemplo de usuario con rol: " + usuariosConRol.get(0).getXeusuNombre());
+                }
                 
-                // También establecemos el selected para referencia
-                selected = rolSeleccionado;
+            } else {
+                // Rol no encontrado
+                JsfUtil.addErrorMessage("El rol seleccionado no existe");
+                limpiarSeleccion();
             }
+        } else {
+            // Si no hay rol seleccionado, limpiar las listas
+            limpiarSeleccion();
         }
     }
 
     // Método para guardar los cambios de asignación
-    public void guardarCambios() {
-        if (rolSeleccionadoId != null && dualUsuarios != null) {
-            try {
-                // Obtener la lista de usuarios asignados
-                List<XeusuUsuar> usuariosAsignados = dualUsuarios.getTarget();
-                
-                // Lógica para guardar las asignaciones en la base de datos
-                // Esto depende de cómo tengas la relación entre usuarios y roles
-                
-                // Ejemplo de implementación:
-                // 1. Eliminar todas las asignaciones actuales para este rol
-                // 2. Crear nuevas asignaciones con los usuarios seleccionados
-                
-                // Por ahora, solo mostramos un mensaje de éxito
-                JsfUtil.addSuccessMessage("Asignaciones de usuarios al rol guardadas correctamente");
-                
-                // Si tienes entidad de relación (ej: XeusuRol), deberías hacer:
-                // for (XeusuUsuar usuario : usuariosAsignados) {
-                //     XeusuRol asignacion = new XeusuRol();
-                //     asignacion.setUsuario(usuario);
-                //     asignacion.setRol(selected);
-                //     asignacionFacade.create(asignacion);
-                // }
-                
-            } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Error al guardar asignaciones", ex);
-                JsfUtil.addErrorMessage("Error al guardar las asignaciones: " + ex.getMessage());
-            }
-        } else {
-            JsfUtil.addErrorMessage("No hay rol seleccionado para guardar asignaciones");
+    
+
+    // Método para limpiar selección
+    public void limpiarSeleccion() {
+        rolSeleccionadoId = null;
+        selected = null;
+        usuariosSinRol = new ArrayList<>();
+        usuariosConRol = new ArrayList<>();
+        dualUsuarios = new DualListModel<>(usuariosSinRol, usuariosConRol);
+        System.out.println("Selección limpiada");
+    }
+
+    // Método para obtener estadísticas
+    public String getEstadisticas() {
+        if (selected == null) {
+            return "Seleccione un rol para ver estadísticas";
         }
+        int totalSinRol = usuariosSinRol != null ? usuariosSinRol.size() : 0;
+        int totalConRol = usuariosConRol != null ? usuariosConRol.size() : 0;
+        return String.format("Usuarios sin rol: %d | Usuarios con este rol: %d", totalSinRol, totalConRol);
+    }
+    
+    // Método para verificar si hay un rol seleccionado
+    public boolean isRolSeleccionado() {
+        return selected != null;
+    }
+    
+    // Método para obtener total de usuarios sin rol (para mostrar en UI)
+    public int getTotalUsuariosSinRol() {
+        return usuariosSinRol != null ? usuariosSinRol.size() : 0;
+    }
+    
+    // Método para obtener total de usuarios con rol seleccionado
+    public int getTotalUsuariosConRol() {
+        return usuariosConRol != null ? usuariosConRol.size() : 0;
     }
 
     private void persist(PersistAction persistAction, String successMessage) {

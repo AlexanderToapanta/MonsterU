@@ -1,0 +1,262 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/template.xhtml">
+
+    <ui:define name="title">
+        Asignación de Opciones a Roles
+    </ui:define>
+
+    <ui:define name="body">
+        <h:form id="formAsignacion" prependId="false">
+            <!-- NO agregues p:growl aquí - se usa el del template -->
+
+            <div style="padding:20px; max-width:1400px; margin:0 auto;">
+                <h3>Asignación de Opciones a Roles</h3>
+                <p style="color: #7f8c8d; margin-bottom: 20px;">
+                    En esta sección puede asignar opciones del sistema (menús) a los diferentes roles de usuario.
+                </p>
+
+                <!-- Selección de ROL -->
+                <div style="margin-bottom:20px;">
+                    <h:outputLabel value="Seleccionar Rol:" style="font-weight:bold; margin-right:10px;"/>
+                    <p:selectOneMenu id="rolSel" value="#{xrXerolXeopcController.rolSeleccionadoId}"
+                                     style="width:400px;">
+                        <f:selectItem itemLabel="-- Seleccione un rol --" itemValue="" />
+                        <f:selectItems value="#{xerolRolController.itemsAvailableSelectOne}"
+                                       var="rol"
+                                       itemLabel="#{rol.xerolNombre} (ID: #{rol.xerolId})"
+                                       itemValue="#{rol.xerolId}" />
+                        <p:ajax listener="#{xrXerolXeopcController.cargarAsignacionesPorRol}"
+                                update="panelInfo tblOpcionesNoAsignadas tblOpcionesAsignadas btnAsignar btnRetirar btnGuardar btnLimpiar :growl"/>
+                    </p:selectOneMenu>
+                </div>
+
+                <!-- Panel de información del rol seleccionado -->
+                <p:panel id="panelInfo" header="Información del Rol" 
+                        rendered="#{xrXerolXeopcController.rolSeleccionadoId != null and not empty xrXerolXeopcController.rolSeleccionadoId}">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputText value="ID del Rol:" style="font-weight:bold;"/>
+                        <h:outputText value="#{xerolRolController.findXerolRol(xrXerolXeopcController.rolSeleccionadoId).xerolId}"/>
+                        
+                        <h:outputText value="Nombre del Rol:" style="font-weight:bold;"/>
+                        <h:outputText value="#{xerolRolController.findXerolRol(xrXerolXeopcController.rolSeleccionadoId).xerolNombre}"/>
+                        
+                        <h:outputText value="Descripción:" style="font-weight:bold;"/>
+                        <h:outputText value="#{xerolRolController.findXerolRol(xrXerolXeopcController.rolSeleccionadoId).xerolDescri}"/>
+                        
+                        <h:outputText value="Estadísticas:" style="font-weight:bold;"/>
+                        <h:outputText value="Opciones disponibles: #{xrXerolXeopcController.getOpcionesNoAsignadas().size()} | Opciones asignadas: #{xrXerolXeopcController.asignacionesFiltradas != null ? xrXerolXeopcController.asignacionesFiltradas.size() : 0}" 
+                                      style="color: #2c3e50; font-weight: bold;"/>
+                    </h:panelGrid>
+                </p:panel>
+
+                <!-- DOS DATATABLES PARA ASIGNACIÓN DE OPCIONES -->
+                <div style="margin-top:20px;" rendered="#{xrXerolXeopcController.rolSeleccionadoId != null and not empty xrXerolXeopcController.rolSeleccionadoId}">
+                    <p:panel header="Asignación de Opciones al Rol">
+                        
+                        <div style="display: flex; justify-content: space-between; gap: 20px;">
+                            
+                            <!-- TABLA IZQUIERDA: Opciones NO asignadas -->
+                            <div style="flex: 1; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                                <h4 style="color: #e74c3c; margin-top: 0;">
+                                    Opciones DISPONIBLES (#{xrXerolXeopcController.getOpcionesNoAsignadas().size()})
+                                </h4>
+                                
+                                <p:dataTable id="tblOpcionesNoAsignadas" 
+                                           value="#{xrXerolXeopcController.getOpcionesNoAsignadas()}"
+                                           var="opcion"
+                                           selection="#{xrXerolXeopcController.selectedOpcionesNoAsignadas}"
+                                           rowKey="#{opcion.xeopcId}"
+                                           style="width:100%;"
+                                           emptyMessage="No hay opciones disponibles o ya están todas asignadas">
+                                    
+                                    <p:column selectionMode="multiple" style="width:50px;"/>
+                                    
+                                    <p:column headerText="Código" style="width:80px;">
+                                        <h:outputText value="#{opcion.xeopcId}"/>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Nombre de Opción">
+                                        <h:outputText value="#{opcion.xeopcNombre}"/>
+                                    </p:column>
+                                    
+                                    <f:facet name="footer">
+                                        <div style="text-align: center; margin-top: 10px;">
+                                            <p:commandButton value="Asignar Seleccionadas ▶" 
+                                                           icon="pi pi-arrow-right"
+                                                           action="#{xrXerolXeopcController.asignarOpcionesSeleccionadas}"
+                                                           update="tblOpcionesNoAsignadas tblOpcionesAsignadas panelInfo :growl"
+                                                           styleClass="p-button-success"
+                                                           style="min-width: 200px;"
+                                                           disabled="#{empty xrXerolXeopcController.selectedOpcionesNoAsignadas}"/>
+                                        </div>
+                                    </f:facet>
+                                </p:dataTable>
+                            </div>
+                            
+                            <!-- BOTONES CENTRALES -->
+                            <div style="display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 0 10px;">
+                                <p:commandButton id="btnAsignar"
+                                               value="▶ Asignar"
+                                               action="#{xrXerolXeopcController.asignarOpcionesSeleccionadas}"
+                                               icon="pi pi-arrow-right"
+                                               update="tblOpcionesNoAsignadas tblOpcionesAsignadas panelInfo :growl"
+                                               styleClass="ui-button-success"
+                                               style="min-width: 120px;"
+                                               disabled="#{empty xrXerolXeopcController.selectedOpcionesNoAsignadas}"/>
+                                
+                                <p:commandButton id="btnRetirar"
+                                               value="◀ Retirar"
+                                               action="#{xrXerolXeopcController.retirarOpcionesSeleccionadas}"
+                                               icon="pi pi-arrow-left"
+                                               update="tblOpcionesNoAsignadas tblOpcionesAsignadas panelInfo :growl"
+                                               styleClass="ui-button-warning"
+                                               style="min-width: 120px;"
+                                               disabled="#{empty xrXerolXeopcController.selectedOpcionesAsignadas}"/>
+                                
+                                <p:separator style="margin: 10px 0;"/>
+                                
+                                <p:commandButton value="Asignación Rápida"
+                                               icon="pi pi-bolt"
+                                               onclick="PF('dlgAsignacionRapida').show();"
+                                               styleClass="ui-button-help"
+                                               style="min-width: 120px;"/>
+                            </div>
+                            
+                            <!-- TABLA DERECHA: Opciones ASIGNADAS -->
+                            <div style="flex: 1; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                                <h4 style="color: #27ae60; margin-top: 0;">
+                                    Opciones ASIGNADAS (#{xrXerolXeopcController.asignacionesFiltradas != null ? xrXerolXeopcController.asignacionesFiltradas.size() : 0})
+                                </h4>
+                                
+                                <p:dataTable id="tblOpcionesAsignadas" 
+                                           value="#{xrXerolXeopcController.asignacionesFiltradas}"
+                                           var="asignacion"
+                                           selection="#{xrXerolXeopcController.selectedOpcionesAsignadas}"
+                                           rowKey="#{asignacion.xeopcId}"
+                                           style="width:100%;"
+                                           emptyMessage="No hay opciones asignadas a este rol">
+                                    
+                                    <p:column selectionMode="multiple" style="width:50px;"/>
+                                    
+                                    <p:column headerText="Código" style="width:80px;">
+                                        <h:outputText value="#{asignacion.xeopcOpcion.xeopcId}"/>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Nombre">
+                                        <h:outputText value="#{asignacion.xeopcOpcion.xeopcNombre}"/>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Fecha Asignación" style="width:120px;">
+                                        <h:outputText value="#{asignacion.xropFechaAsig}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                                        </h:outputText>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Estado" style="width:100px;">
+                                        <h:outputText value="#{asignacion.xropFechaRetiro != null ? 'Retirada' : 'Activa'}" 
+                                                   style="color: #{asignacion.xropFechaRetiro != null ? '#e74c3c' : '#27ae60'}; font-weight: bold;"/>
+                                    </p:column>
+                                    
+                                    <f:facet name="footer">
+                                        <div style="text-align: center; margin-top: 10px;">
+                                            <p:commandButton value="◀ Retirar Seleccionadas" 
+                                                           icon="pi pi-arrow-left"
+                                                           action="#{xrXerolXeopcController.retirarOpcionesSeleccionadas}"
+                                                           update="tblOpcionesNoAsignadas tblOpcionesAsignadas panelInfo :growl"
+                                                           styleClass="p-button-warning"
+                                                           style="min-width: 200px;"
+                                                           disabled="#{empty xrXerolXeopcController.selectedOpcionesAsignadas}"/>
+                                        </div>
+                                    </f:facet>
+                                </p:dataTable>
+                            </div>
+                            
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: center; color: #7f8c8d; font-style: italic;">
+                            Seleccione opciones y use los botones para asignar/retirar del rol
+                        </div>
+                        
+                    </p:panel>
+                </div>
+
+                <!-- Botones de acción -->
+                <div style="margin-top:20px; display: flex; justify-content: center; gap: 15px;">
+                    <p:commandButton id="btnGuardar"
+                                   value="Guardar Cambios" 
+                                   action="#{xrXerolXeopcController.guardarCambios}"
+                                   icon="pi pi-save"
+                                   update=":growl"
+                                   styleClass="ui-button-primary"
+                                   style="min-width: 200px;"
+                                   rendered="#{xrXerolXeopcController.rolSeleccionadoId != null and not empty xrXerolXeopcController.rolSeleccionadoId}"
+                                   disabled="#{xrXerolXeopcController.rolSeleccionadoId == null or empty xrXerolXeopcController.rolSeleccionadoId}"/>
+                    
+                    <p:commandButton id="btnLimpiar"
+                                   value="Limpiar Selección" 
+                                   action="#{xrXerolXeopcController.reiniciarFiltros}"
+                                   icon="pi pi-refresh"
+                                   update="rolSel panelInfo tblOpcionesNoAsignadas tblOpcionesAsignadas btnGuardar :growl"
+                                   style="min-width: 200px;"/>
+                </div>
+
+                <!-- Panel inferior: Asignación rápida (como diálogo) -->
+                <p:dialog id="dlgAsignacionRapida" header="Asignación Rápida" widgetVar="dlgAsignacionRapida"
+                         modal="true" draggable="false" resizable="false" style="width: 500px;">
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <h:outputLabel value="Rol:" style="font-weight:bold;"/>
+                        <p:selectOneMenu value="#{xrXerolXeopcController.rolSeleccionadoId}" style="width:100%;">
+                            <f:selectItem itemLabel="-- Seleccione un rol --" itemValue="" />
+                            <f:selectItems value="#{xerolRolController.itemsAvailableSelectOne}"
+                                           var="rol"
+                                           itemLabel="#{rol.xerolNombre}"
+                                           itemValue="#{rol.xerolId}" />
+                        </p:selectOneMenu>
+                        
+                        <h:outputLabel value="Opción:" style="font-weight:bold;"/>
+                        <p:selectOneMenu value="#{xrXerolXeopcController.opcionSeleccionadoId}" style="width:100%;">
+                            <f:selectItem itemLabel="-- Seleccione una opción --" itemValue="" />
+                            <f:selectItems value="#{xeopcOpcionController.itemsAvailableSelectOne}"
+                                           var="opcion"
+                                           itemLabel="#{opcion.xeopcNombre} (#{opcion.xeopcId})"
+                                           itemValue="#{opcion.xeopcId}" />
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                    
+                    <f:facet name="footer">
+                        <div style="text-align: right;">
+                            <p:commandButton value="Cancelar" 
+                                           icon="pi pi-times"
+                                           onclick="PF('dlgAsignacionRapida').hide();"
+                                           styleClass="ui-button-secondary"/>
+                            
+                            <p:commandButton value="Asignar" 
+                                           icon="pi pi-check"
+                                           action="#{xrXerolXeopcController.asignarOpcionARol}"
+                                           oncomplete="PF('dlgAsignacionRapida').hide();"
+                                           update="tblOpcionesNoAsignadas tblOpcionesAsignadas panelInfo :growl"
+                                           styleClass="ui-button-primary"/>
+                        </div>
+                    </f:facet>
+                </p:dialog>
+
+            </div>
+            
+        </h:form>
+    </ui:define>
+
+    <ui:define name="footer">
+        <div style="text-align:center; width:100%;">Sistema de Gestión Monster University - Asignación de Opciones a Roles</div>
+    </ui:define>
+
+</ui:composition>
+</html>

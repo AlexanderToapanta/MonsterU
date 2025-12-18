@@ -54,6 +54,7 @@ public class XerolRol implements Serializable {
     // El mappedBy = "xerolId" se refiere al atributo en XeusuUsuar.java
     @OneToMany(mappedBy = "xerolId")
     private Collection<XeusuUsuar> xeusuUsuarCollection;
+    
 
     public XerolRol() {
     }

@@ -56,7 +56,10 @@ private List<XeusuUsuar> usuariosSeleccionadosConRol = new ArrayList<>();
     public XerolRol getSelected() {
         return selected;
     }
-
+// En XerolRolController.java
+public XerolRol findXerolRol(String id) {
+    return getFacade().find(id);
+}
     public void setSelected(XerolRol selected) {
         this.selected = selected;
     }

@@ -5,11 +5,19 @@
 package ec.edu.monster.controlador;
 
 import ec.edu.monster.facades.XeusuUsuarFacade;
+import ec.edu.monster.facades.XrXerolXeopcFacade;
 import ec.edu.monster.modelo.XeusuUsuar;
+import ec.edu.monster.modelo.XeopcOpcion;
+import ec.edu.monster.modelo.XrXerolXeopc;
 import ec.edu.monster.modelo.UserCache;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -20,8 +28,6 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
-import java.util.List;
 
 @Named(value = "loginController")
 @SessionScoped
@@ -34,10 +40,19 @@ public class LoginController implements Serializable {
     
     @EJB
     private XeusuUsuarFacade usuarioFacade;
+    
+    @EJB
+    private XrXerolXeopcFacade xrXerolXeopcFacade;
+    
+    // Listas para almacenar opciones del usuario
+    private List<XeopcOpcion> opcionesUsuario;
+    private List<String> idsOpcionesUsuario;
 
     public LoginController() {
         usuario = new XeusuUsuar();
         passController = new PasswordController();
+        opcionesUsuario = new ArrayList<>();
+        idsOpcionesUsuario = new ArrayList<>();
     }
 
     // Getters y Setters
@@ -65,13 +80,21 @@ public class LoginController implements Serializable {
         this.usu = usu;
     }
     
+    public List<XeopcOpcion> getOpcionesUsuario() {
+        return opcionesUsuario;
+    }
+    
+    public List<String> getIdsOpcionesUsuario() {
+        return idsOpcionesUsuario;
+    }
+    
     @PostConstruct
     public void init() {
-        XeusuUsuar x = (XeusuUsuar) FacesContext.getCurrentInstance()
-                .getExternalContext().getSessionMap().get("usuario");
+        XeusuUsuar x = getUsuarioLogueado();
         if (x != null) {
             // Si ya hay sesión, cargar datos en cache
             cargarDatosUsuarioCache(x);
+            cargarOpcionesUsuario();
         }
     }
 
@@ -94,6 +117,9 @@ public class LoginController implements Serializable {
             
             // Cargar datos en cache
             cargarDatosUsuarioCache(usuarioLogueado);
+            
+            // Cargar opciones del usuario según su rol
+            cargarOpcionesUsuario();
             
             // Redirección según necesidad
             if (necesitaCambiarContrasena(usuarioLogueado)) {
@@ -126,6 +152,94 @@ public class LoginController implements Serializable {
         }
     }
     
+    /**
+     * Carga las opciones del usuario según su rol
+     */
+    public void cargarOpcionesUsuario() {
+        opcionesUsuario.clear();
+        idsOpcionesUsuario.clear();
+        
+        XeusuUsuar usuarioLogueado = getUsuarioLogueado();
+        
+        if (usuarioLogueado != null && usuarioLogueado.getXerolId() != null) {
+            try {
+                // Obtener opciones del rol del usuario
+                List<XrXerolXeopc> asignaciones = xrXerolXeopcFacade.findOpcionesPorRol(usuarioLogueado.getXerolId().getXerolId());
+                
+                // Extraer las opciones de las asignaciones
+                for (XrXerolXeopc asignacion : asignaciones) {
+                    if (asignacion.getXropFechaRetiro() == null) { // Solo opciones activas
+                        XeopcOpcion opcion = asignacion.getXeopcOpcion();
+                        if (opcion != null) {
+                            opcionesUsuario.add(opcion);
+                            idsOpcionesUsuario.add(opcion.getXeopcId());
+                        }
+                    }
+                }
+                
+                // Log para depuración
+                System.out.println("Usuario " + usuarioLogueado.getXeusuNombre() + 
+                                 " tiene " + opcionesUsuario.size() + " opciones asignadas");
+                idsOpcionesUsuario.forEach(id -> System.out.println(" - Opción: " + id));
+                
+            } catch (Exception e) {
+                Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, "Error al cargar opciones", e);
+            }
+        }
+    }
+    
+    /**
+     * Verifica si el usuario tiene una opción específica
+     */
+    public boolean tieneOpcion(String opcionId) {
+        if (opcionId == null || opcionId.trim().isEmpty()) {
+            return false;
+        }
+        
+        // Si la lista está vacía, intentar cargarla
+        if (idsOpcionesUsuario.isEmpty() && isLoggedIn()) {
+            cargarOpcionesUsuario();
+        }
+        
+        return idsOpcionesUsuario.contains(opcionId);
+    }
+    
+    /**
+     * Verifica si el usuario tiene al menos una opción de un grupo
+     */
+    public boolean tieneOpcionEnGrupo(String... opcionesIds) {
+        // Si la lista está vacía, intentar cargarla
+        if (idsOpcionesUsuario.isEmpty() && isLoggedIn()) {
+            cargarOpcionesUsuario();
+        }
+        
+        for (String opcionId : opcionesIds) {
+            if (idsOpcionesUsuario.contains(opcionId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Verifica si el usuario tiene acceso a una opción principal (PER, FIN, ACA, SEG)
+     */
+    public boolean tieneAccesoMenu(String menuId) {
+        // Opciones principales que representan menús
+        switch (menuId) {
+            case "PER":
+                return tieneOpcionEnGrupo("PER", "CRE");
+            case "FIN":
+                return tieneOpcion("FIN");
+            case "ACA":
+                return tieneOpcionEnGrupo("ACA", "AC1", "AC2");
+            case "SEG":
+                return tieneOpcionEnGrupo("SEG", "SE1", "SE2");
+            default:
+                return false;
+        }
+    }
+    
     private boolean necesitaCambiarContrasena(XeusuUsuar usuario) {
         // Lógica para determinar si necesita cambiar contraseña
         // Por ejemplo, si es primer acceso o contraseña expirada
@@ -134,25 +248,52 @@ public class LoginController implements Serializable {
     }
 
     public String doLogout() throws IOException {
-    // Limpiar sesión
-    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuario");
-    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usu");
-    FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        // Limpiar sesión
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuario");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usu");
+        
+        // Limpiar opciones del usuario
+        opcionesUsuario.clear();
+        idsOpcionesUsuario.clear();
+        
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        
+        // Redirigir al login
+        FacesContext.getCurrentInstance().getExternalContext()
+                .redirect("/Monster_University/faces/login.xhtml");
+        return null;
+    }
     
-    // Redirigir al login
-    FacesContext.getCurrentInstance().getExternalContext()
-            .redirect("/Monster_University/faces/login.xhtml");
-    return null;
-}
-    
-    // Método para verificar si hay sesión activa
+    /**
+     * Método para verificar si hay sesión activa
+     */
     public boolean isLoggedIn() {
-    return getUsuarioLogueado() != null;
-}
+        return getUsuarioLogueado() != null;
+    }
 
-// Y este getter si no lo tienes
-public XeusuUsuar getUsuarioLogueado() {
-    return (XeusuUsuar) FacesContext.getCurrentInstance().getExternalContext()
-            .getSessionMap().get("usuario");
-}
+    /**
+     * Obtiene el usuario logueado de la sesión
+     */
+    public XeusuUsuar getUsuarioLogueado() {
+        return (XeusuUsuar) FacesContext.getCurrentInstance().getExternalContext()
+                .getSessionMap().get("usuario");
+    }
+    
+    /**
+     * Forzar recarga de opciones (útil después de cambios de rol)
+     */
+    public void recargarOpciones() {
+        cargarOpcionesUsuario();
+    }
+    
+    /**
+     * Obtiene el nombre del rol del usuario logueado
+     */
+    public String getNombreRolUsuario() {
+        XeusuUsuar usuario = getUsuarioLogueado();
+        if (usuario != null && usuario.getXerolId() != null) {
+            return usuario.getXerolId().getXerolNombre();
+        }
+        return "Sin rol asignado";
+    }
 }

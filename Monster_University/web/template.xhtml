@@ -29,14 +29,13 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        z-index: 10; /* Asegura que el header esté sobre la imagen */
+        z-index: 10;
     }
 
     .layout-center {
         grid-row: 2;
         padding: 1rem;
         overflow: auto;
-        /* Imagen de fondo con overlay (degradado) */
         background-image: 
             linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
             url('https://www.bangor.ac.uk/sites/default/files/styles/16x9_1100w/public/2020-05/CB%202018%20May%20%2837%29.jpg?h=41ef3158&amp;itok=zGs3cG5Q');
@@ -47,16 +46,14 @@
         position: relative;
     }
 
-    /* (Overlay integrado en el background via gradient) */
-
     .layout-south {
         grid-row: 3;
-        background-color: rgba(233, 236, 239, 0.9); /* Semi-transparente */
+        background-color: rgba(233, 236, 239, 0.9);
         border-top: 1px solid #dee2e6;
         padding: 0.5rem;
         display: flex;
         align-items: center;
-        z-index: 10; /* Asegura que el footer esté sobre la imagen */
+        z-index: 10;
     }
 
     .app-header {
@@ -82,7 +79,7 @@
 
     <p:growl id="growl" life="3000"/>
 
-    <!-- Global delete confirmation dialog available to all pages (must be inside a form) -->
+    <!-- Global delete confirmation dialog -->
     <h:form id="globalConfirmForm">
         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" severity="warn">
             <p:commandButton value="Sí, eliminar" type="button" styleClass="ui-confirmdialog-yes p-button-danger" icon="pi pi-trash"/>
@@ -102,43 +99,97 @@
             <!-- TÍTULO -->
             <div class="app-header">MONSTER UNIVERSITY</div>
 
-            <!-- MENÚS -->
+            <!-- MENÚS DINÁMICOS SEGÚN ROL -->
             <div class="user-menu">
                 <h:form id="menuForm">
+                    <!-- HOME - Siempre visible si está logueado -->
                     <p:button value="Home"
-                              icon="pi pi-home "
-                              outcome="/index1.xhtml"
-                              />
-                    <!-- PERSONAL -->
-                    <p:menuButton value="Personal" styleClass="menu-btn">
+                              icon="pi pi-home"
+                              outcome="/faces/index1.xhtml"
+                              rendered="#{loginController.loggedIn}"
+                              styleClass="menu-btn"/>
+                    
+                    <!-- PERSONAL - Solo si tiene alguna opción de Personal -->
+                    <p:menuButton value="Personal" 
+                                  styleClass="menu-btn"
+                                  rendered="#{loginController.loggedIn and loginController.tieneOpcionEnGrupo('PER', 'CRE')}">
+                        
+                        <!-- Crear Personal - Solo si tiene la opción CRE -->
                         <p:menuitem value="Crear Personal"
                                     icon="pi pi-user"
-                                    outcome="/crearpersonal.xhtml"/>
-                    </p:menuButton>
-
-                    <!-- FINANZAS -->
-                    <p:menuButton value="Finanzas" styleClass="menu-btn">
+                                    outcome="/faces/crearpersonal.xhtml"
+                                    rendered="#{loginController.tieneOpcion('CRE')}"/>
                         
+                        <!-- Si no tiene opciones específicas, mostrar mensaje -->
+                        <p:menuitem value="No tiene permisos"
+                                    icon="pi pi-lock"
+                                    disabled="true"
+                                    rendered="#{not loginController.tieneOpcionEnGrupo('CRE')}"/>
                     </p:menuButton>
 
-                    <!-- ACADÉMICO -->
-                    <p:menuButton value="Académico" styleClass="menu-btn">
+                    <!-- FINANZAS - Solo si tiene alguna opción de Finanzas -->
+                    <p:menuButton value="Finanzas" 
+                                  styleClass="menu-btn"
+                                  rendered="#{loginController.loggedIn and loginController.tieneOpcion('FIN')}">
+                        <!-- Aquí irían las subopciones de Finanzas si las tuvieras -->
+                        <p:menuitem value="Funcionalidades de Finanzas"
+                                    icon="pi pi-money-bill"
+                                    outcome="#"
+                                    disabled="true"/>
+                    </p:menuButton>
+
+                    <!-- ACADÉMICO - Solo si tiene alguna opción de Académico -->
+                    <p:menuButton value="Académico" 
+                                  styleClass="menu-btn"
+                                  rendered="#{loginController.loggedIn and loginController.tieneOpcionEnGrupo('ACA', 'AC1', 'AC2')}">
+                        
+                        <!-- Administrar Carreras - Solo si tiene la opción AC1 -->
                         <p:menuitem value="Administrar Carreras"
                                     icon="pi pi-briefcase"
-                                    outcome="/mecarrCarrera/List.xhtml"/>
+                                    outcome="/mecarrCarrera/List.xhtml"
+                                    rendered="#{loginController.tieneOpcion('AC1')}"/>
+                        
+                        <!-- Reporte de Carreras - Solo si tiene la opción AC2 -->
                         <p:menuitem value="Reporte de Carreras"
                                     icon="pi pi-file"
-                                    outcome="/reporte_carreras.xhtml"/>
+                                    outcome="/faces/reporte_carreras.xhtml"
+                                    rendered="#{loginController.tieneOpcion('AC2')}"/>
+                        
+                        <!-- Si no tiene opciones específicas -->
+                        <p:menuitem value="No tiene permisos académicos"
+                                    icon="pi pi-lock"
+                                    disabled="true"
+                                    rendered="#{not loginController.tieneOpcionEnGrupo('AC1', 'AC2')}"/>
                     </p:menuButton>
 
-                    <!-- SEGURIDAD -->
-                    <p:menuButton value="Seguridad" styleClass="menu-btn">
-                         <p:menuitem value="Administrar Roles"
+                    <!-- SEGURIDAD - Solo si tiene alguna opción de Seguridad -->
+                    <p:menuButton value="Seguridad" 
+                                  styleClass="menu-btn"
+                                  rendered="#{loginController.loggedIn and loginController.tieneOpcionEnGrupo('SEG', 'SE1', 'SE2')}">
+                        
+                        <!-- Administrar Roles - Solo si tiene la opción SE1 -->
+                        <p:menuitem value="Administrar Roles"
                                     icon="pi pi-users"
-                                    outcome="/xerolRol/List.xhtml"/>
-                         <p:menuitem value="Asignar Roles"
+                                    outcome="/xerolRol/List.xhtml"
+                                    rendered="#{loginController.tieneOpcion('SE1')}"/>
+                        
+                        <!-- Asignar Roles - Solo si tiene la opción SE2 -->
+                        <p:menuitem value="Asignar Roles"
                                     icon="pi pi-shield"
-                                    outcome="/faces/asignacion_roles.xhtml"/>
+                                    outcome="/faces/asignacion_roles.xhtml"
+                                    rendered="#{loginController.tieneOpcion('SE2')}"/>
+                        
+                        <!-- Asignar Opciones a Roles - Solo si tiene la opción SE2 -->
+                        <p:menuitem value="Asignar Opciones"
+                                    icon="pi pi-cog"
+                                    outcome="/faces/asignar_opciones.xhtml"
+                                    rendered="#{loginController.tieneOpcion('SE2')}"/>
+                        
+                        <!-- Si no tiene opciones específicas -->
+                        <p:menuitem value="No tiene permisos de seguridad"
+                                    icon="pi pi-lock"
+                                    disabled="true"
+                                    rendered="#{not loginController.tieneOpcionEnGrupo('SE1', 'SE2')}"/>
                     </p:menuButton>
                      
 
@@ -148,10 +199,17 @@
                                   styleClass="menu-btn"
                                   rendered="#{loginController.loggedIn}">
 
+                        <!-- Opciones personales del usuario -->
+                        
+                                    
                         <p:menuitem value="Cambiar contraseña"
                                     icon="pi pi-key"
                                     outcome="/cambioContrasena.xhtml"/>
+
+                        <p:separator/>
                         
+                        <!-- Solo administradores pueden ver esta opción -->
+                       
 
                         <p:menuitem value="Cerrar sesión"
                                     icon="pi pi-sign-out"
@@ -176,12 +234,15 @@
         <!-- ==================================== FOOTER ====================================== -->
         <div class="layout-south">
             <ui:insert name="footer"/>
-
-            
+            <div style="margin-left: auto;">
+                <h:outputText value="Usuario: #{loginController.usuarioLogueado.xeusuNombre}" 
+                             rendered="#{loginController.loggedIn}"/>
+                <h:outputText value=" | Rol: #{loginController.usuarioLogueado.xerolId.xerolNombre}" 
+                             rendered="#{loginController.loggedIn and loginController.usuarioLogueado.xerolId != null}"/>
+            </div>
         </div>
 
     </div>
 
 </h:body>
 </html>
-    
